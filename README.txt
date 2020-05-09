@@ -1,5 +1,4 @@
 Programa manejador de abasto
-Netbeans Apache 11.1
-Java JDK 14
-MySQL version por definir
-
+QtCreator 4.11.0
+Python 3.8.2
+MySQL  Ver 8.0.20
