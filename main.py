@@ -6,7 +6,7 @@ from PyQt5.QtGui import *
 from PyQt5 import uic
 from PyQt5 import QtSql, QtGui
 import MySQLdb as mdb
-from ventanaMMenu import Ui_MainWindow
+from ventanaMenu import Ui_MainWindow
 
 class MyDialog(QWidget):
     def __init__(self):
@@ -27,9 +27,6 @@ if __name__ == '__main__':
     db.setHostName('localhost')
     db.setUserName('wgan')
     db.setPassword('123456789')
-    MainWindow = QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    print(MainWindow.findChild("label", QLabel))
-    MainWindow.show()
+    win = Window()
+    win.show()
     sys.exit(App.exec())
