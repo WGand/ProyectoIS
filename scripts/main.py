@@ -2,7 +2,7 @@ import sys
 #from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel ya está importado en la linea 4, lo dejo de referencia
 from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtSql, QtGui
-from gestorVentanas import ventanaMenu, ventanaGestionarProducto
+from gestorVentanas import ventanaMenu
 
 
 if __name__ == '__main__':
