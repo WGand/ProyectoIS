@@ -31,7 +31,7 @@ class Ui_Dialogvli(object):
         self.gridLayout.addWidget(self.tableView, 1, 0, 1, 2)
         self.label = QtWidgets.QLabel(self.gridLayoutWidget)
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("../Desktop/lupa.png"))
+        self.label.setPixmap(QtGui.QPixmap("../assets/iconoLupa.png"))
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 1, 1, 1)
         self.gridLayout.setRowStretch(0, 2)
