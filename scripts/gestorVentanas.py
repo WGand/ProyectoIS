@@ -1,13 +1,14 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QDialog
 from ventanaMenu import Ui_MainWindow
-from ventanaGestionarProducto import Ui_Dialog
-from ventanaListarInventario import Ui_Dialog
+from ventanaGestionarProducto import Ui_Dialogvgp
+from ventanaListarInventario import Ui_Dialogvli
+from ventanaRegistrarVenta import Ui_Dialogvrv
 #Editado con Sublime Text
 class ventanaListarInventario(QDialog):
     def __init__(self):
         super(ventanaListarInventario, self).__init__() #redefinicion de la clase QDialog con las necesidades de ventanaListarInventariopy, IDEM a todas las ventanas
-        self.ui = Ui_Dialog() #1- descarga de la interfaz 
+        self.ui = Ui_Dialogvli() #1- descarga de la interfaz 
         self.ui.setupUi(self) #2- carga de la interfaz sobre el objeto. 1 y 2 IDEM todas las ventanas
         self.setWindowTitle("Listar Inventario")
         self.setWindowModality(2) #Detiene toda la actividad en las otras ventanas, ejemplo, salir pulsando la "x", IDEM a todas las ventanas
@@ -15,7 +16,7 @@ class ventanaListarInventario(QDialog):
 class ventanaGestionarProducto(QDialog):
     def __init__(self):
         super(ventanaGestionarProducto, self).__init__()
-        self.ui = Ui_Dialog()
+        self.ui = Ui_Dialogvgp()
         self.ui.setupUi(self)
         self.setWindowTitle("Gestionar Producto")
         self.setWindowModality(2)
@@ -23,7 +24,7 @@ class ventanaGestionarProducto(QDialog):
 class ventanaRegistrarVenta(QDialog):
     def __init__(self):
         super(ventanaRegistrarVenta, self).__init__()
-        self.ui = Ui_Dialog()
+        self.ui = Ui_Dialogvrv()
         self.ui.setupUi(self)
         self.setWindowTitle("Registrar Venta")
         self.setWindowModality(2)
