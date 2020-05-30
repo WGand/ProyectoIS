@@ -22,11 +22,6 @@ class Window(QMainWindow):
 if __name__ == '__main__':
 
     App = QApplication(sys.argv)
-    db = QtSql.QSqlDatabase.addDatabase('QMYSQL','first')
-    db.setDatabaseName('test')
-    db.setHostName('localhost')
-    db.setUserName('wgan')
-    db.setPassword('123456789')
     win = Window()
     win.show()
     sys.exit(App.exec())
