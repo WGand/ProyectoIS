@@ -1,26 +1,13 @@
 import sys
-from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5 import uic
+#from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel ya está importado en la linea 4, lo dejo de referencia
+from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtSql, QtGui
-from ventanaMenu import Ui_MainWindow
+from gestorVentanas import ventanaMenu, ventanaGestionarProducto
 
-class MyDialog(QWidget):
-    def __init__(self):
-        super().__init__()
-        uic.loadUi('/home/wgan/untitled1/ops.ui', self)
-        self.show()
 
-class Window(QMainWindow):
-    def __init__(self):
-        super(Window, self).__init__() #NombreVentana, self en super
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
 if __name__ == '__main__':
 
     App = QApplication(sys.argv)
-    win = Window()
+    win = ventanaMenu()
     win.show()
     sys.exit(App.exec())
