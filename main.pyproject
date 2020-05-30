@@ -1,3 +1,3 @@
 {
-    "files": ["main.py","scripts/main.py","scripts/test.py","scripts/ventanaMenu.py"]
+    "files": ["scripts/ventanaMenu.py","main.py","scripts/main.py"]
 }
