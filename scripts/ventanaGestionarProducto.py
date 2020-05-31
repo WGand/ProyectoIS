@@ -59,7 +59,7 @@ class Ui_Dialogvgp(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Gestionar Producto"))
         self.botonEliminarProducto.setText(_translate("Dialog", "Eliminar Producto"))
-        self.botonModificarProducto.setText(_translate("Dialog", "Modicar Producto"))
+        self.botonModificarProducto.setText(_translate("Dialog", "Modificar Producto"))
         self.botonAddProducto.setText(_translate("Dialog", "Añadir Producto"))
         self.botonVolver.setText(_translate("Dialog", "Volver"))
 

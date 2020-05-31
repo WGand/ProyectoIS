@@ -5,6 +5,7 @@ from ventanaMenu import Ui_MainWindow
 from ventanaGestionarProducto import Ui_Dialogvgp
 from ventanaListarInventario import Ui_Dialogvli
 from ventanaRegistrarVenta import Ui_Dialogvrv
+from ventanaAnadirProducto import Ui_Dialogap
 #Editado con Sublime Text
 class ventanaListarInventario(QDialog):
     def __init__(self):
@@ -19,8 +20,17 @@ class ventanaGestionarProducto(QDialog):
         super(ventanaGestionarProducto, self).__init__()
         self.ui = Ui_Dialogvgp()
         self.ui.setupUi(self)
+        self.ui.botonAddProducto.clicked.connect(self.irAnadirProducto)
+        self.ui.botonVolver.clicked.connect(self.irVolver)
         self.setWindowTitle("Gestionar Producto")
         self.setWindowModality(2)
+
+    def irAnadirProducto(self):
+        self.ventana_AnadirProducto = ventanaAnadirProducto()
+        self.ventana_AnadirProducto.show()
+
+    def irVolver(self):
+        self.close()
 
 class ventanaRegistrarVenta(QDialog):
     def __init__(self):
@@ -29,6 +39,18 @@ class ventanaRegistrarVenta(QDialog):
         self.ui.setupUi(self)
         self.setWindowTitle("Registrar Venta")
         self.setWindowModality(2)
+
+class ventanaAnadirProducto(QDialog):
+    def __init__(self):
+        super(ventanaAnadirProducto, self).__init__()
+        self.ui = Ui_Dialogap()
+        self.ui.setupUi(self)
+        self.ui.botonVolver.clicked.connect(self.volver)
+        self.setWindowTitle("Añadir Producto")
+        self.setWindowModality(2)
+
+    def volver(self):
+        self.close()
 
 class ventanaMenu(QMainWindow):
     def __init__(self):
@@ -57,7 +79,7 @@ class ventanaMenu(QMainWindow):
     def salir(self):
         self.close()
 
-    def centerOnScreen(self):
+    def centerOnScreen(self): #metodo centra la ventana principal
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                           (resolution.height() / 2) - (self.frameSize().height() / 2))
