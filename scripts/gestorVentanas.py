@@ -1,5 +1,6 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QDialog
+from PyQt5 import QtWidgets
 from ventanaMenu import Ui_MainWindow
 from ventanaGestionarProducto import Ui_Dialogvgp
 from ventanaListarInventario import Ui_Dialogvli
@@ -39,6 +40,7 @@ class ventanaMenu(QMainWindow):
         self.ui.botonListarInventario.clicked.connect(self.irListarInventario)
         self.ui.botonRegistrarVenta.clicked.connect(self.irRegistrarVenta)
         self.ui.botonSalir.clicked.connect(self.salir)
+        self.centerOnScreen()
 
     def irGestionarProducto(self):
         self.ventana_GestionarProducto = ventanaGestionarProducto() #ventana_GestionarProducto en vez de ventanaGestionarProducto para confusion en el interpretador, IDEM a todas las ventanas
@@ -54,3 +56,8 @@ class ventanaMenu(QMainWindow):
 
     def salir(self):
         self.close()
+
+    def centerOnScreen(self):
+        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
+                          (resolution.height() / 2) - (self.frameSize().height() / 2))
