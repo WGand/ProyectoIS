@@ -18,38 +18,92 @@ class ConexionDataBase:
         return ConexionDataBase.db.open()
 
 
+    #Select
+    def validarCliente(self,cedula):
+        'Devuelve True si esta en la DB'
+        sql = "SELECT FROM cliente WHERE cedula = " + str(cedula) + ";"
+        query = QSqlQuery()
+        query.exec_(sql)
+        if (query.size() > 0):
+            return True
+        else:
+            return False
+
+    def validarMarca(self,nombre):
+        'Devuelve True si esta en la DB'
+        sql = "SELECT FROM marca WHERE nombre = '" + str(nombre) + "';"
+        query = QSqlQuery()
+        query.exec_(sql)
+        if (query.size() > 0):
+            return True
+        else:
+            return False
+
+    def validarProducto(self,nombre):
+        'Devuelve True si esta en la DB'
+        sql = "SELECT FROM producto WHERE nombre = '" + str(nombre) + "';"
+        query = QSqlQuery()
+        query.exec_(sql)
+        if (query.size() > 0):
+            return True
+        else:
+            return False
+
+    def validarProveedor(self,nombre):
+        'Devuelve True si esta en la DB'
+        sql = "SELECT FROM proveedor WHERE nombre = '" + str(nombre) + "';"
+        query = QSqlQuery()
+        query.exec_(sql)
+        if (query.size() > 0):
+            return True
+        else:
+            return False
+
+    def validarVendedor(self,cedula):
+        'Devuelve True si esta en la DB'
+        sql = "SELECT FROM vendedor WHERE cedula = " + str(cedula) + ";"
+        query = QSqlQuery()
+        query.exec_(sql)
+        if (query.size() > 0):
+            return True
+        else:
+            return False
+
     #Insert
     def insertCliente(self, cedula, telefono, nombre):
 
-        sql = "INSERT INTO cliente(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"');"
-        query = QSqlQuery()
-        query.exec_(sql)
+        if (self.validarCliente(cedula) == False):
+            sql = "INSERT INTO cliente(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"');"
+            query = QSqlQuery()
+            query.exec_(sql)
     
     def insertMarca(self, nombre):
 
-        sql = "INSERT INTO marca(nombre) VALUES ('"+str(nombre)+"');"
-        query = QSqlQuery()
-        query.exec_(sql)
+        if (self.validarMarca(nombre) == False):
+            sql = "INSERT INTO marca(nombre) VALUES ('"+str(nombre)+"');"
+            query = QSqlQuery()
+            query.exec_(sql)
     
     def insertProducto(self, nombre, cantidad, precio, proveedor_id, marca_id):
 
-        sql = "INSERT INTO producto(nombre, cantidad, precio, proveedor_id, marca_id) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(proveedor_id)+","+str(marca_id)+");"
-        query = QSqlQuery()
-        query.exec_(sql)
+        if (self.validarProducto(nombre) == False):
+            sql = "INSERT INTO producto(nombre, cantidad, precio, proveedor_id, marca_id) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(proveedor_id)+","+str(marca_id)+");"
+            query = QSqlQuery()
+            query.exec_(sql)
 
-    
     def insertProveedor(self, nombre):
 
-        sql = "INSERT INTO proveedor(nombre) VALUES ('"+str(nombre)+"');"
-        query = QSqlQuery()
-        query.exec_(sql)
-    
+        if (self.validarProveedor(nombre) == False):
+            sql = "INSERT INTO proveedor(nombre) VALUES ('"+str(nombre)+"');"
+            query = QSqlQuery()
+            query.exec_(sql)
+
     def insertVendedor(self, cedula, telefono, nombre, proveedor_id):
 
-        sqlsearch = "SELECT nombre FROM cliente WHERE cedula = "+str(cedula)+";"    
-        sql = "INSERT INTO vendedor(cedula, telefono, nombre,proveedor_id) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"', "+str(proveedor_id)+");"
-        query = QSqlQuery()
-        query.exec_(sql)
+        if (self.validarVendedor(cedula) == False):  
+            sql = "INSERT INTO vendedor(cedula, telefono, nombre,proveedor_id) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"', "+str(proveedor_id)+");"
+            query = QSqlQuery()
+            query.exec_(sql)
     
     def insertVenta(self, monto, cliente_id):
 
@@ -89,6 +143,7 @@ class ConexionDataBase:
         sql = "DELETE FROM vendedor WHERE cedula = '" + str(cedula) + "';"
         query = QSqlQuery()
         query.exec_(sql)
+
 
 
 #Main
