@@ -11,18 +11,14 @@ class ConexionDataBase:
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
         ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setUserName("froilanroac")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
         return ConexionDataBase.db.open()
 
-    ###
-    # INSERCIONES
-    ###
 
-
-
+    #Insert
     def insertCliente(self, cedula, telefono, nombre):
 
         sql = "INSERT INTO cliente(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"');"
@@ -37,9 +33,10 @@ class ConexionDataBase:
     
     def insertProducto(self, nombre, cantidad, precio, proveedor_id, marca_id):
 
-        sql = "INSERT INTO producto(nombre, cantidad, precio, proveedor_id, marca_id) VALUES ('"+str(nombre)+"', "+str(cantidad)+", "+str(precio)+", "+str(proveedor_id)+", "+str(marca_id)+");"
+        sql = "INSERT INTO producto(nombre, cantidad, precio, proveedor_id, marca_id) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(proveedor_id)+","+str(marca_id)+");"
         query = QSqlQuery()
         query.exec_(sql)
+
     
     def insertProveedor(self, nombre):
 
@@ -49,13 +46,9 @@ class ConexionDataBase:
     
     def insertVendedor(self, cedula, telefono, nombre, proveedor_id):
 
-        sqlsearch = "SELECT nombre FROM cliente WHERE cedula = "+str(cedula)+";"
-"       
-        sql = "INSERT INTO vendedor(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"', "+str(proveedor_id)+");"
+        sqlsearch = "SELECT nombre FROM cliente WHERE cedula = "+str(cedula)+";"    
+        sql = "INSERT INTO vendedor(cedula, telefono, nombre,proveedor_id) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"', "+str(proveedor_id)+");"
         query = QSqlQuery()
-
-
-
         query.exec_(sql)
     
     def insertVenta(self, monto, cliente_id):
@@ -69,29 +62,37 @@ class ConexionDataBase:
         sql = "INSERT INTO venta_producto(cantidad, producto_id, venta_id) VALUES ("+str(cantidad)+", "+str(producto_id)+", "+str(venta_id)+");"
         query = QSqlQuery()
         query.exec_(sql)
-    
 
-     
+    #Delete
+    def deleteCliente(self, cedula):
+        sql = "DELETE FROM cliente WHERE cedula = " + str(cedula) + ";"
+        query = QSqlQuery()
+        query.exec_(sql)
+
+    def deleteMarca(self, nombre):
+        sql = "DELETE FROM marca WHERE nombre = '" + nombre + "';"
+        print (sql)
+        query = QSqlQuery()
+        query.exec_(sql)
+
+    def deleteProducto(self, nombre):
+        sql = "DELETE FROM producto WHERE nombre = '" + nombre + "';"
+        query = QSqlQuery()
+        query.exec_(sql)
+
+    def deleteProveedor(self, nombre):
+        sql = "DELETE FROM proveedor WHERE nombre = '" + nombre + "';"
+        query = QSqlQuery()
+        query.exec_(sql)
+
+    def deleteVendedor(self, cedula):
+        sql = "DELETE FROM vendedor WHERE cedula = '" + str(cedula) + "';"
+        query = QSqlQuery()
+        query.exec_(sql)
 
 
-
-
-
-
-
-
-##########                  MAIN
-
-
-
-
+#Main
 conector = ConexionDataBase()
 conector.openDB()
-
-cedula = 12312323
-telefono = 2325252525
-nombre = 'fROIlan ROasxdxd'
-
-print("INSERT INTO marca(nombre) VALUES ('"+str(nombre)+"');")
 
 
