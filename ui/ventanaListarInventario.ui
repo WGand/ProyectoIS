@@ -48,7 +48,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../Desktop/lupa.png</pixmap>
+       <pixmap>../assets/iconoLupa.png</pixmap>
       </property>
      </widget>
     </item>
