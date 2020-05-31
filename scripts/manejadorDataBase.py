@@ -49,8 +49,13 @@ class ConexionDataBase:
     
     def insertVendedor(self, cedula, telefono, nombre, proveedor_id):
 
+        sqlsearch = "SELECT nombre FROM cliente WHERE cedula = "+str(cedula)+";"
+"       
         sql = "INSERT INTO vendedor(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"', "+str(proveedor_id)+");"
         query = QSqlQuery()
+
+
+
         query.exec_(sql)
     
     def insertVenta(self, monto, cliente_id):
@@ -65,7 +70,8 @@ class ConexionDataBase:
         query = QSqlQuery()
         query.exec_(sql)
     
-            
+
+     
 
 
 
