@@ -37,9 +37,26 @@ class ventanaRegistrarVenta(QDialog):
         super(ventanaRegistrarVenta, self).__init__()
         self.ui = Ui_Dialogvrv()
         self.ui.setupUi(self)
+        self.ui.pushButtonFinzalizar.clicked.connect(self.popUpFinalizarVenta)
         self.setWindowTitle("Registrar Venta")
         self.setWindowModality(2)
+    def popUpFinalizarVenta(self):
+        self.popUp_FinalizarVenta = popUp('Desea confirmar la venta', 'Finalizar Venta', 'Confirmar', 'Cancelar')        
 
+class popUp(): # Ventanas emergentes.
+    def __init__(self, mensaje='', tituloVentana='', botonSi = '', botonNo=''):
+        self = QtWidgets.QMessageBox()
+        self.setIcon(QtWidgets.QMessageBox.Warning)
+        self.setWindowTitle(tituloVentana)
+        self.setInformativeText(mensaje)
+        self.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        botonSi_ = self.button(QtWidgets.QMessageBox.Yes)
+        botonSi_.setText(botonSi)
+        botonNo_ = self.button(QtWidgets.QMessageBox.Cancel)
+        botonNo_.setText(botonNo)
+        print(self.children())
+        self.exec()
+        
 class ventanaAnadirProducto(QDialog):
     def __init__(self):
         super(ventanaAnadirProducto, self).__init__()
