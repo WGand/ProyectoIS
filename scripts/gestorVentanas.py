@@ -6,7 +6,17 @@ from ventanaGestionarProducto import Ui_Dialogvgp
 from ventanaListarInventario import Ui_Dialogvli
 from ventanaRegistrarVenta import Ui_Dialogvrv
 from ventanaAnadirProducto import Ui_Dialogap
+import enum
 #Editado con Sublime Text
+def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
+    switch = {
+        "advertencia": QtWidgets.QMessageBox.Warning,
+        "informativo" : QtWidgets.QMessageBox.Information,
+        "dubitativo" : QtWidgets.QMessageBox.Question,
+        "critico" : QtWidgets.QMessageBox.Critical
+    }
+    return switch.get(tipo)
+
 class ventanaListarInventario(QDialog):
     def __init__(self):
         super(ventanaListarInventario, self).__init__() #redefinicion de la clase QDialog con las necesidades de ventanaListarInventariopy, IDEM a todas las ventanas
@@ -40,21 +50,19 @@ class ventanaRegistrarVenta(QDialog):
         self.ui.pushButtonFinzalizar.clicked.connect(self.popUpFinalizarVenta)
         self.setWindowTitle("Registrar Venta")
         self.setWindowModality(2)
-    def popUpFinalizarVenta(self):
-        self.popUp_FinalizarVenta = popUp('Desea confirmar la venta', 'Finalizar Venta', 'Confirmar', 'Cancelar')        
 
-class popUp(): # Ventanas emergentes.
-    def __init__(self, mensaje='', tituloVentana='', botonSi = '', botonNo=''):
+    def popUpFinalizarVenta(self):
+        self.popUp_FinalizarVenta = popUp('Desea confirmar la venta', 'Finalizar Venta', 'Confirmar', 'Cancelar', 'dubitativo')        
+
+class popUp(): # ventanas emergentes.
+    def __init__(self, mensaje='', tituloVentana='', botonSi = '', botonNo='', tipo=''):
         self = QtWidgets.QMessageBox()
-        self.setIcon(QtWidgets.QMessageBox.Warning)
+        self.setIcon(tipoPopUp(tipo))
         self.setWindowTitle(tituloVentana)
         self.setInformativeText(mensaje)
         self.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
-        botonSi_ = self.button(QtWidgets.QMessageBox.Yes)
-        botonSi_.setText(botonSi)
-        botonNo_ = self.button(QtWidgets.QMessageBox.Cancel)
-        botonNo_.setText(botonNo)
-        print(self.children())
+        self.button(QtWidgets.QMessageBox.Yes).setText(botonSi)
+        self.button(QtWidgets.QMessageBox.Cancel).setText(botonNo)
         self.exec()
         
 class ventanaAnadirProducto(QDialog):
