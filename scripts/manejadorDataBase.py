@@ -12,7 +12,7 @@ class ConexionDataBase:
         ConexionDataBase.db.setPort(5432)
         ConexionDataBase.db.setDatabaseName("inventarioabasto")
         ConexionDataBase.db.setUserName("froilanroac")
-        ConexionDataBase.db.setPassword("123456")
+        ConexionDataBase.db.setPassword("")
 
     def openDB(self):
         return ConexionDataBase.db.open()
@@ -144,10 +144,84 @@ class ConexionDataBase:
         query = QSqlQuery()
         query.exec_(sql)
 
+    #Modificaciones
+
+    #Cliente
+    def modificarNombreCliente(self, nombre, cedula):
+        if (self.validarCliente(cedula) == True):
+            sql = "UPDATE cliente SET nombre = '" + str(nombre) +"' WHERE cedula = "+ str(cedula)
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    def modificarCedulaCliente(self, nuevaCedula, cedula):
+        if (self.validarCliente(cedula) == True):
+            sql = "UPDATE cliente SET cedula = " + str(nuevaCedula) +" WHERE cedula = "+ str(cedula)
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    def modificarTelefonoCliente(self, telefono, cedula):
+        if (self.validarCliente(cedula) == True):
+            sql = "UPDATE cliente SET telefono = " + str(telefono) +" WHERE cedula = "+ str(cedula)
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    #Marca
+    def modificarMarca(self, nuevoNombre, nombre):
+        if (self.validarMarca(nombre) == True):
+            sql = "UPDATE marca SET nombre = '" + str(nuevoNombre) +"' WHERE nombre = '"+ str(nombre) +"';"
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    #Producto
+    def modificarNombreProducto(self, nuevoNombre, nombre):
+        if (self.validarProducto(nombre) == True):
+            sql = "UPDATE producto SET nombre = '" + str(nuevoNombre) +"' WHERE nombre = '"+ str(nombre) +"';"
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    def modificarCantidadProducto(self, nuevaCantidad, nombre):
+        if (self.validarProducto(nombre) == True):
+            sql = "UPDATE producto SET cantidad = " + str(nuevaCantidad) +" WHERE nombre = '"+ str(nombre) +"';"
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    def modificarPrecioProducto(self, nuevoPrecio, nombre):
+        if (self.validarProducto(nombre) == True):
+            sql = "UPDATE producto SET precio = " + str(nuevoPrecio) +" WHERE nombre = '"+ str(nombre) +"';"
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    #Proveedor
+    def modificarNombreProveedor(self, nuevoNombre, nombre):
+        if (self.validarProveedor(nombre) == True):
+            sql = "UPDATE proveedor SET nombre = '" + str(nuevoNombre) +"' WHERE nombre = '"+ str(nombre) +"';"
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    #Vendedor        
+    def modificarCedulaVendedor(self, nuevaCedula, cedula):
+        if (self.validarVendedor(cedula) == True):
+            sql = "UPDATE vendedor SET cedula = " + str(nuevaCedula) +" WHERE cedula = "+ str(cedula) +";"
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    def modificarTelefonoVendedor(self, nuevoTelefono, cedula):
+        if (self.validarVendedor(cedula) == True):
+            sql = "UPDATE vendedor SET telefono = " + str(nuevoTelefono) +" WHERE cedula = "+ str(cedula) +";"
+            query = QSqlQuery()
+            query.exec_(sql)
+
+    def modificarNombreVendedor(self, nuevoNombre, cedula):
+        if (self.validarVendedor(cedula) == True):
+            sql = "UPDATE vendedor SET nombre = '" + str(nuevoNombre) +"' WHERE cedula = "+ str(cedula) +";"
+            query = QSqlQuery()
+            query.exec_(sql)
+
 
 
 #Main
 conector = ConexionDataBase()
 conector.openDB()
+
 
 
