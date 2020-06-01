@@ -17,14 +17,7 @@ def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
         "critico" : QtWidgets.QMessageBox.Critical
     }
     return switch.get(tipo)
-
-def tipoFuncionPopUp(tipoFuncion): #funcion que retorna la expresion del PopUp
-    switch = {
-        "irVentanaRegistrarVentaDatosCliente": self.irVentanaRegistrarVentaDatosCliente
-    }
-    return switch.get(tipoFuncion)
-
-
+    
 class ventanaListarInventario(QDialog):
     def __init__(self):
         super(ventanaListarInventario, self).__init__() #redefinicion de la clase QDialog con las necesidades de ventanaListarInventariopy, IDEM a todas las ventanas
