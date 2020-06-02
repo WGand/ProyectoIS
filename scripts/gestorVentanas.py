@@ -7,9 +7,9 @@ from ventanaListarInventario import Ui_Dialogvli
 from ventanaRegistrarVenta import Ui_Dialogvrv
 from ventanaAnadirProducto import Ui_Dialogap
 from ventanaRegistrarVentaDatosCliente import Ui_Dialogvrvdc
-from manejadorDataBase import ConexionDataBase
 from ventanaModificarProducto import Ui_Dialogvmp
 from ventanaEliminarProducto import Ui_Dialogvep
+from manejadorDataBase import ConexionDataBase
 
 import enum
 #Editado con Sublime Text
