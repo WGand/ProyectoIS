@@ -143,16 +143,20 @@ class ventanaAnadirProducto(QDialog):
         else: #Validar
             validador = Validaciones()
             if ((validador.isNotFloat(self.ui.campoTextoPrecio.toPlainText())) or (validador.isNotDigit(self.ui.campoTextoCantidad.toPlainText())) or (validador.isNotAlpha(self.ui.campoTextoNombre.toPlainText()))):
-                self.popUp_AdvertenciaDatoIncorrecto = popUp('Algún dato se ingresó de manera incorrecta', 'Error', False, 'advertencia', 'Ok')
-                self.popUp_AdvertenciaDatoIncorrecto.exec()    
+                self.popUp_AdvertenciaDatoIncorrecto = popUp('Algún dato se ingresó de manera incorrecta.', 'Error', False, 'advertencia', 'Ok')
+                self.popUp_AdvertenciaDatoIncorrecto.exec()
             else: 
-                if (self.ui.radioSi.isChecked() == True):
-                    self.conector.insertProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecio.toPlainText(), True)
+                if(self.conector.validarProducto(self.ui.campoTextoNombre.toPlainText())):
+                    self.popUp_ProductoExistente = popUp('El nombre del producto ingresado ya se encuentra registrado.', 'Error', False, 'informativo', 'Ok')
+                    self.popUp_ProductoExistente.exec_()
                 else:
-                    self.conector.insertProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecio.toPlainText(), False)
-                self.popUp_InfoDatosCorrectos = popUp('Se agregó el nuevo producto exitosamente', 'Éxito', False, 'informativo', 'Ok')
-                self.popUp_InfoDatosCorrectos.buttons()[0].pressed.connect(self.close)
-                self.popUp_InfoDatosCorrectos.exec()
+                    if (self.ui.radioSi.isChecked() == True):
+                        self.conector.insertProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecio.toPlainText(), True)
+                    else:
+                        self.conector.insertProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecio.toPlainText(), False)
+                    self.popUp_InfoDatosCorrectos = popUp('Se agregó el nuevo producto exitosamente.', 'Éxito', False, 'informativo', 'Ok')
+                    self.popUp_InfoDatosCorrectos.buttons()[0].pressed.connect(self.close)
+                    self.popUp_InfoDatosCorrectos.exec()
                 
     def volver(self):
         self.close()
