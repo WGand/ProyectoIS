@@ -60,6 +60,8 @@ class ventanaGestionarProducto(QDialog):
         self.ui = Ui_Dialogvgp()
         self.ui.setupUi(self)
         self.ui.botonAddProducto.clicked.connect(self.irAnadirProducto)
+        self.ui.botonModificarProducto.clicked.connect(self.irModificarProducto)
+        self.ui.botonEliminarProducto.clicked.connect(self.irEliminarProducto)
         self.ui.botonVolver.clicked.connect(self.irVolver)
         self.setWindowTitle("Gestionar Producto")
         self.setWindowModality(2)
@@ -71,6 +73,14 @@ class ventanaGestionarProducto(QDialog):
     def irVolver(self):
         self.close()
 
+    def irModificarProducto(self):
+        self.ventanaModificarProducto = ventanaModificarProducto()
+        self.ventanaModificarProducto.show() 
+
+    def irEliminarProducto(self):
+        self.ventanaEliminarProducto = ventanaEliminarProducto()
+        self.ventanaEliminarProducto.show()  
+        
 class ventanaRegistrarVentaDatosCliente(QDialog):
     def __init__(self):
         super(ventanaRegistrarVentaDatosCliente, self).__init__()
