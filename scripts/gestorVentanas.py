@@ -18,6 +18,33 @@ def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
         "critico" : QtWidgets.QMessageBox.Critical
     }
     return switch.get(tipo)
+class Validaciones():
+    def isNotFloat(self, string_):
+            try:
+                float(string_)
+                return False
+            except ValueError:
+                return True
+        
+    def isNotDigit(self, string_):
+        try:
+            int(string_)
+            return False
+        except ValueError:
+            return True
+    
+    def isNotNumeric(self, string_):
+        try:
+            
+            return False
+        except ValueError:
+            return True
+    
+    def isNotAlpha(self, string_):
+        for i in range(0, len(string_)):
+            if((string_[i].isdigit() == True) or ((string_[i].isalnum() == False) and (string_[i] != ' ') )):
+                return True
+        return False
 
 class ventanaListarInventario(QDialog):
     def __init__(self):
@@ -72,7 +99,7 @@ class ventanaRegistrarVenta(QDialog):
         self.setWindowModality(2)
 
     def popUpFinalizarVenta(self):
-        self.popUp_FinalizarVenta = popUp('Desea confirmar la venta', 'Finalizar Venta', True, 'dubitativo', 'Confirmar', 'Cancelar')#, 'ventanaRegistrarVenta', 'irVentanaRegistrarVentaDatosCliente')
+        self.popUp_FinalizarVenta = popUp('Desea confirmar la venta', 'Finalizar Venta', True, 'dubitativo', 'Confirmar', 'Cancelar')
         self.popUp_FinalizarVenta.buttons()[1].pressed.connect(self.irVentanaRegistrarVentaDatosCliente)
         self.popUp_FinalizarVenta.buttons()[0].pressed.connect(self.close)
         self.popUp_FinalizarVenta.exec()
@@ -113,7 +140,14 @@ class ventanaAnadirProducto(QDialog):
         ((self.ui.radioSi.isChecked() == False) and (self.ui.radioNo.isChecked() == False))):
             self.popUp_AdvertenciaDatoIncompleto = popUp('No se llenaron todos los datos requeridos.', 'Error', False, 'informativo', 'Ok')
             self.popUp_AdvertenciaDatoIncompleto.exec()
+        else: #Validar
+            validador = Validaciones()
+            if ((validador.isNotFloat(self.ui.campoTextoPrecio.toPlainText())) or (validador.isNotDigit(self.ui.campoTextoCantidad.toPlainText())) or (validador.isNotAlpha(self.ui.campoTextoNombre.toPlainText()))):
+                pass
     
+
+
+
     def volver(self):
         self.close()
 
