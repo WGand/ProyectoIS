@@ -284,7 +284,8 @@ class ConexionDataBase:
         sql = 'SELECT * FROM producto;'
         query = QSqlQuery()
         self.closeDB()
-        return query.exec_(sql)
+        query.exec_(sql)
+        return query
 
     def guardarVenta(self, venta):
         self.openDB()
