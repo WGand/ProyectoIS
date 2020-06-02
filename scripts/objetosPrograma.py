@@ -6,14 +6,14 @@ class Persona(ABC):
 		self.cedula = cedula
 		self.telefono = telefono
 
-class Cliente(persona):
+class Cliente(Persona):
 	pass
 
 class Proveedor():
 	def __init__(self, nombre = ''):
 		self.nombre = nombre
 
-class Vendedor(persona):
+class Vendedor(Persona):
 	def __init__(self, proveedor = []):
 		super(vendedor, self).__init__()
 		self.proveedor = proveedor
