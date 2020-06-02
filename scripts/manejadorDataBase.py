@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
-
+from objetosPrograma import Cliente, Venta
 
 class ConexionDataBase:
     
@@ -276,9 +276,6 @@ class ConexionDataBase:
         print(ids)
         self.closeDB()
     
-    def guardarVenta(self):
-        pass
-
-#Main
-conector = ConexionDataBase()
-conector.pruebitajeje()
+    def guardarVenta(self, venta ):
+        self.openDB()
+        ###########Seguire trabajando aqui
