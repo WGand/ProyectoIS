@@ -8,8 +8,8 @@ from ventanaRegistrarVenta import Ui_Dialogvrv
 from ventanaAnadirProducto import Ui_Dialogap
 from ventanaRegistrarVentaDatosCliente import Ui_Dialogvrvdc
 from manejadorDataBase import ConexionDataBase
+from ventanaModificarProducto import Ui_Dialogvmp
 from ventanaEliminarProducto import Ui_Dialogvep
-from ventanaModificarProducto import i_Dialogvmp
 
 import enum
 #Editado con Sublime Text
@@ -84,18 +84,6 @@ class ventanaGestionarProducto(QDialog):
         self.ventanaEliminarProducto = ventanaEliminarProducto()
         self.ventanaEliminarProducto.show()  
 
-class ventanaEliminarProducto(QDialog):
-    def __init__(self):
-        super(ventanaEliminarProducto, self).__init__()
-        self.ui = Ui_Dialogvep()
-        self.ui.setupUi(self)
-        self.ui.pushButton.clicked.connect(self.volver)
-        self.setWindowTitle("Eliminar Producto")
-        self.setWindowModality(2)
-
-    def volver(self):
-        self.close()
-
 class ventanaModificarProducto(QDialog):
     def __init__(self):
         super(ventanaModificarProducto, self).__init__()
@@ -103,6 +91,18 @@ class ventanaModificarProducto(QDialog):
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.volver)
         self.setWindowTitle("Modificar Producto")
+        self.setWindowModality(2)
+
+    def volver(self):
+        self.close()
+
+class ventanaEliminarProducto(QDialog):
+    def __init__(self):
+        super(ventanaEliminarProducto, self).__init__()
+        self.ui = Ui_Dialogvep()
+        self.ui.setupUi(self)
+        self.ui.pushButton.clicked.connect(self.volver)
+        self.setWindowTitle("Eliminar Producto")
         self.setWindowModality(2)
 
     def volver(self):
