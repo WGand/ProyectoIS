@@ -143,11 +143,16 @@ class ventanaAnadirProducto(QDialog):
         else: #Validar
             validador = Validaciones()
             if ((validador.isNotFloat(self.ui.campoTextoPrecio.toPlainText())) or (validador.isNotDigit(self.ui.campoTextoCantidad.toPlainText())) or (validador.isNotAlpha(self.ui.campoTextoNombre.toPlainText()))):
-                pass
-    
+                self.popUp_AdvertenciaDatoIncorrecto = popUp('Algún dato se ingresó de manera incorrecta', 'Error', False, 'advertencia', 'Ok')
+                self.popUp_AdvertenciaDatoIncorrecto.exec()    
+            else: #Se ingresan los datos correctamente y se agrega el archivo a la base de datos
+                
+                ######AQUI SE AGREGA EL ARCHIVO A LA BASE DE DATOS
 
 
-
+                self.popUp_InfoDatosCorrectos = popUp('Se agregó el nuevo producto exitosamente', 'Éxito', False, 'informativo', 'Ok')
+                self.popUp_InfoDatosCorrectos.exec()
+                
     def volver(self):
         self.close()
 
