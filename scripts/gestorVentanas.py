@@ -1,12 +1,23 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QDialog
+from PyQt5.QtWidgets import QMainWindow, QDialog, QMessageBox
 from PyQt5 import QtWidgets
 from ventanaMenu import Ui_MainWindow
 from ventanaGestionarProducto import Ui_Dialogvgp
 from ventanaListarInventario import Ui_Dialogvli
 from ventanaRegistrarVenta import Ui_Dialogvrv
 from ventanaAnadirProducto import Ui_Dialogap
+from ventanaRegistrarVentaDatosCliente import Ui_Dialogvrvdc
+import enum
 #Editado con Sublime Text
+def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
+    switch = {
+        "advertencia": QtWidgets.QMessageBox.Warning,
+        "informativo" : QtWidgets.QMessageBox.Information,
+        "dubitativo" : QtWidgets.QMessageBox.Question,
+        "critico" : QtWidgets.QMessageBox.Critical
+    }
+    return switch.get(tipo)
+    
 class ventanaListarInventario(QDialog):
     def __init__(self):
         super(ventanaListarInventario, self).__init__() #redefinicion de la clase QDialog con las necesidades de ventanaListarInventariopy, IDEM a todas las ventanas
@@ -32,14 +43,53 @@ class ventanaGestionarProducto(QDialog):
     def irVolver(self):
         self.close()
 
+class ventanaRegistrarVentaDatosCliente(QDialog):
+    def __init__(self):
+        super(ventanaRegistrarVentaDatosCliente, self).__init__()
+        self.ui = Ui_Dialogvrvdc()
+        self.ui.setupUi(self)
+        self.ui.botonOK.clicked.connect(self.popUpConfirmarDatosCliente)
+        self.setWindowTitle("Datos Cliente")
+        self.setWindowModality(2)
+    
+    def popUpConfirmarDatosCliente(self):
+        self.popUp_ConfirmarDatosCliente = popUp('¿Los datos ingresados son correctos? '+'\n\nCedula: '+str(self.ui.textCedula.toPlainText())+
+        '\nNombre: '+str(self.ui.textNombre.toPlainText())+'\nTelefono: '+str(self.ui.textTelefono.toPlainText()), 'Datos Cliente', 'Confirmar',
+        'Cancelar', 'dubitativo')
+        # SEGUIMOS TRABAJANDO AQUI ###############################
+        ###################### NO ESTA TERMINADO HIJOS DE PUTA
+        ##################### WORK IN PROGRESS
+        self.popUp_ConfirmarDatosCliente.exec()
+
 class ventanaRegistrarVenta(QDialog):
     def __init__(self):
         super(ventanaRegistrarVenta, self).__init__()
         self.ui = Ui_Dialogvrv()
         self.ui.setupUi(self)
+        self.ui.pushButtonFinzalizar.clicked.connect(self.popUpFinalizarVenta)
         self.setWindowTitle("Registrar Venta")
         self.setWindowModality(2)
 
+    def popUpFinalizarVenta(self):
+        self.popUp_FinalizarVenta = popUp('Desea confirmar la venta', 'Finalizar Venta', 'Confirmar', 'Cancelar', 'dubitativo')#, 'ventanaRegistrarVenta', 'irVentanaRegistrarVentaDatosCliente')
+        self.popUp_FinalizarVenta.buttons()[1].pressed.connect(self.irVentanaRegistrarVentaDatosCliente)
+        self.popUp_FinalizarVenta.exec()
+    
+    def irVentanaRegistrarVentaDatosCliente(self):
+        self.ventana_VentanaRegistrarVentaDatosCliente = ventanaRegistrarVentaDatosCliente()
+        self.ventana_VentanaRegistrarVentaDatosCliente.show()
+
+class popUp(QMessageBox): # ventanas emergentes.
+    def __init__(self, mensaje='', tituloVentana='', botonSi = '', botonNo='', tipo=''):
+        super(popUp, self).__init__()
+        self.setIcon(tipoPopUp(tipo))
+        self.setWindowTitle(tituloVentana)
+        self.setInformativeText(mensaje)
+        self.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        self.button(QtWidgets.QMessageBox.Yes).setText(botonSi)
+        self.button(QtWidgets.QMessageBox.Cancel).setText(botonNo)
+        self.buttons()[0].pressed.connect(self.close)   
+        
 class ventanaAnadirProducto(QDialog):
     def __init__(self):
         super(ventanaAnadirProducto, self).__init__()
