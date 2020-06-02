@@ -10,7 +10,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Dialogvmp(object):
+class Ui_Dialogvep(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(507, 449)
@@ -27,7 +27,7 @@ class Ui_Dialogvmp(object):
         self.tableView.setObjectName("tableView")
         self.verticalLayout.addWidget(self.tableView)
         self.pushButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.pushButton.setObjectName("pushButton")
+        self.pushButton.setObjectName("volverBoton")
         self.verticalLayout.addWidget(self.pushButton)
 
         self.retranslateUi(Dialog)
@@ -35,6 +35,6 @@ class Ui_Dialogvmp(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Modificar Producto  "))
-        self.campoTexto.setText(_translate("Dialog", "Ingrese Producto a buscar"))
+        Dialog.setWindowTitle(_translate("Dialog", "Eliminar Producto  "))
+        self.campoTexto.setText(_translate("Dialog", "Ingrese Producto a Eliminar"))
         self.pushButton.setText(_translate("Dialog", "Volver"))
