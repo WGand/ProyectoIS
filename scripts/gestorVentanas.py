@@ -99,6 +99,9 @@ class ventanaAnadirProducto(QDialog):
         self.setWindowTitle("Añadir Producto")
         self.setWindowModality(2)
 
+    def validarIngreso(self):
+        self.ui.campoTextoNombre.toPlainText()
+
     def volver(self):
         self.close()
 

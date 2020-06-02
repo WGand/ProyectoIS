@@ -93,10 +93,14 @@ class ConexionDataBase:
             query.exec_(sql)
         self.closeDB()
     
-    def insertProducto(self, nombre, cantidad, precio, proveedor_id, marca_id):
+    def insertProducto(self, nombre, cantidad, precio, iva, proveedor_id, marca_id):
         self.openDB()
+        if (iva == True):
+            iva_ =  1
+        else:
+            iva_ = 0
         if (self.validarProducto(nombre) == False):
-            sql = "INSERT INTO producto(nombre, cantidad, precio, proveedor_id, marca_id) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(proveedor_id)+","+str(marca_id)+");"
+            sql = "INSERT INTO producto(nombre, cantidad, precio, iva, proveedor_id, marca_id) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(iva_)+","+str(proveedor_id)+","+str(marca_id)+");"
             query = QSqlQuery()
             query.exec_(sql)
         self.closeDB()
@@ -229,6 +233,18 @@ class ConexionDataBase:
             query.exec_(sql)
         self.closeDB()
 
+    def modificarIvaProducto(self, nuevoIva, nombre):
+        self.openDB()
+        if (nuevoIva == True):
+            nuevoIva_ = 1
+        else:
+            nuevoIva_ = 0
+        if (self.validarProducto(nombre) == True):
+            sql = "UPDATE producto SET iva = " + str(nuevoIva_) +" WHERE nombre = '"+ str(nombre) +"';"
+            query = QSqlQuery()
+            query.exec_(sql)
+        self.closeDB()
+
     #Proveedor
     def modificarNombreProveedor(self, nuevoNombre, nombre):
         self.openDB()
@@ -262,19 +278,13 @@ class ConexionDataBase:
             query = QSqlQuery()
             query.exec_(sql)
         self.closeDB()
-    
-    def pruebitajeje(self):
+
+    def retornarTodoProducto(self):
         self.openDB()
-        sql = 'SELECT id_cliente FROM cliente;'
+        sql = 'SELECT * FROM producto;'
         query = QSqlQuery()
-        query.exec_(sql)
-        
-        ids = []
-        while(query.next()):
-            retorno = query.value(0)
-            ids.append(retorno)
-        print(ids)
         self.closeDB()
+        return query.exec_(sql)
 
     def guardarVenta(self, venta):
         self.openDB()
