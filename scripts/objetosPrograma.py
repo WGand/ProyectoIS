@@ -5,6 +5,7 @@ class Persona(ABC):
 		self._nombre = nombre
 		self._cedula = cedula
 		self._telefono = telefono
+	
 	def setNombre(self, nombre):
 		self._nombre = nombre
 	
@@ -16,7 +17,7 @@ class Persona(ABC):
 
 	def getCedula(self):
 		return self._cedula
-	
+
 	def setTelefono(self, telefono):
 		self._telefono = telefono
 	
@@ -25,6 +26,7 @@ class Persona(ABC):
 
 class Cliente(Persona):
 	pass
+
 class Proveedor():
 	def __init__(self, nombre = ''):
 		self.__nombre = nombre
@@ -45,7 +47,7 @@ class Vendedor(Persona):
 
 	def getProveedor(self):
 		return self.__proveedor
-
+	
 class Marca():
 	def __init__(self, nombre = ''):
 		self.__nombre = nombre
