@@ -59,13 +59,20 @@ class Marca():
 		return self.__nombre
 
 class Producto():
-	def __init__(self, marca = [], nombre = '', cantidad = '', proveedor = [], precio = ''):
+	def __init__(self, marca = [], nombre = '', cantidad = '', proveedor = [], precio = '', iva = ''):
 		self.__marca = marca
 		self.__nombre = nombre
 		self.__cantidad = cantidad
 		self.__proveedor = proveedor
 		self.__precio = precio
+		self.__iva = iva
 	
+	def setIva(self, iva):
+		self.__iva = iva
+
+	def getIva(self):
+		return self.__iva
+
 	def setMarca(self, marca):
 		self.__marca = marca
 
