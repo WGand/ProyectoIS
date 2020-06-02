@@ -9,7 +9,7 @@ from ventanaAnadirProducto import Ui_Dialogap
 from ventanaRegistrarVentaDatosCliente import Ui_Dialogvrvdc
 from ventanaModificarProducto import Ui_Dialogvmp
 from ventanaEliminarProducto import Ui_Dialogvep
-from manejadorDataBase import ConexionDataBase
+from manejadoDataBarse import ConexionDataBase
 
 import enum
 #Editado con Sublime Text
