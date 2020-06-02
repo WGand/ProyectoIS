@@ -5,27 +5,26 @@ class Persona(ABC):
 		self._nombre = nombre
 		self._cedula = cedula
 		self._telefono = telefono
-
-class Cliente(Persona):
-	
 	def setNombre(self, nombre):
-		self.__nombre = nombre
+		self._nombre = nombre
 	
 	def getNombre(self):
-		return self.__nombre
+		return self._nombre
 
 	def setCedula(self, cedula):
-		self.__cedula = cedula
+		self._cedula = cedula
 
 	def getCedula(self):
-		return self.__cedula
+		return self._cedula
 	
 	def setTelefono(self, telefono):
-		self.__telefono = telefono
+		self._telefono = telefono
 	
 	def getTelefono(self):
-		return self.__telefono
+		return self._telefono
 
+class Cliente(Persona):
+	pass
 class Proveedor():
 	def __init__(self, nombre = ''):
 		self.__nombre = nombre
@@ -46,24 +45,6 @@ class Vendedor(Persona):
 
 	def getProveedor(self):
 		return self.__proveedor
-	
-	def setNombre(self, nombre):
-		self.__nombre = nombre
-	
-	def getNombre(self):
-		return self.__nombre
-
-	def setCedula(self, cedula):
-		self.__cedula = cedula
-
-	def getCedula(self):
-		return self.__cedula
-	
-	def setTelefono(self, telefono):
-		self.__telefono = telefono
-	
-	def getTelefono(self):
-		return self.__telefono
 
 class Marca():
 	def __init__(self, nombre = ''):
