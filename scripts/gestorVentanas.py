@@ -7,6 +7,7 @@ from ventanaListarInventario import Ui_Dialogvli
 from ventanaRegistrarVenta import Ui_Dialogvrv
 from ventanaAnadirProducto import Ui_Dialogap
 from ventanaRegistrarVentaDatosCliente import Ui_Dialogvrvdc
+from ventanaModificarProducto import Ui_Dialogvmp
 import enum
 #Editado con Sublime Text
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
@@ -32,6 +33,7 @@ class ventanaGestionarProducto(QDialog):
         self.ui = Ui_Dialogvgp()
         self.ui.setupUi(self)
         self.ui.botonAddProducto.clicked.connect(self.irAnadirProducto)
+        self.ui.botonModificarProducto.clicked.connect(self.irModificarProducto)
         self.ui.botonVolver.clicked.connect(self.irVolver)
         self.setWindowTitle("Gestionar Producto")
         self.setWindowModality(2)
@@ -41,6 +43,22 @@ class ventanaGestionarProducto(QDialog):
         self.ventana_AnadirProducto.show()
 
     def irVolver(self):
+        self.close()
+
+    def irModificarProducto(self):
+        self.ventanaModificarProducto = ventanaModificarProducto()
+        self.ventanaModificarProducto.show()    
+
+class ventanaModificarProducto(QDialog):
+    def __init__(self):
+        super(ventanaModificarProducto, self).__init__()
+        self.ui = Ui_Dialogvmp()
+        self.ui.setupUi(self)
+        self.ui.pushButton.clicked.connect(self.volver)
+        self.setWindowTitle("Modificar Producto")
+        self.setWindowModality(2)
+
+    def volver(self):
         self.close()
 
 class ventanaRegistrarVentaDatosCliente(QDialog):
