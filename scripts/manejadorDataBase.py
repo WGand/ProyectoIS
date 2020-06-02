@@ -275,7 +275,19 @@ class ConexionDataBase:
             ids.append(retorno)
         print(ids)
         self.closeDB()
-    
-    def guardarVenta(self, venta ):
+
+    def guardarVenta(self, venta):
         self.openDB()
-        ###########Seguire trabajando aqui
+        ##(Venta)
+        ##BEGIN
+        ##Verificar si existe el cliente
+        ##Si existe-> buscar su id
+        ##sino -> insertar el cliente y retornar el id del cliente
+        ##insertar venta, con referencia al cliente
+        ##retornar el id de la venta  id_venta
+        ##recorremos la lista de productos de la venta
+        ##  retornar su id id_producto
+        ##  capturamos su cantidad
+        ##  insertamos en venta_producto haciendo referencia con id_venta, id_producto
+        ##END
+        self.closeDB()

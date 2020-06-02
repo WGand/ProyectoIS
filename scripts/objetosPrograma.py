@@ -97,10 +97,10 @@ class Producto():
 		return self.__precio
 
 class Venta():
-	def __init__(self, monto = '', cantidad = '', cliente = []):
+	def __init__(self, monto = '', cliente = []):
 		self.__monto = monto
 		self.__cliente = cliente
-		self.__cantidad = cantidad
+		self.__producto = []
 	
 	def setMonto(self, monto):
 		self.__monto = monto
@@ -113,9 +113,9 @@ class Venta():
 	
 	def getCliente(self):
 		return self.__cliente
+	
+	def addProducto(self, producto):
+		self.__producto.append(producto)
 
-	def setCantidad(self, cantidad):
-		self.__cantidad = cantidad
-
-	def getCantidad(self):
-		return self.__cantidad
+	def getProducto(self):
+		return self.__producto
