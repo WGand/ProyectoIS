@@ -19,7 +19,6 @@ class Ui_MainWindow(object):
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(0, 0, 791, 551))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("../assets/freeman.jpg"))
         self.label.setObjectName("label")
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(0, 0, 791, 551))
