@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1191</width>
-    <height>717</height>
+    <height>718</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1016,27 +1016,60 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="pushButtonFinzalizar">
+  <widget class="QWidget" name="horizontalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>1040</x>
+     <x>610</x>
      <y>680</y>
-     <width>141</width>
+     <width>561</width>
      <height>31</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Finalizar Venta</string>
-   </property>
-   <property name="autoDefault">
-    <bool>true</bool>
-   </property>
-   <property name="default">
-    <bool>false</bool>
-   </property>
-   <property name="flat">
-    <bool>false</bool>
-   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,5,1">
+    <item alignment="Qt::AlignRight">
+     <widget class="QLabel" name="labelm">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Monto:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="labelMonto">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;TextLabel&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButtonFinzalizar">
+      <property name="text">
+       <string>Finalizar Venta</string>
+      </property>
+      <property name="autoDefault">
+       <bool>true</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
