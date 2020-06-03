@@ -16,6 +16,7 @@ from ventanaRegistrarVentaDatosCliente import Ui_Dialogvrvdc
 from ventanaModificarProducto import Ui_Dialogvmp
 from ventanaEliminarProducto import Ui_Dialogvep
 from ventanaModificarCantidad import Ui_Dialogvmc
+from ventanaModificarProductoCampos import Ui_Dialogvmpc
 #Import Database
 from manejadorDataBase import ConexionDataBase
 
@@ -134,11 +135,57 @@ class ventanaModificarProducto(QDialog):
         self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
 
     def irProximaVentana(self):
-        print(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
-
+        nombre = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()
+        precio = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 2).data()
+        iva = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 3).data()
+        self.ventanaModificarProductoCampos = ventanaModificarProductoCampos(nombre, precio ,iva)
+        self.ventanaModificarProductoCampos.show()
 
     def volver(self):
         self.close()
+
+class ventanaModificarProductoCampos(QDialog):
+    def __init__(self, nombre, precio, iva):
+        super(ventanaModificarProductoCampos, self).__init__()
+        self.ui = Ui_Dialogvmpc()
+        self.ui.setupUi(self)
+        self.ui.botonCancelar.clicked.connect(self.volver)
+        self.ui.campoNombre.setPlainText(nombre)
+        self.conector = ConexionDataBase()
+        self.ui.campoPrecio.setPlainText(str(precio))
+        if (iva):
+            self.ui.radioButtonSi.setChecked(True)
+        else:
+            self.ui.radioButtonNo.setChecked(True)
+        self.setWindowTitle("Modificar Producto")
+        self.setWindowModality(2)
+        self.ui.okBoton.clicked.connect(self.validarIngreso)
+        self.nombre = nombre
+        self.precio = precio
+        self.iva = iva
+
+    def volver(self):
+        self.close()
+
+    def validarIngreso(self):
+        if ((len(self.ui.campoNombre.toPlainText()) == 0) or (len(self.ui.campoPrecio.toPlainText()) == 0) or ((self.ui.radioButtonSi.isChecked() == False) and (self.ui.radioButtonNo.isChecked() == False))):
+            self.popUp_AdvertenciaDatoIncompleto = popUp('No se llenaron todos los datos requeridos.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaDatoIncompleto.exec()
+        else: #Validar
+            validador = Validaciones()
+            if ((validador.isNotFloat(self.ui.campoPrecio.toPlainText())) or (validador.isNotAlpha(self.ui.campoNombre.toPlainText()))):
+                self.popUp_AdvertenciaDatoIncorrecto = popUp('Algún dato se ingresó de manera incorrecta.', 'Error', False, 'advertencia', 'Ok')
+                self.popUp_AdvertenciaDatoIncorrecto.exec()
+            else:
+                self.conector.modificarNombreProducto(self.ui.campoNombre.toPlainText(),self.nombre)
+                self.conector.modificarPrecioProducto(self.ui.campoPrecio.toPlainText(),self.nombre)
+                if (self.ui.radioButtonSi.isChecked() == True):
+                    self.conector.modificarIvaProducto("True",self.nombre)
+                elif(self.ui.radioButtonSi.isChecked() == False):
+                    self.conector.modificarIvaProducto("False",self.nombre)
+
+
+    
 
 class ventanaEliminarProducto(QDialog):
     def __init__(self):
