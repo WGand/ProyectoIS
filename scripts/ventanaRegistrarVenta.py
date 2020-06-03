@@ -1,10 +1,19 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'ventanaRegistrarVenta.ui'
+#
+# Created by: PyQt5 UI code generator 5.14.2
+#
+# WARNING! All changes made in this file will be lost!
+
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_Dialogvrv(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(1191, 717)
+        Dialog.resize(1191, 718)
         self.gridLayoutWidget_2 = QtWidgets.QWidget(Dialog)
         self.gridLayoutWidget_2.setGeometry(QtCore.QRect(0, 0, 591, 671))
         self.gridLayoutWidget_2.setObjectName("gridLayoutWidget_2")
@@ -354,13 +363,30 @@ class Ui_Dialogvrv(object):
         self.iconoCarritoVenta.setPixmap(QtGui.QPixmap("../assets/iconoCarritoVenta.png"))
         self.iconoCarritoVenta.setObjectName("iconoCarritoVenta")
         self.gridLayout_3.addWidget(self.iconoCarritoVenta, 0, 1, 1, 1)
-        self.pushButtonFinzalizar = QtWidgets.QPushButton(Dialog)
-        self.pushButtonFinzalizar.setGeometry(QtCore.QRect(1040, 680, 141, 31))
+        self.horizontalLayoutWidget = QtWidgets.QWidget(Dialog)
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(610, 680, 561, 31))
+        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.labelm = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.labelm.setObjectName("labelm")
+        self.horizontalLayout.addWidget(self.labelm, 0, QtCore.Qt.AlignRight)
+        self.labelMonto = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.labelMonto.setObjectName("labelMonto")
+        self.horizontalLayout.addWidget(self.labelMonto)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.horizontalLayout.addItem(spacerItem)
+        self.pushButtonFinzalizar = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.pushButtonFinzalizar.setAutoDefault(True)
         self.pushButtonFinzalizar.setDefault(False)
         self.pushButtonFinzalizar.setFlat(False)
         self.pushButtonFinzalizar.setObjectName("pushButtonFinzalizar")
-
+        self.horizontalLayout.addWidget(self.pushButtonFinzalizar)
+        self.horizontalLayout.setStretch(0, 1)
+        self.horizontalLayout.setStretch(1, 1)
+        self.horizontalLayout.setStretch(2, 5)
+        self.horizontalLayout.setStretch(3, 1)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -370,4 +396,6 @@ class Ui_Dialogvrv(object):
         Dialog.setWindowTitle(_translate("Dialog", "Venta"))
         self.labelInventario.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; color:#204a87;\">INVENTARIO</span></p></body></html>"))
         self.labelInventario_2.setText(_translate("Dialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; color:#cc0000;\">VENTA</span></p></body></html>"))
+        self.labelm.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Monto:</span></p></body></html>"))
+        self.labelMonto.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:14pt;\">TextLabel</span></p></body></html>"))
         self.pushButtonFinzalizar.setText(_translate("Dialog", "Finalizar Venta"))

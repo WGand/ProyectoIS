@@ -19,8 +19,10 @@ from ventanaModificarProducto import Ui_Dialogvmp
 from ventanaEliminarProducto import Ui_Dialogvep
 from ventanaModificarCantidad import Ui_Dialogvmc
 from ventanaModificarProductoCampos import Ui_Dialogvmpc
+from ventanaAnadirCantidadVenta import Ui_Dialogvacv
 #Import Database
 from manejadorDataBase import ConexionDataBase
+from objetosPrograma import Venta, Producto, Cliente
 
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
     switch = {
@@ -245,7 +247,7 @@ class ventanaModificarProductoCampos(QDialog):
         else: #Validar
             validador = Validaciones()
             if ((validador.isNotFloat(self.ui.campoPrecio.toPlainText())) or (validador.isNotAlpha(self.ui.campoNombre.toPlainText()))):
-                self.popUp_AdvertenciaDatoIncorrecto = popUp('Algún dato se ingresó de manera incorrecta.', 'Error', False, 'advertencia', 'Ok')
+                self.popUp_AdvertenciaDatoIncorrecto = popUp('Algún dato se ingresó con caracteres invalidos.', 'Error', False, 'advertencia', 'Ok')
                 self.popUp_AdvertenciaDatoIncorrecto.exec()
             else:
                 self.conector.modificarPrecioProducto(self.ui.campoPrecio.toPlainText(),self.nombre)
@@ -267,7 +269,6 @@ class ventanaEliminarProducto(QDialog):
         self.ui.pushButton.clicked.connect(self.volver)
         self.setWindowTitle("Eliminar Producto")
         self.setWindowModality(2)
-
         self.conector = ConexionDataBase()
         self.conector.openDB()
         self.query1 = QSqlQuery()
@@ -302,25 +303,105 @@ class ventanaEliminarProducto(QDialog):
         self.popUp_confirmacion = popUp('Producto eliminado Exitosamente.', 'Aviso', False, 'informativo', 'Ok')
         self.popUp_confirmacion.exec()
 
+class ventanaAnadirCantidadVenta(QDialog):
+    def __init__(self, ventana, nombre):
+        super(ventanaAnadirCantidadVenta, self).__init__()
+        self.ui = Ui_Dialogvacv()
+        self.ui.setupUi(self)
+        self.conector = ConexionDataBase()
+        self.producto_ = self.conector.busquedaProducto(nombre)
+        self.productoVenta = Producto(self.producto_.getNombre(), 0, self.producto_.getPrecio(), self.producto_.getIva())
+        self.cantidadActual = self.producto_.getCantidad()
+        self.ui.botonMenos.setDisabled(True)
+        if (self.producto_.getCantidad() == 0):
+            self.ui.botonMas.setDisabled(True)
+        self.ui.textCantidad.setText('0')
+        self.ui.labelInformacion.setText('Producto: '+str(self.producto_.getNombre())+'\nCantidad actual: '+str(self.producto_.getCantidad())+'\nPrecio: '+ str(self.producto_.getPrecio()))
+        self.ui.botonMas.clicked.connect(self.sumar)
+        self.ui.botonMenos.clicked.connect(self.restar)
+        self.ui.textCantidad.setReadOnly(True)
+        self.ui.botonOk.pressed.connect(self.popUpConfirmarCantidad)
+        self.setWindowTitle("Modificar Cantidad")
+        self.setWindowModality(2)
+        self.ventana = ventana
 
+    def sumar(self):
+        sumando = int(self.ui.textCantidad.toPlainText())
+        if(sumando == 0):
+            self.ui.botonMenos.setEnabled(True)
+        sumando += 1
+        self.ui.textCantidad.setText(str(sumando))
+        self.productoVenta.setCantidad(int(self.ui.textCantidad.toPlainText()))
+        if((self.productoVenta.getCantidad()) == (self.producto_.getCantidad())):
+            self.ui.botonMas.setDisabled(True)
+
+    def restar(self):
+        restando = int(self.ui.textCantidad.toPlainText())
+        if(restando < (self.producto_.getCantidad())):
+            self.ui.botonMas.setEnabled(True)
+        if(restando == 1):
+            self.ui.botonMenos.setDisabled(True)
+        restando -= 1
+        self.ui.textCantidad.setText(str(restando))
+        self.productoVenta.setCantidad(int(self.ui.textCantidad.toPlainText()))
+
+        
+    def popUpConfirmarCantidad(self):
+        self.popUp_ConfirmarCantidad = popUp('Añadiendo '+str(self.productoVenta.getCantidad()) +' unidades del producto '+str(self.productoVenta.getNombre()),'Confirmar',
+        True, 'informativo', 'Confirmar', 'Cancelar' )
+        self.popUp_ConfirmarCantidad.buttons()[1].pressed.connect(self.guardarCambios)
+        self.popUp_ConfirmarCantidad.buttons()[0].pressed.connect(self.close)
+        self.popUp_ConfirmarCantidad.exec_()
+
+    def guardarCambios(self):
+        if(self.productoVenta.getCantidad() > 0):    
+            self.producto_.setCantidad(self.producto_.getCantidad() - self.productoVenta.getCantidad())
+            self.ventana.venta.addProducto(self.productoVenta)
+            self.ventana.anadirProductoVenta(self.productoVenta)
+            self.ventana.actualizarMonto()
+            self.conector.modificarCantidadProducto(self.producto_.getCantidad(), self.producto_.getNombre())
+            self.ventana.cambiarDatoInventario()
+        self.irVolver()
+
+    def irVolver(self):
+        self.close()
 
 class ventanaRegistrarVentaDatosCliente(QDialog):
-    def __init__(self):
+    def __init__(self, ventana):
         super(ventanaRegistrarVentaDatosCliente, self).__init__()
         self.ui = Ui_Dialogvrvdc()
+        self.ventana = ventana
         self.ui.setupUi(self)
-        self.ui.botonOK.clicked.connect(self.popUpConfirmarDatosCliente)
+        self.ui.botonOK.clicked.connect(self.validadorDatos)
         self.setWindowTitle("Datos Cliente")
         self.setWindowModality(2)
 
+    def validadorDatos(self):
+        validador = Validaciones()
+        if((len(self.ui.textCedula.toPlainText()) == 0) or (len(self.ui.textNombre.toPlainText()) == 0) or (len(self.ui.textTelefono.toPlainText()) == 0)):
+            self.popUp_AdvertenciaDatoIncompleto = popUp('No se llenaron todos los datos requeridos.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaDatoIncompleto.exec()
+        elif(validador.isNotDigit(self.ui.textCedula.toPlainText()) or validador.isNotDigit(self.ui.textTelefono.toPlainText()) or validador.isNotAlpha(self.ui.textNombre.toPlainText())):
+            self.popUp_AdvertenciaDatoInvalido = popUp('Algún dato contiene carácteres inválidos.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaDatoInvalido.exec()
+        elif(((len(self.ui.textCedula.toPlainText()) != 8) and (len(self.ui.textCedula.toPlainText()) != 7)) or ((len(self.ui.textTelefono.toPlainText()) < 10)) or (len(self.ui.textTelefono.toPlainText()) > 11)):
+            self.popUp_AdvertenciaDatoInvalido = popUp('Algún dato contiene no cumple con el rango adecuado.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaDatoInvalido.exec()
+        else:
+            self.popUpConfirmarDatosCliente()
     def popUpConfirmarDatosCliente(self):
         self.popUp_ConfirmarDatosCliente = popUp('¿Los datos ingresados son correctos? '+'\n\nCedula: '+str(self.ui.textCedula.toPlainText())+
         '\nNombre: '+str(self.ui.textNombre.toPlainText())+'\nTelefono: '+str(self.ui.textTelefono.toPlainText()), 'Datos Cliente', True,
         'dubitativo', 'Confirmar', 'Cancelar')
-        # SEGUIMOS TRABAJANDO AQUI ###############################
-        ###################### NO ESTA TERMINADO HIJOS DE PUTA
-        ##################### WORK IN PROGRESS
+        self.popUp_ConfirmarDatosCliente.buttons()[1].clicked.connect(self.guardarDatosCliente)
         self.popUp_ConfirmarDatosCliente.exec()
+    
+    def guardarDatosCliente(self):
+        self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), int(self.ui.textTelefono.toPlainText())))
+        self.conector = ConexionDataBase()
+        self.conector.guardarVenta(self.ventana.venta)
+        #self.ventana.close
+        self.close
 
 class ventanaRegistrarVenta(QDialog):
     def __init__(self):
@@ -330,11 +411,13 @@ class ventanaRegistrarVenta(QDialog):
         self.ui.pushButtonFinzalizar.clicked.connect(self.popUpFinalizarVenta)
         self.setWindowTitle("Registrar Venta")
         self.setWindowModality(2)
+        self.venta = Venta()
         self.db = ConexionDataBase()
+        self.actualizarMonto()
         self.result = self.db.recorrerProducto()
         self.model = QStandardItemModel()
         self.modelVenta = QStandardItemModel()
-        self.modelVenta.setHorizontalHeaderLabels(['Nombre','Precio','IVA','Eliminar'])
+        self.modelVenta.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio','IVA','Anular'])
         self.filtroVenta =  QtCore.QSortFilterProxyModel()
         self.filtroVenta.setFilterCaseSensitivity(0)
         self.filtroVenta.setSourceModel(self.modelVenta)
@@ -360,39 +443,100 @@ class ventanaRegistrarVenta(QDialog):
         self.ui.BarraBusqueda.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableInventario.setModel(self.filtro)
         self.ui.tableInventario.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.tableInventario.selectionModel().currentRowChanged.connect(self.anadirProductoVenta)
-        self.ui.tableVenta.selectionModel().currentRowChanged.connect(self.eliminarProductoVenta)
+        self.ui.tableInventario.selectionModel().currentRowChanged.connect(self.irVentanaAnadirCantidadVenta) 
+        if(self.ui.tableVenta.currentIndex().column() != 0 and (self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),0).data() != '')):
+            self.ui.tableVenta.selectionModel().currentRowChanged.connect(self.popUpEliminarProductoVenta)
 
-    def anadirProductoVenta(self):
-        producto = self.db.busquedaProducto(self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data())
-        nombre = QStandardItem(producto.getNombre())
-        #cantidad = QStandardItem(str(producto.getCantidad()))
-        precio = QStandardItem(str(producto.getPrecio()))
-        iva = QStandardItem(str(producto.getIva()))
-        filas = self.modelVenta.rowCount()
-        self.modelVenta.setItem(filas, 0, nombre)
-        #self.model1.setItem(filas, 1, cantidad)
-        self.modelVenta.setItem(filas, 1, precio)
-        self.modelVenta.setItem(filas, 2, iva)
-        self.modelVenta.setItem(filas, 3, QStandardItem('Eliminar'))
+    def irVentanaAnadirCantidadVenta(self):
+        if(self.ui.tableVenta.currentIndex().column() != 0):
+            self.nombreModificar = self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data()
+            self.filaModificar = self.ui.tableInventario.currentIndex().row()
+            self.ventana_AnadirCantidadVenta = ventanaAnadirCantidadVenta(self, self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data())
+            self.ventana_AnadirCantidadVenta.show()
+
+    def actualizarMonto(self):
+        self.ui.labelMonto.setText(self.venta.truncate(self.venta.getMonto(), 2))
+
+    def cerrar(self):
+        if(self.venta.getProducto()):
+            for producto_ in self.venta.getProducto():
+                cantidadeliminar = producto_.getCantidad()
+                nombreeliminar = producto_.getNombre()
+                protocolo = self.db.busquedaProducto(nombreeliminar)
+                self.db.modificarCantidadProducto((cantidadeliminar + protocolo.getCantidad()), nombreeliminar)
+        self.close()
+
+    def anadirProductoVenta(self, producto):
+        productoJodedor = self.venta.getProducto()
+        objeto = Producto('','','','')
+        for filas in range(len(self.venta.getProducto())):
+            objeto.setNombre(productoJodedor[filas].getNombre())
+            objeto.setCantidad(productoJodedor[filas].getCantidad())
+            objeto.setPrecio(productoJodedor[filas].getPrecio())
+            objeto.setIva(productoJodedor[filas].getIva())
+            self.modelVenta.setItem(filas, 0, QtGui.QStandardItem(str(objeto.getNombre())))
+            self.modelVenta.setItem(filas, 1, QtGui.QStandardItem(str(objeto.getCantidad())))
+            self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
+            self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
+            self.modelVenta.setItem(filas, 4, QtGui.QStandardItem("Anular"))
+        self.actualizarMonto()
+
+    def cambiarDatoInventario(self):
+        productoNuevo = self.db.busquedaProducto(self.nombreModificar)
+        self.model.setItem(self.filaModificar, 1, QtGui.QStandardItem(str(productoNuevo.getCantidad())))
+
+    def popUpEliminarProductoVenta(self):  
+        if(self.ui.tableVenta.currentIndex().column() != 0 and (self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),0).data() != '')):
+            self.popUp_EliminarProductoVenta = popUp('Se eliminara el producto de la venta', 'Confirmar', True, 'advertencia', 'Confirmar', 'Cancelar')
+            self.popUp_EliminarProductoVenta.buttons()[1].pressed.connect(self.eliminarProductoVenta)
+            self.popUp_EliminarProductoVenta.exec_()
 
     def eliminarProductoVenta(self):
-        print(self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),0).data())
-
-    def irProximaVentana(self):
-        print(self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data())
-
-
-
+        if((self.ui.tableVenta.currentIndex().column() != 0) and (self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),0).data() != '')):
+            nombreeliminar =self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),0).data()#nombre
+            cantidadeliminar =int(self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),1).data())#cantidad
+            for i in range(0,2):
+                if(i == 1):
+                        self.venta.delProducto(nombreeliminar, cantidadeliminar)
+                        protocolo = self.db.busquedaProducto(nombreeliminar)
+                        self.db.modificarCantidadProducto((cantidadeliminar + protocolo.getCantidad()), nombreeliminar)
+                        self.cambiarDatoInventario()
+                        productoJodedor = self.venta.getProducto()
+                        for filas in range(len(self.venta.getProducto())):
+                            objeto.setNombre(productoJodedor[filas].getNombre())
+                            objeto.setCantidad(productoJodedor[filas].getCantidad())
+                            objeto.setPrecio(productoJodedor[filas].getPrecio())
+                            objeto.setIva(productoJodedor[filas].getIva())
+                            self.modelVenta.setItem(filas, 0, QtGui.QStandardItem(str(objeto.getNombre())))
+                            self.modelVenta.setItem(filas, 1, QtGui.QStandardItem(str(objeto.getCantidad())))
+                            self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
+                            self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
+                            self.modelVenta.setItem(filas, 4, QtGui.QStandardItem("Anular"))
+                elif(i == 0 ):
+                    for filas in range(len(self.venta.getProducto())):
+                        objeto = Producto('', '','','')
+                        self.modelVenta.setItem(filas, 0, QtGui.QStandardItem(str(objeto.getNombre())))
+                        self.modelVenta.setItem(filas, 1, QtGui.QStandardItem(str(objeto.getCantidad())))
+                        self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
+                        self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
+                        self.modelVenta.setItem(filas, 4, QtGui.QStandardItem(""))
+        self.actualizarMonto()
+            
     def popUpFinalizarVenta(self):
-        self.popUp_FinalizarVenta = popUp('Desea confirmar la venta', 'Finalizar Venta', True, 'dubitativo', 'Confirmar', 'Cancelar')
+        self.popUp_FinalizarVenta = popUp('¿Desea confirmar la venta?', 'Finalizar Venta', True, 'dubitativo', 'Confirmar', 'Cancelar')
         self.popUp_FinalizarVenta.buttons()[1].pressed.connect(self.irVentanaRegistrarVentaDatosCliente)
-        self.popUp_FinalizarVenta.buttons()[0].pressed.connect(self.close)
+        self.popUp_FinalizarVenta.buttons()[0].pressed.connect(self.cerrar)
         self.popUp_FinalizarVenta.exec()
 
     def irVentanaRegistrarVentaDatosCliente(self):
-        self.ventana_VentanaRegistrarVentaDatosCliente = ventanaRegistrarVentaDatosCliente()
-        self.ventana_VentanaRegistrarVentaDatosCliente.show()
+        if(self.venta.getProducto() ):
+            self.ventana_VentanaRegistrarVentaDatosCliente = ventanaRegistrarVentaDatosCliente(self)
+            self.ventana_VentanaRegistrarVentaDatosCliente.show()
+        else:
+            self.popUp_FinalizarVenta.close()
+            self.popUp_AdvertenciaNoProducto = popUp('La venta no contiene productos.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaNoProducto.buttons()[0].pressed.connect(self.close)
+            self.popUp_AdvertenciaNoProducto.exec()
 
 class popUp(QMessageBox): # ventanas emergentes.
     #Ventana emergente con 2 opciones
