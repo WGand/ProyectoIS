@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QHeaderView, QMainWindow, QDialog, QMessageBox, QVBo
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore, QtGui
 from PyQt5 import Qt
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5 import QtSql
 from PyQt5.QtSql import *
 #Import Ventanas
@@ -64,9 +65,9 @@ class ventanaListarInventario(QDialog):
         self.setWindowModality(2) #Detiene toda la actividad en las otras ventanas, ejemplo, salir pulsando la "x", IDEM a todas las ventanas
         self.conector = ConexionDataBase()
         self.conector.openDB()
-        self.query1 = QSqlQuery()
+        self.query1 = QtSql.QSqlQuery()
         self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
-        model = QSqlTableModel()
+        model = QtSql.QSqlTableModel()
         model.setQuery(self.query1)
         self.conector.closeDB()
         model.insertColumn(4)
@@ -79,8 +80,9 @@ class ventanaListarInventario(QDialog):
         self.ui.tableView.setModel(filter_proxy_model)
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
+
     def irProximaVentana(self):
-        print(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
+        print(self.ui.tableView.selectionModel().currentIndex().data())
 
 class ventanaGestionarProducto(QDialog):
     def __init__(self):
@@ -119,9 +121,9 @@ class ventanaModificarProducto(QDialog):
         self.setWindowModality(2)
         self.conector = ConexionDataBase()
         self.conector.openDB()
-        self.query1 = QSqlQuery()
+        self.query1 = QtSql.QSqlQuery()
         self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
-        model = QSqlTableModel()
+        model = QtSql.QSqlTableModel()
         model.setQuery(self.query1)
         self.conector.closeDB()
         filter_proxy_model = QtCore.QSortFilterProxyModel()
@@ -180,11 +182,13 @@ class ventanaRegistrarVenta(QDialog):
         self.setWindowModality(2)
         self.conector = ConexionDataBase()
         self.conector.openDB()
-        self.query1 = QSqlQuery()
+        self.query1 = QtSql.QSqlQuery()
         self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
-        model = QSqlTableModel()
+        model = QtSql.QSqlTableModel()
         model.setQuery(self.query1)
         self.conector.closeDB()
+        model.insertColumn(4)
+        model.setHeaderData(4, QtCore.Qt.Horizontal, str("Añadir"))
         filter_proxy_model = QtCore.QSortFilterProxyModel()
         filter_proxy_model.setFilterCaseSensitivity(0)
         filter_proxy_model.setSourceModel(model)
@@ -192,7 +196,23 @@ class ventanaRegistrarVenta(QDialog):
         self.ui.BarraBusqueda.textChanged.connect(filter_proxy_model.setFilterRegExp)
         self.ui.tableInventario.setModel(filter_proxy_model)
         self.ui.tableInventario.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.tableInventario.selectionModel().currentRowChanged.connect(self.irProximaVentana)
+        self.model1 = QStandardItemModel(0,5)
+        self.ui.tableVenta.setModel(self.model1)
+        self.ui.tableInventario.selectionModel().currentRowChanged.connect(self.anadirProductoVenta)
+
+    def anadirProductoVenta(self):
+        producto = self.conector.busquedaProducto(self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data())
+        nombre = QStandardItem(producto.getNombre())
+        #cantidad = QStandardItem(str(producto.getCantidad()))
+        precio = QStandardItem(str(producto.getPrecio()))
+        iva = QStandardItem(str(producto.getIva()))
+        filas = self.model1.rowCount()
+        self.model1.setItem(filas, 0, nombre)
+        #self.model1.setItem(filas, 1, cantidad)
+        self.model1.setItem(filas, 2, precio)
+        self.model1.setItem(filas, 3, iva)
+        self.ui.tableVenta.setModel(self.model1)
+
     def irProximaVentana(self):
         print(self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data())
 

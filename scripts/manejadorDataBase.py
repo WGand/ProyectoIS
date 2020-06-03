@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
-from objetosPrograma import Cliente, Venta
+from objetosPrograma import Cliente, Venta, Producto
 
 class ConexionDataBase:
 
@@ -10,9 +10,9 @@ class ConexionDataBase:
 
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("froilanroac")
-        ConexionDataBase.db.setPassword("")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
+        ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
         return ConexionDataBase.db.open()
@@ -210,6 +210,24 @@ class ConexionDataBase:
         query.exec_(sql)
         self.closeDB()
         return query
+
+    def busquedaProducto(self, nombre):
+            self.openDB()
+            sql = "SELECT cantidad, precio, iva FROM producto WHERE nombre = '"+str(nombre)+"';"
+            query = QSqlQuery()
+            query.exec(sql)
+            self.closeDB()
+            producto_ = Producto()
+            producto_.setNombre(nombre)
+            while (query.next()):
+                for i in range (0,3):
+                    if(i == 0):
+                        producto_.setCantidad(query.value(i))
+                    elif(i == 1):
+                        producto_.setPrecio(query.value(i))
+                    else:
+                        producto_.setIva(query.value(i))
+            return producto_
 
     def guardarVenta(self, venta):
         self.openDB()
