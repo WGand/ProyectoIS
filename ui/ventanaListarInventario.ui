@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>614</width>
-    <height>530</height>
+    <width>502</width>
+    <height>457</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,34 +18,37 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>611</width>
-     <height>521</height>
+     <width>501</width>
+     <height>524289</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="2,0">
+    <property name="horizontalSpacing">
+     <number>6</number>
+    </property>
     <property name="verticalSpacing">
      <number>2</number>
     </property>
     <item row="0" column="0">
-     <widget class="QLineEdit" name="campoTextoBuscador"/>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLabel" name="labelLupa">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="pixmap">
-       <pixmap>Coding/ProyectoIS/assets/iconoLupa.png</pixmap>
+     <widget class="QLineEdit" name="lineEdit">
+      <property name="minimumSize">
+       <size>
+        <width>140</width>
+        <height>0</height>
+       </size>
       </property>
      </widget>
     </item>
     <item row="1" column="0" colspan="2">
-     <widget class="QTableWidget" name="tablaProductos"/>
+     <widget class="QTableView" name="tableView"/>
     </item>
-    <item row="2" column="0" colspan="2">
-     <widget class="QPushButton" name="botonVolver">
+    <item row="0" column="1">
+     <widget class="QLabel" name="label">
       <property name="text">
-       <string>Volver</string>
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>../assets/iconoLupa.png</pixmap>
       </property>
      </widget>
     </item>

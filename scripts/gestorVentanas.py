@@ -1,13 +1,17 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QDialog, QMessageBox
+from PyQt5.QtWidgets import QHeaderView, QMainWindow, QDialog, QMessageBox, QVBoxLayout
 from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtGui
+from PyQt5 import Qt
 from ventanaMenu import Ui_MainWindow
 from ventanaGestionarProducto import Ui_Dialogvgp
 from ventanaListarInventario import Ui_Dialogvli
 from ventanaRegistrarVenta import Ui_Dialogvrv
 from ventanaAnadirProducto import Ui_Dialogap
 from ventanaRegistrarVentaDatosCliente import Ui_Dialogvrvdc
-import enum
+from manejadorDataBase import ConexionDataBase
+from PyQt5 import QtSql
+from PyQt5.QtSql import *
 #Editado con Sublime Text
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
     switch = {
@@ -17,7 +21,7 @@ def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
         "critico" : QtWidgets.QMessageBox.Critical
     }
     return switch.get(tipo)
-    
+
 class ventanaListarInventario(QDialog):
     def __init__(self):
         super(ventanaListarInventario, self).__init__() #redefinicion de la clase QDialog con las necesidades de ventanaListarInventariopy, IDEM a todas las ventanas
@@ -25,6 +29,28 @@ class ventanaListarInventario(QDialog):
         self.ui.setupUi(self) #2- carga de la interfaz sobre el objeto. 1 y 2 IDEM todas las ventanas
         self.setWindowTitle("Listar Inventario")
         self.setWindowModality(2) #Detiene toda la actividad en las otras ventanas, ejemplo, salir pulsando la "x", IDEM a todas las ventanas
+        self.conector = ConexionDataBase()
+        self.conector.openDB()
+        self.query1 = QSqlQuery()
+        self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
+        model = QSqlTableModel()
+        model.setQuery(self.query1)
+        self.conector.closeDB()
+        model.insertColumn(4)
+        model.setHeaderData(4, QtCore.Qt.Horizontal, str("Modificar"))
+        filter_proxy_model = QtCore.QSortFilterProxyModel()
+        filter_proxy_model.setFilterCaseSensitivity(0)
+        filter_proxy_model.setSourceModel(model)
+        filter_proxy_model.setFilterKeyColumn(0)
+        self.ui.lineEdit.textChanged.connect(filter_proxy_model.setFilterRegExp)
+        self.ui.tableView.setModel(filter_proxy_model)
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.tableView.selectionModel().currentChanged.connect(self.irProximaVentana)
+    def irProximaVentana(self):
+        print(self.ui.tableView.selectionModel().selection()[0].indexes()[0].data())
+        print(self.ui.tableView.selectionModel().selection()[0].indexes()[1].data())
+        print(self.ui.tableView.selectionModel().selection()[0].indexes()[2].data())
+        print(self.ui.tableView.selectionModel().selection()[0].indexes()[3].data())
 
 class ventanaGestionarProducto(QDialog):
     def __init__(self):
