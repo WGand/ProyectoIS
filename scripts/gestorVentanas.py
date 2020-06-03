@@ -197,6 +197,37 @@ class ventanaEliminarProducto(QDialog):
         self.setWindowTitle("Eliminar Producto")
         self.setWindowModality(2)
 
+        self.conector = ConexionDataBase()
+        self.conector.openDB()
+        self.query1 = QSqlQuery()
+        self.query1.exec_("SELECT nombre,cantidad,precio,iva FROM producto WHERE cantidad=0;")
+        model = QSqlTableModel()
+        model.setQuery(self.query1)
+        self.conector.closeDB()
+        filter_proxy_model = QtCore.QSortFilterProxyModel()
+        filter_proxy_model.setFilterCaseSensitivity(0)
+        filter_proxy_model.setSourceModel(model)
+        filter_proxy_model.setFilterKeyColumn(0)
+        self.ui.campoTexto.textChanged.connect(filter_proxy_model.setFilterRegExp)
+        self.ui.tableView.setModel(filter_proxy_model)
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
+
+
+    def irProximaVentana(self):
+        self.popUp_eliminarProducto = popUp('¿Desea eliminar el producto seleccionado?', 'Aviso', True, 'informativo', 'Confirmar', 'Cancelar')
+        self.popUp_eliminarProducto.buttons()[1].pressed.connect(self.eliminarProducto)
+        self.popUp_eliminarProducto.buttons()[0].pressed.connect(self.close) 
+        self.popUp_eliminarProducto.exec()   
+
+    def eliminarProducto(self):
+        self.conector = ConexionDataBase()
+        self.conector.openDB()
+        self.conector.deleteProducto(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
+        self.conector.closeDB()
+        self.popUp_confirmacion = popUp('Producto eliminado Exitosamente.', 'Aviso', False, 'informativo', 'Ok')
+        self.popUp_confirmacion.exec()
+
     def volver(self):
         self.close()
 
