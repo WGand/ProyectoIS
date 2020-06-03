@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QHeaderView, QMainWindow, QDialog, QMessageBox, QVBo
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore, QtGui
 from PyQt5 import Qt
-from PyQt5 import QtSql
+from PyQt5 import QtSql, QSqlQuery, QSqlTableModel
 from PyQt5.QtSql import *
 #Import Ventanas
 from ventanaMenu import Ui_MainWindow
