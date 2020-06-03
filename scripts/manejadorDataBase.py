@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
-from objetosPrograma import Cliente, Venta
+from objetosPrograma import Cliente, Venta, Producto
 
 class ConexionDataBase:
 
@@ -10,8 +10,8 @@ class ConexionDataBase:
 
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
@@ -168,14 +168,9 @@ class ConexionDataBase:
 
     def modificarIvaProducto(self, nuevoIva, nombre):
         self.openDB()
-        if (nuevoIva == True):
-            nuevoIva_ = 1
-        else:
-            nuevoIva_ = 0
-        if (self.validarProducto(nombre) == True):
-            sql = "UPDATE producto SET iva = " + str(nuevoIva_) +" WHERE nombre = '"+ str(nombre) +"';"
-            query = QSqlQuery()
-            query.exec_(sql)
+        sql = "UPDATE producto SET iva = " + str(nuevoIva) +" WHERE nombre = '"+ str(nombre) +"';"
+        query = QSqlQuery()
+        query.exec_(sql)
         self.closeDB()
 
     #Vendedor        
@@ -210,6 +205,38 @@ class ConexionDataBase:
         query.exec_(sql)
         self.closeDB()
         return query
+
+    def busquedaProducto(self, nombre):
+            self.openDB()
+            sql = "SELECT cantidad, precio, iva FROM producto WHERE nombre = '"+str(nombre)+"';"
+            query = QSqlQuery()
+            query.exec(sql)
+            self.closeDB()
+            producto_ = Producto()
+            producto_.setNombre(nombre)
+            while (query.next()):
+                for i in range (0,3):
+                    if(i == 0):
+                        producto_.setCantidad(query.value(i))
+                    elif(i == 1):
+                        producto_.setPrecio(query.value(i))
+                    else:
+                        producto_.setIva(query.value(i))
+            return producto_
+    def recorrerProducto(connection):
+        listaProducto = []
+        connection.openDB()
+        sql = "SELECT * FROM producto"
+        query = QSqlQuery(sql)
+        while query.next():
+            nombre = query.value(1)
+            cantidad = query.value(2)
+            precio = query.value(3)
+            iva = query.value(4)
+            objeto = Producto(nombre,cantidad,precio,iva)
+            listaProducto.append(objeto)
+        connection.closeDB()
+        return listaProducto
 
     def guardarVenta(self, venta):
         self.openDB()

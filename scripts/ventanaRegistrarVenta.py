@@ -361,6 +361,7 @@ class Ui_Dialogvrv(object):
         self.pushButtonFinzalizar.setFlat(False)
         self.pushButtonFinzalizar.setObjectName("pushButtonFinzalizar")
 
+
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
