@@ -177,12 +177,12 @@ class ventanaModificarProductoCampos(QDialog):
                 self.popUp_AdvertenciaDatoIncorrecto = popUp('Algún dato se ingresó de manera incorrecta.', 'Error', False, 'advertencia', 'Ok')
                 self.popUp_AdvertenciaDatoIncorrecto.exec()
             else:
-                self.conector.modificarNombreProducto(self.ui.campoNombre.toPlainText(),self.nombre)
                 self.conector.modificarPrecioProducto(self.ui.campoPrecio.toPlainText(),self.nombre)
                 if (self.ui.radioButtonSi.isChecked() == True):
                     self.conector.modificarIvaProducto("True",self.nombre)
                 elif(self.ui.radioButtonSi.isChecked() == False):
                     self.conector.modificarIvaProducto("False",self.nombre)
+                self.conector.modificarNombreProducto(self.ui.campoNombre.toPlainText(),self.nombre)
 
 
     
