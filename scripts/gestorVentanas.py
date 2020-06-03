@@ -279,6 +279,9 @@ class ventanaModificarProductoCampos(QDialog):
         self.popUp_ModificarProducto.close()
         self.close()
 
+    def volver(self):
+        self.close()
+
     def cerrarTodo(self):
         self.popUp_ModificarProducto.close()
         self.ventana.close()
