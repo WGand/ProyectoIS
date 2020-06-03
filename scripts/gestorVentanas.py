@@ -213,6 +213,8 @@ class ventanaEliminarProducto(QDialog):
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
 
+    def volver(self):
+        self.close()        
 
     def irProximaVentana(self):
         self.popUp_eliminarProducto = popUp('¿Desea eliminar el producto seleccionado?', 'Aviso', True, 'informativo', 'Confirmar', 'Cancelar')
@@ -225,11 +227,11 @@ class ventanaEliminarProducto(QDialog):
         self.conector.openDB()
         self.conector.deleteProducto(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
         self.conector.closeDB()
+        self.popUp_eliminarProducto.cerrarPopup()
         self.popUp_confirmacion = popUp('Producto eliminado Exitosamente.', 'Aviso', False, 'informativo', 'Ok')
         self.popUp_confirmacion.exec()
 
-    def volver(self):
-        self.close()
+
 
 class ventanaRegistrarVentaDatosCliente(QDialog):
     def __init__(self):
@@ -301,6 +303,8 @@ class popUp(QMessageBox): # ventanas emergentes.
         else:
             self.setStandardButtons(QtWidgets.QMessageBox.Ok)
             self.button(QtWidgets.QMessageBox.Ok).setText(botonSi)
+    def cerrarPopup(self):
+        self.close()
 
 class ventanaAnadirProducto(QDialog):
 
