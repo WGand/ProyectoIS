@@ -190,33 +190,50 @@ class ventanaModificarProducto(QDialog):
         self.setWindowTitle("Modificar Producto")
         self.setWindowModality(2)
         self.conector = ConexionDataBase()
-        self.conector.openDB()
-        self.query1 = QtSql.QSqlQuery()
-        self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
-        model = QtSql.QSqlTableModel()
-        model.setQuery(self.query1)
-        self.conector.closeDB()
-        filter_proxy_model = QtCore.QSortFilterProxyModel()
-        filter_proxy_model.setFilterCaseSensitivity(0)
-        filter_proxy_model.setSourceModel(model)
-        filter_proxy_model.setFilterKeyColumn(0)
-        self.ui.campoTexto.textChanged.connect(filter_proxy_model.setFilterRegExp)
-        self.ui.tableView.setModel(filter_proxy_model)
-        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
+        self.result = self.conector.recorrerProducto()
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
+        self.columnas = 3
+        self.fila = len(self.result)
+        for filas in range(self.fila):
+            objects = self.result[filas]
+            self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
+            self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
+            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
+        self.filtro = QtCore.QSortFilterProxyModel()
+        self.filtro.setFilterCaseSensitivity(0)
+        self.filtro.setSourceModel(self.model)
+        self.filtro.setFilterKeyColumn(0)
+        self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
+        self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.selectionModel().currentChanged.connect(self.irProximaVentana)
+        self.ui.pushButton.clicked.connect(self.volver)
+
+    def llenarTabla(self):
+        self.conector = ConexionDataBase()
+        self.result = self.conector.recorrerProducto()
+        self.fila = len(self.result)
+        for filas in range(self.fila):
+            objects = self.result[filas]
+            self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
+            self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
+            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
 
     def irProximaVentana(self):
-        nombre = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()
-        precio = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 2).data()
-        iva = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 3).data()
-        self.ventanaModificarProductoCampos = ventanaModificarProductoCampos(nombre, precio ,iva)
-        self.ventanaModificarProductoCampos.show()
+        if(self.ui.tableView.currentIndex().column() != 0):
+            nombre = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()
+            precio = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 2).data()
+            iva = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 3).data()
+            self.ventanaModificarProductoCampos = ventanaModificarProductoCampos(self, nombre, precio ,iva)
+            self.ventanaModificarProductoCampos.show()
 
     def volver(self):
         self.close()
 
 class ventanaModificarProductoCampos(QDialog):
-    def __init__(self, nombre, precio, iva):
+    def __init__(self, ventana, nombre, precio, iva):
         super(ventanaModificarProductoCampos, self).__init__()
         self.ui = Ui_Dialogvmpc()
         self.ui.setupUi(self)
@@ -234,9 +251,7 @@ class ventanaModificarProductoCampos(QDialog):
         self.nombre = nombre
         self.precio = precio
         self.iva = iva
-
-    def volver(self):
-        self.close()
+        self.ventana = ventana
 
     def validarIngreso(self):
         if ((len(self.ui.campoNombre.toPlainText()) == 0) or (len(self.ui.campoPrecio.toPlainText()) == 0) or ((self.ui.radioButtonSi.isChecked() == False) and (self.ui.radioButtonNo.isChecked() == False))):
@@ -255,9 +270,19 @@ class ventanaModificarProductoCampos(QDialog):
                     self.conector.modificarIvaProducto("False",self.nombre)
                 self.conector.modificarNombreProducto(self.ui.campoNombre.toPlainText(),self.nombre)
                 self.popUp_ModificarProducto = popUp('¿Desea modificar otro producto?', 'Producto modificado correctamente', True, 'informativo', 'Si', 'No')
-                self.popUp_ModificarProducto.buttons()[1].pressed.connect(self.close)
+                self.popUp_ModificarProducto.buttons()[1].pressed.connect(self.cerrarPopUp)
+                self.popUp_ModificarProducto.buttons()[0].pressed.connect(self.cerrarTodo)#NO
                 self.popUp_ModificarProducto.exec()
-   
+
+    def cerrarPopUp(self):
+        self.ventana.llenarTabla()
+        self.popUp_ModificarProducto.close()
+        self.close()
+
+    def cerrarTodo(self):
+        self.popUp_ModificarProducto.close()
+        self.ventana.close()
+        self.close()
 
 class ventanaEliminarProducto(QDialog):
     def __init__(self):
@@ -267,7 +292,6 @@ class ventanaEliminarProducto(QDialog):
         self.ui.pushButton.clicked.connect(self.volver)
         self.setWindowTitle("Eliminar Producto")
         self.setWindowModality(2)
-
         self.conector = ConexionDataBase()
         self.conector.openDB()
         self.query1 = QSqlQuery()
