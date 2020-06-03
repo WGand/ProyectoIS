@@ -168,14 +168,9 @@ class ConexionDataBase:
 
     def modificarIvaProducto(self, nuevoIva, nombre):
         self.openDB()
-        if (nuevoIva == True):
-            nuevoIva_ = 1
-        else:
-            nuevoIva_ = 0
-        if (self.validarProducto(nombre) == True):
-            sql = "UPDATE producto SET iva = " + str(nuevoIva_) +" WHERE nombre = '"+ str(nombre) +"';"
-            query = QSqlQuery()
-            query.exec_(sql)
+        sql = "UPDATE producto SET iva = " + str(nuevoIva) +" WHERE nombre = '"+ str(nombre) +"';"
+        query = QSqlQuery()
+        query.exec_(sql)
         self.closeDB()
 
     #Vendedor        
