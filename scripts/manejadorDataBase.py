@@ -223,6 +223,20 @@ class ConexionDataBase:
                     else:
                         producto_.setIva(query.value(i))
             return producto_
+    def recorrerProducto(connection):
+        listaProducto = []
+        connection.openDB()
+        sql = "SELECT * FROM producto"
+        query = QSqlQuery(sql)
+        while query.next():
+            nombre = query.value(1)
+            cantidad = query.value(2)
+            precio = query.value(3)
+            iva = query.value(4)
+            objeto = Producto(nombre,cantidad,precio,iva)
+            listaProducto.append(objeto)
+        connection.closeDB()
+        return listaProducto
 
     def guardarVenta(self, venta):
         self.openDB()
