@@ -32,31 +32,9 @@ class ConexionDataBase:
             return False
         self.closeDB()
 
-    def validarMarca(self,nombre): #Devuelve True si esta en la DB
-        self.openDB()
-        sql = "SELECT FROM marca WHERE nombre = '" + str(nombre) + "';"
-        query = QSqlQuery()
-        query.exec_(sql)
-        if (query.size() > 0):
-            return True
-        else:
-            return False
-        self.closeDB()
-
     def validarProducto(self,nombre): #Devuelve True si esta en la DB
         self.openDB()
         sql = "SELECT FROM producto WHERE nombre = '" + str(nombre) + "';"
-        query = QSqlQuery()
-        query.exec_(sql)
-        if (query.size() > 0):
-            return True
-        else:
-            return False
-        self.closeDB()
-
-    def validarProveedor(self,nombre): #Devuelve True si esta en la DB
-        self.openDB()
-        sql = "SELECT FROM proveedor WHERE nombre = '" + str(nombre) + "';"
         query = QSqlQuery()
         query.exec_(sql)
         if (query.size() > 0):
@@ -85,38 +63,21 @@ class ConexionDataBase:
             query.exec_(sql)
         self.closeDB()
     
-    def insertMarca(self, nombre):
-        self.openDB()
-        if (self.validarMarca(nombre) == False):
-            sql = "INSERT INTO marca(nombre) VALUES ('"+str(nombre)+"');"
-            query = QSqlQuery()
-            query.exec_(sql)
-        self.closeDB()
-    
-    def insertProducto(self, nombre, cantidad, precio, iva, proveedor_id, marca_id):
+    def insertProducto(self, nombre, cantidad, precio, iva):
         self.openDB()
         if (iva == True):
             iva_ =  1
         else:
             iva_ = 0
-        if (self.validarProducto(nombre) == False):
-            sql = "INSERT INTO producto(nombre, cantidad, precio, iva, proveedor_id, marca_id) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(iva_)+","+str(proveedor_id)+","+str(marca_id)+");"
-            query = QSqlQuery()
-            query.exec_(sql)
+        sql = "INSERT INTO producto(nombre, cantidad, precio, iva) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(iva)+");"
+        query = QSqlQuery()
+        query.exec_(sql)
         self.closeDB()
 
-    def insertProveedor(self, nombre):
-        self.openDB()
-        if (self.validarProveedor(nombre) == False):
-            sql = "INSERT INTO proveedor(nombre) VALUES ('"+str(nombre)+"');"
-            query = QSqlQuery()
-            query.exec_(sql)
-        self.closeDB()
-
-    def insertVendedor(self, cedula, telefono, nombre, proveedor_id):
+    def insertVendedor(self, cedula, telefono, nombre):
         self.openDB()
         if (self.validarVendedor(cedula) == False):  
-            sql = "INSERT INTO vendedor(cedula, telefono, nombre,proveedor_id) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"', "+str(proveedor_id)+");"
+            sql = "INSERT INTO vendedor(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"');"
             query = QSqlQuery()
             query.exec_(sql)
         self.closeDB()
@@ -143,24 +104,9 @@ class ConexionDataBase:
         query.exec_(sql)
         self.closeDB()
 
-    def deleteMarca(self, nombre):
-        self.openDB()
-        sql = "DELETE FROM marca WHERE nombre = '" + nombre + "';"
-        print (sql)
-        query = QSqlQuery()
-        query.exec_(sql)
-        self.closeDB()
-
     def deleteProducto(self, nombre):
         self.openDB()
         sql = "DELETE FROM producto WHERE nombre = '" + nombre + "';"
-        query = QSqlQuery()
-        query.exec_(sql)
-        self.closeDB()
-
-    def deleteProveedor(self, nombre):
-        self.openDB()
-        sql = "DELETE FROM proveedor WHERE nombre = '" + nombre + "';"
         query = QSqlQuery()
         query.exec_(sql)
         self.closeDB()
@@ -199,15 +145,6 @@ class ConexionDataBase:
             query.exec_(sql)
         self.closeDB()
 
-    #Marca
-    def modificarMarca(self, nuevoNombre, nombre):
-        self.openDB()
-        if (self.validarMarca(nombre) == True):
-            sql = "UPDATE marca SET nombre = '" + str(nuevoNombre) +"' WHERE nombre = '"+ str(nombre) +"';"
-            query = QSqlQuery()
-            query.exec_(sql)
-        self.closeDB()
-
     #Producto
     def modificarNombreProducto(self, nuevoNombre, nombre):
         self.openDB()
@@ -241,15 +178,6 @@ class ConexionDataBase:
             nuevoIva_ = 0
         if (self.validarProducto(nombre) == True):
             sql = "UPDATE producto SET iva = " + str(nuevoIva_) +" WHERE nombre = '"+ str(nombre) +"';"
-            query = QSqlQuery()
-            query.exec_(sql)
-        self.closeDB()
-
-    #Proveedor
-    def modificarNombreProveedor(self, nuevoNombre, nombre):
-        self.openDB()
-        if (self.validarProveedor(nombre) == True):
-            sql = "UPDATE proveedor SET nombre = '" + str(nuevoNombre) +"' WHERE nombre = '"+ str(nombre) +"';"
             query = QSqlQuery()
             query.exec_(sql)
         self.closeDB()
