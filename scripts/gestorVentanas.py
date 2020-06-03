@@ -6,6 +6,7 @@ from PyQt5 import QtCore, QtGui
 from PyQt5 import Qt
 from PyQt5 import QtSql
 from PyQt5.QtSql import *
+from PyQt5.QtSql import QSqlQuery, QSqlTableModel
 #Import Ventanas
 from ventanaMenu import Ui_MainWindow
 from ventanaGestionarProducto import Ui_Dialogvgp
@@ -63,25 +64,82 @@ class ventanaListarInventario(QDialog):
         self.ui.setupUi(self) #2- carga de la interfaz sobre el objeto. 1 y 2 IDEM todas las ventanas
         self.setWindowTitle("Listar Inventario")
         self.setWindowModality(2) #Detiene toda la actividad en las otras ventanas, ejemplo, salir pulsando la "x", IDEM a todas las ventanas
+        self.funcionPiedreraTabla()
+
+    def irVentanaModificarCantidad(self):
+            self.ventana_ModificarCantidad = ventanaModificarCantidad(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
+            self.ventana_ModificarCantidad.show()
+            self.model.updateRowInTable(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row()))
+
+    def funcionPiedreraTabla(self):
         self.conector = ConexionDataBase()
-        self.conector.openDB()
         self.query1 = QSqlQuery()
+        self.model = QSqlTableModel()
+        self.conector.openDB()
         self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
-        model = QSqlTableModel()
-        model.setQuery(self.query1)
+        self.model.setQuery(self.query1)
         self.conector.closeDB()
-        model.insertColumn(4)
-        model.setHeaderData(4, QtCore.Qt.Horizontal, str("Modificar"))
-        filter_proxy_model = QtCore.QSortFilterProxyModel()
-        filter_proxy_model.setFilterCaseSensitivity(0)
-        filter_proxy_model.setSourceModel(model)
-        filter_proxy_model.setFilterKeyColumn(0)
-        self.ui.lineEdit.textChanged.connect(filter_proxy_model.setFilterRegExp)
-        self.ui.tableView.setModel(filter_proxy_model)
+        self.model.insertColumn(4)
+        self.model.setHeaderData(4, QtCore.Qt.Horizontal, str("Modificar"))
+        self.filter_proxy_model = QtCore.QSortFilterProxyModel()
+        self.filter_proxy_model.setFilterCaseSensitivity(0)
+        self.filter_proxy_model.setSourceModel(self.model)
+        self.filter_proxy_model.setFilterKeyColumn(0)
+        self.ui.lineEdit.textChanged.connect(self.filter_proxy_model.setFilterRegExp)
+        self.ui.tableView.setModel(self.filter_proxy_model)
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
-    def irProximaVentana(self):
-        print(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
+        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irVentanaModificarCantidad)
+
+    def irVolver(self):
+        self.close()
+
+class ventanaModificarCantidad(QDialog):
+    def __init__(self, nombre):
+        super(ventanaModificarCantidad, self).__init__()
+        self.ui = Ui_Dialogvmc()
+        self.ui.setupUi(self)
+        self.conector = ConexionDataBase()
+        self.producto_ = self.conector.busquedaProducto(nombre)
+        self.cantidadActual = self.producto_.getCantidad()
+        self.ui.textCantidad.setText(str(self.producto_.getCantidad()))
+        self.ui.labelInformacion.setText('Producto: '+str(self.producto_.getNombre())+'\nCantidad actual: '+str(self.producto_.getCantidad())+'\nPrecio: '+ str(self.producto_.getPrecio()))
+        self.ui.botonMas.clicked.connect(self.sumar)
+        self.ui.botonMenos.clicked.connect(self.restar)
+        self.ui.textCantidad.setReadOnly(True)
+        self.ui.botonOk.clicked.connect(self.popUpConfirmarCantidad)    
+        self.setWindowTitle("Modificar Cantidad")
+        self.setWindowModality(2)
+
+    def sumar(self):
+        sumando = int(self.ui.textCantidad.toPlainText())
+        if(sumando == 0):
+            self.ui.botonMenos.setEnabled(True)
+        sumando += 1
+        self.ui.textCantidad.setText(str(sumando))
+        self.producto_.setCantidad(int(self.ui.textCantidad.toPlainText()))
+
+    def restar(self):
+        restando = int(self.ui.textCantidad.toPlainText())
+        if(restando == 1):
+            self.ui.botonMenos.setDisabled(True)
+        restando -= 1
+        self.ui.textCantidad.setText(str(restando))
+        self.producto_.setCantidad(int(self.ui.textCantidad.toPlainText()))
+        
+    def popUpConfirmarCantidad(self):
+        self.popUp_ConfirmarCantidad = popUp('El producto '+self.producto_.getNombre()+' tiene una cantidad existente de'
+        +str(self.cantidadActual)+'unidades registrada \n¿Desea actualizar a: '+str(self.producto_.getCantidad())+' unidades?','Confirmar Cambios',
+        True, 'dubitativo', 'Confirmar', 'Cancelar' )
+        self.popUp_ConfirmarCantidad.buttons()[1].pressed.connect(self.guardarCambios)
+        self.popUp_ConfirmarCantidad.buttons()[0].pressed.connect(self.close)
+        self.popUp_ConfirmarCantidad.exec()
+    
+    def irVolver(self):
+        self.close()
+    
+    def guardarCambios(self):
+        self.conector.modificarCantidadProducto(self.producto_.getCantidad(), self.producto_.getNombre())
+        self.irVolver()
 
 class ventanaGestionarProducto(QDialog):
     def __init__(self):
@@ -363,7 +421,7 @@ class ventanaMenu(QMainWindow):
     def irListarInventario(self):
         self.ventana_ListarInventario = ventanaListarInventario()
         self.ventana_ListarInventario.show()
-
+        
     def irRegistrarVenta(self):
         self.ventana_RegistrarVenta = ventanaRegistrarVenta()
         self.ventana_RegistrarVenta.show()

@@ -27,43 +27,13 @@ class Persona(ABC):
 class Cliente(Persona):
 	pass
 
-class Proveedor():
-	def __init__(self, nombre = ''):
-		self.__nombre = nombre
-	
-	def setNombre(self, nombre):
-		self.__nombre = nombre
-
-	def getNombre(self):
-		return self.__nombre
-
 class Vendedor(Persona):
-	def __init__(self, proveedor = []):
-		super(Vendedor, self).__init__()
-		self.__proveedor = proveedor
-
-	def setProveedor(self, proveedor):
-		self.__proveedor = proveedor
-
-	def getProveedor(self):
-		return self.__proveedor
-	
-class Marca():
-	def __init__(self, nombre = ''):
-		self.__nombre = nombre
-
-	def setNombre(self, nombre):
-		self.__nombre = nombre
-	
-	def getNombre(self):
-		return self.__nombre
+	pass
 
 class Producto():
-	def __init__(self, marca = [], nombre = '', cantidad = '', proveedor = [], precio = '', iva = ''):
-		self.__marca = marca
+	def __init__(self, nombre = '', cantidad = '', precio = '', iva = ''):
 		self.__nombre = nombre
 		self.__cantidad = cantidad
-		self.__proveedor = proveedor
 		self.__precio = precio
 		self.__iva = iva
 	
@@ -72,12 +42,6 @@ class Producto():
 
 	def getIva(self):
 		return self.__iva
-
-	def setMarca(self, marca):
-		self.__marca = marca
-
-	def getMarca(self):
-		return self.__marca
 	
 	def setNombre(self, nombre):
 		self.__nombre = nombre
@@ -90,12 +54,6 @@ class Producto():
 	
 	def getCantidad(self):
 		return self.__cantidad
-
-	def setProveedor(self, proveedor):
-		self.__proveedor = proveedor
-	
-	def getProveedor(self):
-		return self.__proveedor
 	
 	def setPrecio(self, precio):
 		self.__precio = precio
