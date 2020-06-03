@@ -63,11 +63,20 @@ class ventanaListarInventario(QDialog):
         self.ui.setupUi(self) #2- carga de la interfaz sobre el objeto. 1 y 2 IDEM todas las ventanas
         self.setWindowTitle("Listar Inventario")
         self.setWindowModality(2) #Detiene toda la actividad en las otras ventanas, ejemplo, salir pulsando la "x", IDEM a todas las ventanas
+        self.funcionPiedreraTabla()
+        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irVentanaModificarCantidad)
+
+    def irVentanaModificarCantidad(self):
+            self.ventana_ModificarCantidad = ventanaModificarCantidad(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
+            self.ventana_ModificarCantidad.show()
+
+    def funcionPiedreraTabla(self):
+        ##########MODIFICAR ESTA TABLA DE MIERDA
         self.conector = ConexionDataBase()
-        self.conector.openDB()
         self.query1 = QSqlQuery()
-        self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
         model = QSqlTableModel()
+        self.conector.openDB()
+        self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
         model.setQuery(self.query1)
         self.conector.closeDB()
         model.insertColumn(4)
@@ -79,12 +88,15 @@ class ventanaListarInventario(QDialog):
         self.ui.lineEdit.textChanged.connect(filter_proxy_model.setFilterRegExp)
         self.ui.tableView.setModel(filter_proxy_model)
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irVentanaModificarCantidad)
-        ##########MODIFICAR ESTA TABLA DE MIERDA
+            
+    def irVolver(self):
+        self.close()
+    
+    def irVolverReopen(self):
+        self.close()
+    
 
-    def irVentanaModificarCantidad(self):
-            self.ventana_ModificarCantidad = ventanaModificarCantidad(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
-            self.ventana_ModificarCantidad.show()
+
 
 class ventanaModificarCantidad(QDialog):
     def __init__(self, nombre):
