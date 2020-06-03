@@ -64,39 +64,33 @@ class ventanaListarInventario(QDialog):
         self.setWindowTitle("Listar Inventario")
         self.setWindowModality(2) #Detiene toda la actividad en las otras ventanas, ejemplo, salir pulsando la "x", IDEM a todas las ventanas
         self.funcionPiedreraTabla()
-        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irVentanaModificarCantidad)
 
     def irVentanaModificarCantidad(self):
             self.ventana_ModificarCantidad = ventanaModificarCantidad(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
             self.ventana_ModificarCantidad.show()
+            self.model.updateRowInTable(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row()))
 
     def funcionPiedreraTabla(self):
-        ##########MODIFICAR ESTA TABLA DE MIERDA
         self.conector = ConexionDataBase()
         self.query1 = QSqlQuery()
-        model = QSqlTableModel()
+        self.model = QSqlTableModel()
         self.conector.openDB()
         self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
-        model.setQuery(self.query1)
+        self.model.setQuery(self.query1)
         self.conector.closeDB()
-        model.insertColumn(4)
-        model.setHeaderData(4, QtCore.Qt.Horizontal, str("Modificar"))
-        filter_proxy_model = QtCore.QSortFilterProxyModel()
-        filter_proxy_model.setFilterCaseSensitivity(0)
-        filter_proxy_model.setSourceModel(model)
-        filter_proxy_model.setFilterKeyColumn(0)
-        self.ui.lineEdit.textChanged.connect(filter_proxy_model.setFilterRegExp)
-        self.ui.tableView.setModel(filter_proxy_model)
+        self.model.insertColumn(4)
+        self.model.setHeaderData(4, QtCore.Qt.Horizontal, str("Modificar"))
+        self.filter_proxy_model = QtCore.QSortFilterProxyModel()
+        self.filter_proxy_model.setFilterCaseSensitivity(0)
+        self.filter_proxy_model.setSourceModel(self.model)
+        self.filter_proxy_model.setFilterKeyColumn(0)
+        self.ui.lineEdit.textChanged.connect(self.filter_proxy_model.setFilterRegExp)
+        self.ui.tableView.setModel(self.filter_proxy_model)
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-            
+        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irVentanaModificarCantidad)
+
     def irVolver(self):
         self.close()
-    
-    def irVolverReopen(self):
-        self.close()
-    
-
-
 
 class ventanaModificarCantidad(QDialog):
     def __init__(self, nombre):
@@ -144,7 +138,7 @@ class ventanaModificarCantidad(QDialog):
     
     def guardarCambios(self):
         self.conector.modificarCantidadProducto(self.producto_.getCantidad(), self.producto_.getNombre())
-        self.close()
+        self.irVolver()
 
 class ventanaGestionarProducto(QDialog):
     def __init__(self):
@@ -306,7 +300,7 @@ class ventanaMenu(QMainWindow):
     def irListarInventario(self):
         self.ventana_ListarInventario = ventanaListarInventario()
         self.ventana_ListarInventario.show()
-
+        
     def irRegistrarVenta(self):
         self.ventana_RegistrarVenta = ventanaRegistrarVenta()
         self.ventana_RegistrarVenta.show()
