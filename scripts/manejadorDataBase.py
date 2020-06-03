@@ -10,8 +10,8 @@ class ConexionDataBase:
 
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("postgres")
-        ConexionDataBase.db.setUserName("postgres")
+        ConexionDataBase.db.setDatabaseName("inventarioabasto")
+        ConexionDataBase.db.setUserName("inventarioabasto")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
@@ -65,10 +65,6 @@ class ConexionDataBase:
     
     def insertProducto(self, nombre, cantidad, precio, iva):
         self.openDB()
-        if (iva == True):
-            iva_ =  1
-        else:
-            iva_ = 0
         sql = "INSERT INTO producto(nombre, cantidad, precio, iva) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(iva)+");"
         query = QSqlQuery()
         query.exec_(sql)
