@@ -3,11 +3,11 @@ from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
 from objetosPrograma import Cliente, Venta
 
 class ConexionDataBase:
-    
+
     db = QSqlDatabase.addDatabase("QPSQL")
 
     def __init__(self):
-        
+
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
         ConexionDataBase.db.setDatabaseName("inventarioabasto")
@@ -32,31 +32,9 @@ class ConexionDataBase:
             return False
         self.closeDB()
 
-    def validarMarca(self,nombre): #Devuelve True si esta en la DB
-        self.openDB()
-        sql = "SELECT FROM marca WHERE nombre = '" + str(nombre) + "';"
-        query = QSqlQuery()
-        query.exec_(sql)
-        if (query.size() > 0):
-            return True
-        else:
-            return False
-        self.closeDB()
-
     def validarProducto(self,nombre): #Devuelve True si esta en la DB
         self.openDB()
         sql = "SELECT FROM producto WHERE nombre = '" + str(nombre) + "';"
-        query = QSqlQuery()
-        query.exec_(sql)
-        if (query.size() > 0):
-            return True
-        else:
-            return False
-        self.closeDB()
-
-    def validarProveedor(self,nombre): #Devuelve True si esta en la DB
-        self.openDB()
-        sql = "SELECT FROM proveedor WHERE nombre = '" + str(nombre) + "';"
         query = QSqlQuery()
         query.exec_(sql)
         if (query.size() > 0):
@@ -85,34 +63,17 @@ class ConexionDataBase:
             query.exec_(sql)
         self.closeDB()
     
-    def insertMarca(self, nombre):
+    def insertProducto(self, nombre, cantidad, precio, iva):
         self.openDB()
-        if (self.validarMarca(nombre) == False):
-            sql = "INSERT INTO marca(nombre) VALUES ('"+str(nombre)+"');"
-            query = QSqlQuery()
-            query.exec_(sql)
-        self.closeDB()
-    
-    def insertProducto(self, nombre, cantidad, precio, proveedor_id, marca_id):
-        self.openDB()
-        if (self.validarProducto(nombre) == False):
-            sql = "INSERT INTO producto(nombre, cantidad, precio, proveedor_id, marca_id) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(proveedor_id)+","+str(marca_id)+");"
-            query = QSqlQuery()
-            query.exec_(sql)
+        sql = "INSERT INTO producto(nombre, cantidad, precio, iva) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(iva)+");"
+        query = QSqlQuery()
+        query.exec_(sql)
         self.closeDB()
 
-    def insertProveedor(self, nombre):
-        self.openDB()
-        if (self.validarProveedor(nombre) == False):
-            sql = "INSERT INTO proveedor(nombre) VALUES ('"+str(nombre)+"');"
-            query = QSqlQuery()
-            query.exec_(sql)
-        self.closeDB()
-
-    def insertVendedor(self, cedula, telefono, nombre, proveedor_id):
+    def insertVendedor(self, cedula, telefono, nombre):
         self.openDB()
         if (self.validarVendedor(cedula) == False):  
-            sql = "INSERT INTO vendedor(cedula, telefono, nombre,proveedor_id) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"', "+str(proveedor_id)+");"
+            sql = "INSERT INTO vendedor(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"');"
             query = QSqlQuery()
             query.exec_(sql)
         self.closeDB()
@@ -139,24 +100,9 @@ class ConexionDataBase:
         query.exec_(sql)
         self.closeDB()
 
-    def deleteMarca(self, nombre):
-        self.openDB()
-        sql = "DELETE FROM marca WHERE nombre = '" + nombre + "';"
-        print (sql)
-        query = QSqlQuery()
-        query.exec_(sql)
-        self.closeDB()
-
     def deleteProducto(self, nombre):
         self.openDB()
         sql = "DELETE FROM producto WHERE nombre = '" + nombre + "';"
-        query = QSqlQuery()
-        query.exec_(sql)
-        self.closeDB()
-
-    def deleteProveedor(self, nombre):
-        self.openDB()
-        sql = "DELETE FROM proveedor WHERE nombre = '" + nombre + "';"
         query = QSqlQuery()
         query.exec_(sql)
         self.closeDB()
@@ -195,15 +141,6 @@ class ConexionDataBase:
             query.exec_(sql)
         self.closeDB()
 
-    #Marca
-    def modificarMarca(self, nuevoNombre, nombre):
-        self.openDB()
-        if (self.validarMarca(nombre) == True):
-            sql = "UPDATE marca SET nombre = '" + str(nuevoNombre) +"' WHERE nombre = '"+ str(nombre) +"';"
-            query = QSqlQuery()
-            query.exec_(sql)
-        self.closeDB()
-
     #Producto
     def modificarNombreProducto(self, nuevoNombre, nombre):
         self.openDB()
@@ -229,11 +166,14 @@ class ConexionDataBase:
             query.exec_(sql)
         self.closeDB()
 
-    #Proveedor
-    def modificarNombreProveedor(self, nuevoNombre, nombre):
+    def modificarIvaProducto(self, nuevoIva, nombre):
         self.openDB()
-        if (self.validarProveedor(nombre) == True):
-            sql = "UPDATE proveedor SET nombre = '" + str(nuevoNombre) +"' WHERE nombre = '"+ str(nombre) +"';"
+        if (nuevoIva == True):
+            nuevoIva_ = 1
+        else:
+            nuevoIva_ = 0
+        if (self.validarProducto(nombre) == True):
+            sql = "UPDATE producto SET iva = " + str(nuevoIva_) +" WHERE nombre = '"+ str(nombre) +"';"
             query = QSqlQuery()
             query.exec_(sql)
         self.closeDB()
@@ -262,20 +202,27 @@ class ConexionDataBase:
             query = QSqlQuery()
             query.exec_(sql)
         self.closeDB()
-    
-    def pruebitajeje(self):
+
+    def retornarTodoProducto(self):
         self.openDB()
-        sql = 'SELECT id_cliente FROM cliente;'
+        sql = 'SELECT * FROM producto;'
         query = QSqlQuery()
         query.exec_(sql)
-        
-        ids = []
-        while(query.next()):
-            retorno = query.value(0)
-            ids.append(retorno)
-        print(ids)
         self.closeDB()
-    
-    def guardarVenta(self, venta ):
+        return query
+
+    def guardarVenta(self, venta):
         self.openDB()
-        ###########Seguire trabajando aqui
+        ##(Venta)
+        ##BEGIN
+        ##Verificar si existe el cliente
+        ##Si existe-> buscar su id
+        ##sino -> insertar el cliente y retornar el id del cliente
+        ##insertar venta, con referencia al cliente
+        ##retornar el id de la venta  id_venta
+        ##recorremos la lista de productos de la venta
+        ##  retornar su id id_producto
+        ##  capturamos su cantidad
+        ##  insertamos en venta_producto haciendo referencia con id_venta, id_producto
+        ##END
+        self.closeDB()

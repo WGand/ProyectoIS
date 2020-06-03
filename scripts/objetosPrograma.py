@@ -59,13 +59,20 @@ class Marca():
 		return self.__nombre
 
 class Producto():
-	def __init__(self, marca = [], nombre = '', cantidad = '', proveedor = [], precio = ''):
+	def __init__(self, marca = [], nombre = '', cantidad = '', proveedor = [], precio = '', iva = ''):
 		self.__marca = marca
 		self.__nombre = nombre
 		self.__cantidad = cantidad
 		self.__proveedor = proveedor
 		self.__precio = precio
+		self.__iva = iva
 	
+	def setIva(self, iva):
+		self.__iva = iva
+
+	def getIva(self):
+		return self.__iva
+
 	def setMarca(self, marca):
 		self.__marca = marca
 
@@ -97,10 +104,10 @@ class Producto():
 		return self.__precio
 
 class Venta():
-	def __init__(self, monto = '', cantidad = '', cliente = []):
+	def __init__(self, monto = '', cliente = []):
 		self.__monto = monto
 		self.__cliente = cliente
-		self.__cantidad = cantidad
+		self.__producto = []
 	
 	def setMonto(self, monto):
 		self.__monto = monto
@@ -113,9 +120,9 @@ class Venta():
 	
 	def getCliente(self):
 		return self.__cliente
+	
+	def addProducto(self, producto):
+		self.__producto.append(producto)
 
-	def setCantidad(self, cantidad):
-		self.__cantidad = cantidad
-
-	def getCantidad(self):
-		return self.__cantidad
+	def getProducto(self):
+		return self.__producto
