@@ -183,9 +183,10 @@ class ventanaModificarProductoCampos(QDialog):
                 elif(self.ui.radioButtonSi.isChecked() == False):
                     self.conector.modificarIvaProducto("False",self.nombre)
                 self.conector.modificarNombreProducto(self.ui.campoNombre.toPlainText(),self.nombre)
-
-
-    
+                self.popUp_ModificarProducto = popUp('¿Desea modificar otro producto?', 'Producto modificado correctamente', True, 'informativo', 'Si', 'No')
+                self.popUp_ModificarProducto.buttons()[1].pressed.connect(self.close)
+                self.popUp_ModificarProducto.exec()
+   
 
 class ventanaEliminarProducto(QDialog):
     def __init__(self):
