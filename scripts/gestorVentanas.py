@@ -117,6 +117,25 @@ class ventanaModificarProducto(QDialog):
         self.ui.pushButton.clicked.connect(self.volver)
         self.setWindowTitle("Modificar Producto")
         self.setWindowModality(2)
+        self.conector = ConexionDataBase()
+        self.conector.openDB()
+        self.query1 = QSqlQuery()
+        self.query1.exec_("select nombre,cantidad,precio,iva from producto;")
+        model = QSqlTableModel()
+        model.setQuery(self.query1)
+        self.conector.closeDB()
+        filter_proxy_model = QtCore.QSortFilterProxyModel()
+        filter_proxy_model.setFilterCaseSensitivity(0)
+        filter_proxy_model.setSourceModel(model)
+        filter_proxy_model.setFilterKeyColumn(0)
+        self.ui.campoTexto.textChanged.connect(filter_proxy_model.setFilterRegExp)
+        self.ui.tableView.setModel(filter_proxy_model)
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
+
+    def irProximaVentana(self):
+        print(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
+
 
     def volver(self):
         self.close()
