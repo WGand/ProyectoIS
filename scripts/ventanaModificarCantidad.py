@@ -10,7 +10,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Dialog(object):
+class Ui_Dialogvmc(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(422, 241)
@@ -59,13 +59,3 @@ class Ui_Dialog(object):
         self.botonOk.setText(_translate("Dialog", "Ok"))
         self.botonMenos.setText(_translate("Dialog", "-"))
         self.labelInformacion.setText(_translate("Dialog", "<html><head/><body><p align=\"center\">Nombre Producto</p><p>Cantidad actual: X</p><p>Precio: X</p><p><br/></p></body></html>"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Dialog = QtWidgets.QDialog()
-    ui = Ui_Dialog()
-    ui.setupUi(Dialog)
-    Dialog.show()
-    sys.exit(app.exec_())

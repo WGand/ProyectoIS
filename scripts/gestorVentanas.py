@@ -1,6 +1,8 @@
+#Import basura de QT
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QDialog, QMessageBox
 from PyQt5 import QtWidgets
+#Import Ventanas
 from ventanaMenu import Ui_MainWindow
 from ventanaGestionarProducto import Ui_Dialogvgp
 from ventanaListarInventario import Ui_Dialogvli
@@ -9,10 +11,10 @@ from ventanaAnadirProducto import Ui_Dialogap
 from ventanaRegistrarVentaDatosCliente import Ui_Dialogvrvdc
 from ventanaModificarProducto import Ui_Dialogvmp
 from ventanaEliminarProducto import Ui_Dialogvep
+from ventanaModificarCantidad import Ui_Dialogvmc
+#Import Database
 from manejadorDataBase import ConexionDataBase
 
-import enum
-#Editado con Sublime Text
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
     switch = {
         "advertencia": QtWidgets.QMessageBox.Warning,
