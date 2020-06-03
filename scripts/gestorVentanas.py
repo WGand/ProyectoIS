@@ -146,6 +146,7 @@ class ventanaModificarCantidad(QDialog):
         True, 'dubitativo', 'Confirmar', 'Cancelar' )
         self.popUp_ConfirmarCantidad.buttons()[1].pressed.connect(self.guardarCambios)
         self.popUp_ConfirmarCantidad.buttons()[0].pressed.connect(self.close)
+        self.popUp_ConfirmarCantidad.cerrarPopup()
         self.popUp_ConfirmarCantidad.exec_()
 
     def irVolver(self):
@@ -243,11 +244,13 @@ class ventanaModificarProductoCampos(QDialog):
     def validarIngreso(self):
         if ((len(self.ui.campoNombre.toPlainText()) == 0) or (len(self.ui.campoPrecio.toPlainText()) == 0) or ((self.ui.radioButtonSi.isChecked() == False) and (self.ui.radioButtonNo.isChecked() == False))):
             self.popUp_AdvertenciaDatoIncompleto = popUp('No se llenaron todos los datos requeridos.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaDatoIncompleto.cerrarPopup()
             self.popUp_AdvertenciaDatoIncompleto.exec()
         else: #Validar
             validador = Validaciones()
             if ((validador.isNotFloat(self.ui.campoPrecio.toPlainText())) or (validador.isNotAlpha(self.ui.campoNombre.toPlainText()))):
                 self.popUp_AdvertenciaDatoIncorrecto = popUp('Algún dato se ingresó con caracteres invalidos.', 'Error', False, 'advertencia', 'Ok')
+                self.popUp_AdvertenciaDatoIncorrecto.cerrarPopup()
                 self.popUp_AdvertenciaDatoIncorrecto.exec()
             else:
                 self.conector.modificarPrecioProducto(self.ui.campoPrecio.toPlainText(),self.nombre)
@@ -258,8 +261,8 @@ class ventanaModificarProductoCampos(QDialog):
                 self.conector.modificarNombreProducto(self.ui.campoNombre.toPlainText(),self.nombre)
                 self.popUp_ModificarProducto = popUp('¿Desea modificar otro producto?', 'Producto modificado correctamente', True, 'informativo', 'Si', 'No')
                 self.popUp_ModificarProducto.buttons()[1].pressed.connect(self.close)
+                self.popUp_ModificarProducto.cerrarPopup()
                 self.popUp_ModificarProducto.exec()
-   
 
 class ventanaEliminarProducto(QDialog):
     def __init__(self):
@@ -292,6 +295,7 @@ class ventanaEliminarProducto(QDialog):
         self.popUp_eliminarProducto = popUp('¿Desea eliminar el producto seleccionado?', 'Aviso', True, 'informativo', 'Confirmar', 'Cancelar')
         self.popUp_eliminarProducto.buttons()[1].pressed.connect(self.eliminarProducto)
         self.popUp_eliminarProducto.buttons()[0].pressed.connect(self.close) 
+        self.popUp_eliminarProducto.cerrarPopup()
         self.popUp_eliminarProducto.exec()   
 
     def eliminarProducto(self):
@@ -301,6 +305,7 @@ class ventanaEliminarProducto(QDialog):
         self.conector.closeDB()
         self.popUp_eliminarProducto.cerrarPopup()
         self.popUp_confirmacion = popUp('Producto eliminado Exitosamente.', 'Aviso', False, 'informativo', 'Ok')
+        self.popUp_confirmacion.cerrarPopup()
         self.popUp_confirmacion.exec()
 
 class ventanaAnadirCantidadVenta(QDialog):
@@ -351,6 +356,7 @@ class ventanaAnadirCantidadVenta(QDialog):
         True, 'informativo', 'Confirmar', 'Cancelar' )
         self.popUp_ConfirmarCantidad.buttons()[1].pressed.connect(self.guardarCambios)
         self.popUp_ConfirmarCantidad.buttons()[0].pressed.connect(self.close)
+        self.popUp_ConfirmarCantidad.cerrarPopup()
         self.popUp_ConfirmarCantidad.exec_()
 
     def guardarCambios(self):
@@ -380,15 +386,19 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         validador = Validaciones()
         if((len(self.ui.textCedula.toPlainText()) == 0) or (len(self.ui.textNombre.toPlainText()) == 0) or (len(self.ui.textTelefono.toPlainText()) == 0)):
             self.popUp_AdvertenciaDatoIncompleto = popUp('No se llenaron todos los datos requeridos.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaDatoIncompleto.cerrarPopup()
             self.popUp_AdvertenciaDatoIncompleto.exec()
         elif(validador.isNotDigit(self.ui.textCedula.toPlainText()) or validador.isNotDigit(self.ui.textTelefono.toPlainText()) or validador.isNotAlpha(self.ui.textNombre.toPlainText())):
             self.popUp_AdvertenciaDatoInvalido = popUp('Algún dato contiene carácteres inválidos.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaDatoInvalido.cerrarPopup()
             self.popUp_AdvertenciaDatoInvalido.exec()
         elif(((len(self.ui.textCedula.toPlainText()) != 8) and (len(self.ui.textCedula.toPlainText()) != 7)) or ((len(self.ui.textTelefono.toPlainText()) < 10)) or (len(self.ui.textTelefono.toPlainText()) > 11)):
             self.popUp_AdvertenciaDatoInvalido = popUp('Algún dato contiene no cumple con el rango adecuado.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaDatoInvalido.cerrarPopup()
             self.popUp_AdvertenciaDatoInvalido.exec()
         else:
             self.popUpConfirmarDatosCliente()
+    
     def popUpConfirmarDatosCliente(self):
         self.popUp_ConfirmarDatosCliente = popUp('¿Los datos ingresados son correctos? '+'\n\nCedula: '+str(self.ui.textCedula.toPlainText())+
         '\nNombre: '+str(self.ui.textNombre.toPlainText())+'\nTelefono: '+str(self.ui.textTelefono.toPlainText()), 'Datos Cliente', True,
@@ -397,6 +407,7 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.popUp_ConfirmarDatosCliente.exec()
     
     def guardarDatosCliente(self):
+        self.popUp_ConfirmarDatosCliente.cerrarPopup()
         self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), int(self.ui.textTelefono.toPlainText())))
         self.conector = ConexionDataBase()
         self.conector.guardarVenta(self.ventana.venta)
@@ -406,11 +417,12 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
     def popUpListo(self):
         self.popUp_Listo = popUp('Se ha registrado exitosamente la venta.', 'Exito', False, 'informativo', 'Ok')
         self.popUp_Listo.buttons()[0].pressed.connect(self.cerrarFinalizado)
+        self.popUp_Listo.cerrarPopup()
         self.popUp_Listo.exec()
     
     def cerrarFinalizado(self):
+        self.close()
         self.ventana.cerrarSignal()
-        print('entramos')
 
 class ventanaRegistrarVenta(QDialog):
     def __init__(self):
@@ -539,11 +551,11 @@ class ventanaRegistrarVenta(QDialog):
         self.popUp_FinalizarVenta = popUp('¿Desea confirmar la venta?', 'Finalizar Venta', True, 'dubitativo', 'Confirmar', 'Cancelar')
         self.popUp_FinalizarVenta.buttons()[1].pressed.connect(self.irVentanaRegistrarVentaDatosCliente)
         self.popUp_FinalizarVenta.buttons()[0].pressed.connect(self.cerrar)
-        self.popUp_FinalizarVenta.cerrarPopup()
         self.popUp_FinalizarVenta.exec()
 
     def irVentanaRegistrarVentaDatosCliente(self):
         if(self.venta.getProducto() ):
+            self.popUp_FinalizarVenta.cerrarPopup()
             self.ventana_VentanaRegistrarVentaDatosCliente = ventanaRegistrarVentaDatosCliente(self)
             self.ventana_VentanaRegistrarVentaDatosCliente.show()
         else:
