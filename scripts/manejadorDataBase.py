@@ -3,15 +3,15 @@ from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
 from objetosPrograma import Cliente, Venta
 
 class ConexionDataBase:
-    
+
     db = QSqlDatabase.addDatabase("QPSQL")
 
     def __init__(self):
-        
+
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
@@ -211,8 +211,8 @@ class ConexionDataBase:
         self.openDB()
         sql = 'SELECT * FROM producto;'
         query = QSqlQuery()
-        self.closeDB()
         query.exec_(sql)
+        self.closeDB()
         return query
 
     def guardarVenta(self, venta):

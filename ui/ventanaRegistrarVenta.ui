@@ -26,6 +26,29 @@
     <property name="verticalSpacing">
      <number>2</number>
     </property>
+    <item row="1" column="0">
+     <widget class="QLineEdit" name="BarraBusqueda">
+      <property name="minimumSize">
+       <size>
+        <width>140</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLabel" name="iconoLupa">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>../assets/iconoLupa.png</pixmap>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QTableView" name="tableInventario"/>
+    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="labelInventario">
       <property name="palette">
@@ -484,32 +507,9 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../../../../assets/iconoInventario.png</pixmap>
+       <pixmap>../assets/iconoInventario.png</pixmap>
       </property>
      </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLabel" name="iconoLupa">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="pixmap">
-       <pixmap>../../../../assets/iconoLupa.png</pixmap>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLineEdit" name="BarraBusqueda">
-      <property name="minimumSize">
-       <size>
-        <width>140</width>
-        <height>0</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QTableWidget" name="tablaInventario"/>
     </item>
    </layout>
   </widget>
@@ -526,15 +526,31 @@
     <property name="verticalSpacing">
      <number>2</number>
     </property>
+    <item row="1" column="0">
+     <widget class="QLineEdit" name="BarraBusquedaVenta">
+      <property name="minimumSize">
+       <size>
+        <width>140</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="1">
      <widget class="QLabel" name="iconoLupa_2">
       <property name="text">
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../../../../assets/iconoLupa.png</pixmap>
+       <pixmap>../assets/iconoLupa.png</pixmap>
       </property>
      </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QTableView" name="tableVenta"/>
     </item>
     <item row="0" column="0">
      <widget class="QLabel" name="labelInventario_2">
@@ -988,31 +1004,15 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QLineEdit" name="BarraBusquedaVenta">
-      <property name="minimumSize">
-       <size>
-        <width>140</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="1">
      <widget class="QLabel" name="iconoCarritoVenta">
       <property name="text">
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../../../../assets/iconoCarritoVenta.png</pixmap>
+       <pixmap>../assets/iconoCarritoVenta.png</pixmap>
       </property>
      </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QTableWidget" name="tablaVenta"/>
     </item>
    </layout>
   </widget>
