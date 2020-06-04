@@ -297,9 +297,9 @@ class ConexionDataBase:
             self.insertCliente(clienteIntenso.getCedula(), clienteIntenso.getTelefono(), clienteIntenso.getNombre())
             id_cliente = self.getIdCliente(clienteIntenso.getCedula())
         self.insertVenta(venta.getMonto(), id_cliente)
-        id_venta = self.getIdUltimaVenta()
-        for producto_ in venta.getProducto():
-            id_producto = self.getIdProducto(producto_.getNombre())
-            self.insertVentaProducto(producto_.getCantidad(), id_producto, id_venta)
+        #id_venta = self.getIdUltimaVenta()
+        #for producto_ in venta.getProducto():
+        #    id_producto = self.getIdProducto(producto_.getNombre())
+        #    self.insertVentaProducto(producto_.getCantidad(), id_producto, id_venta)
         self.closeDB()
 
