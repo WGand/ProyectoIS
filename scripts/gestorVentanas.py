@@ -20,6 +20,7 @@ from ventanaEliminarProducto import Ui_Dialogvep
 from ventanaModificarCantidad import Ui_Dialogvmc
 from ventanaModificarProductoCampos import Ui_Dialogvmpc
 from ventanaAnadirCantidadVenta import Ui_Dialogvacv
+from popUpEliminar import Ui_Dialogpop
 #Import Database
 from manejadorDataBase import ConexionDataBase
 from objetosPrograma import Venta, Producto, Cliente
@@ -88,6 +89,11 @@ class ventanaListarInventario(QDialog):
         self.filtro.setFilterKeyColumn(0)
         self.ui.lineEdit.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.setColumnWidth(0, self.width()/4)
+        self.ui.tableView.setColumnWidth(1, self.width()/6)
+        self.ui.tableView.setColumnWidth(2, self.width()/4)
+        self.ui.tableView.setColumnWidth(3, self.width()/6)
+        self.ui.tableView.setColumnWidth(4, self.width()/7)
         self.ui.tableView.selectionModel().currentChanged.connect(self.irVentanaModificarCantidad)
         self.ui.botonVolver.clicked.connect(self.irVolver)
 
@@ -141,8 +147,8 @@ class ventanaModificarCantidad(QDialog):
         self.producto_.setCantidad(int(self.ui.textCantidad.toPlainText()))
         
     def popUpConfirmarCantidad(self):
-        self.popUp_ConfirmarCantidad = popUp('El producto '+self.producto_.getNombre()+' tiene una cantidad existente de'
-        +str(self.cantidadActual)+'unidades registrada \n¿Desea actualizar a: '+str(self.producto_.getCantidad())+' unidades?','Confirmar Cambios',
+        self.popUp_ConfirmarCantidad = popUp('El producto '+self.producto_.getNombre()+' tiene una cantidad existente de '
+        +str(self.cantidadActual)+' unidades registrada \n¿Desea actualizar a: '+str(self.producto_.getCantidad())+' unidades?','Confirmar Cambios',
         True, 'dubitativo', 'Confirmar', 'Cancelar' )
         self.popUp_ConfirmarCantidad.buttons()[1].pressed.connect(self.guardarCambios)
         self.popUp_ConfirmarCantidad.buttons()[0].pressed.connect(self.close)
@@ -244,10 +250,12 @@ class ventanaModificarProductoCampos(QDialog):
         self.ui.campoNombre.setPlainText(nombre)
         self.conector = ConexionDataBase()
         self.ui.campoPrecio.setPlainText(str(precio))
-        if (iva):
+        if iva == True:
             self.ui.radioButtonSi.setChecked(True)
+            self.ui.radioButtonNo.setChecked(False)
         else:
             self.ui.radioButtonNo.setChecked(True)
+            self.ui.radioButtonSi.setChecked(False)
         self.setWindowTitle("Modificar Producto")
         self.setWindowModality(2)
         self.ui.okBoton.clicked.connect(self.validarIngreso)
@@ -301,41 +309,96 @@ class ventanaEliminarProducto(QDialog):
         self.ui.pushButton.clicked.connect(self.volver)
         self.setWindowTitle("Eliminar Producto")
         self.setWindowModality(2)
+
+        # self.conector = ConexionDataBase()
+        # self.conector.openDB()
+        # self.query1 = QSqlQuery()
+        # self.query1.exec_("SELECT nombre,cantidad,precio,iva FROM producto WHERE cantidad=0;")
+        # model = QSqlTableModel()
+        # model.setQuery(self.query1)
+        # self.conector.closeDB()
+        # filter_proxy_model = QtCore.QSortFilterProxyModel()
+        # filter_proxy_model.setFilterCaseSensitivity(0)
+        # filter_proxy_model.setSourceModel(model)
+        # filter_proxy_model.setFilterKeyColumn(0)
+        # self.ui.campoTexto.textChanged.connect(filter_proxy_model.setFilterRegExp)
+        # self.ui.tableView.setModel(filter_proxy_model)
+        # self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        # self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
+
         self.conector = ConexionDataBase()
-        self.conector.openDB()
-        self.query1 = QSqlQuery()
-        self.query1.exec_("SELECT nombre,cantidad,precio,iva FROM producto WHERE cantidad=0;")
-        model = QSqlTableModel()
-        model.setQuery(self.query1)
-        self.conector.closeDB()
-        filter_proxy_model = QtCore.QSortFilterProxyModel()
-        filter_proxy_model.setFilterCaseSensitivity(0)
-        filter_proxy_model.setSourceModel(model)
-        filter_proxy_model.setFilterKeyColumn(0)
-        self.ui.campoTexto.textChanged.connect(filter_proxy_model.setFilterRegExp)
-        self.ui.tableView.setModel(filter_proxy_model)
-        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
+        self.result = self.conector.recorrerProductoCero()
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
+        self.columnas = 3
+        self.fila = len(self.result)
+        for filas in range(self.fila):
+            objects = self.result[filas]
+            self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
+            self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
+            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
+        self.filtro = QtCore.QSortFilterProxyModel()
+        self.filtro.setFilterCaseSensitivity(0)
+        self.filtro.setSourceModel(self.model)
+        self.filtro.setFilterKeyColumn(0)
+        self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
+        self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.selectionModel().currentChanged.connect(self.irProximaVentana)
+        self.ui.pushButton.clicked.connect(self.volver)
+
+    def llenarTabla(self):
+        self.conector = ConexionDataBase()
+        self.result = self.conector.recorrerProductoCero()
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
+        self.columnas = 3
+        self.fila = len(self.result)
+        for filas in range(self.fila):
+            objects = self.result[filas]
+            self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
+            self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
+            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
+        self.filtro = QtCore.QSortFilterProxyModel()
+        self.filtro.setFilterCaseSensitivity(0)
+        self.filtro.setSourceModel(self.model)
+        self.filtro.setFilterKeyColumn(0)
+        self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
+        self.ui.tableView.setModel(self.filtro)
+        #self.ui.tableView.selectionModel().currentChanged.connect(self.irProximaVentana)
+        self.ui.pushButton.clicked.connect(self.volver)
 
     def volver(self):
         self.close()        
 
     def irProximaVentana(self):
-        self.popUp_eliminarProducto = popUp('¿Desea eliminar el producto seleccionado?', 'Aviso', True, 'informativo', 'Confirmar', 'Cancelar')
-        self.popUp_eliminarProducto.buttons()[1].pressed.connect(self.eliminarProducto)
-        self.popUp_eliminarProducto.buttons()[0].pressed.connect(self.close) 
-        self.popUp_eliminarProducto.cerrarPopup()
-        self.popUp_eliminarProducto.exec()   
+        self.elemento = self
+        self.popUpEliminar = popUpEliminar(self.elemento,(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()))
+        self.popUpEliminar.show()
+ 
+
+
+class popUpEliminar(QDialog):
+
+    def __init__(self, ventana, nombre):
+        super(popUpEliminar, self).__init__()
+        self.ui = Ui_Dialogpop()
+        self.ui.setupUi(self)
+        self.ui.botonConfirmar.clicked.connect(self.eliminarProducto)
+        self.ui.botonCancelar.clicked.connect(self.close)
+        self.setWindowModality(2)
+        self.ventana = ventana
+        self.nombre = nombre 
 
     def eliminarProducto(self):
-        self.conector = ConexionDataBase()
-        self.conector.openDB()
-        self.conector.deleteProducto(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
-        self.conector.closeDB()
-        self.popUp_eliminarProducto.cerrarPopup()
-        self.popUp_confirmacion = popUp('Producto eliminado Exitosamente.', 'Aviso', False, 'informativo', 'Ok')
-        self.popUp_confirmacion.cerrarPopup()
-        self.popUp_confirmacion.exec()
+        self.ventana.conector = ConexionDataBase()
+        self.ventana.conector.openDB()
+        self.ventana.conector.deleteProducto(self.nombre)
+        self.ventana.conector.closeDB()
+        self.ventana.setWindowTitle("Modificar Producto")
+        self.ventana.llenarTabla()
+        self.close()
 
 class ventanaAnadirCantidadVenta(QDialog):
     def __init__(self, ventana, nombre):
@@ -440,7 +503,6 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), int(self.ui.textTelefono.toPlainText())))
         self.conector = ConexionDataBase()
         self.conector.guardarVenta(self.ventana.venta)
-        print('guardando datos cliente')
         self.popUpListo()
         
     def popUpListo(self):

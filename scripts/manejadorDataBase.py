@@ -240,6 +240,21 @@ class ConexionDataBase:
         self.closeDB()
         return listaProducto
 
+    def recorrerProductoCero(self):
+        listaProducto = []
+        self.openDB()
+        sql = "SELECT * FROM producto WHERE cantidad = 0"
+        query = QSqlQuery(sql)
+        while query.next():
+            nombre = query.value(1)
+            cantidad = query.value(2)
+            precio = query.value(3)
+            iva = query.value(4)
+            objeto = Producto(nombre,cantidad,precio,iva)
+            listaProducto.append(objeto)
+        self.closeDB()
+        return listaProducto
+
     def getIdUltimaVenta(self):
         self.openDB()
         sql = "SELECT id_venta FROM venta;"
@@ -282,9 +297,9 @@ class ConexionDataBase:
             self.insertCliente(clienteIntenso.getCedula(), clienteIntenso.getTelefono(), clienteIntenso.getNombre())
             id_cliente = self.getIdCliente(clienteIntenso.getCedula())
         self.insertVenta(venta.getMonto(), id_cliente)
-        id_venta = self.getIdUltimaVenta()
-        for producto_ in venta.getProducto():
-            id_producto = self.getIdProducto(producto_.getNombre())
-            self.insertVentaProducto(producto_.getCantidad(), id_producto, id_venta)
+        #id_venta = self.getIdUltimaVenta()
+        #for producto_ in venta.getProducto():
+        #    id_producto = self.getIdProducto(producto_.getNombre())
+        #    self.insertVentaProducto(producto_.getCantidad(), id_producto, id_venta)
         self.closeDB()
 
