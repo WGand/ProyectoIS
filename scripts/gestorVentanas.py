@@ -359,7 +359,7 @@ class ventanaEliminarProducto(QDialog):
         self.filtro.setFilterKeyColumn(0)
         self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
-        self.ui.tableView.selectionModel().currentChanged.connect(self.irProximaVentana)
+        #self.ui.tableView.selectionModel().currentChanged.connect(self.irProximaVentana)
         self.ui.pushButton.clicked.connect(self.volver)
 
     def volver(self):
