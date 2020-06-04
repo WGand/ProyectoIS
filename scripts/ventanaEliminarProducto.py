@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'ventanaModificarProducto.ui'
-#
-# Created by: PyQt5 UI code generator 5.14.2
-#
-# WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -36,5 +28,5 @@ class Ui_Dialogvep(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Eliminar Producto  "))
-        self.campoTexto.setText(_translate("Dialog", "Ingrese Producto a Eliminar"))
+        #self.campoTexto.setText(_translate("Dialog", "Ingrese Producto a Eliminar"))
         self.pushButton.setText(_translate("Dialog", "Volver"))

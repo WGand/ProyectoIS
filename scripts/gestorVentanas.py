@@ -389,7 +389,7 @@ class popUpEliminar(QDialog):
         self.ventana.conector.openDB()
         self.ventana.conector.deleteProducto(self.nombre)
         self.ventana.conector.closeDB()
-        self.ventana.setWindowTitle("Modificar Productooooooo")
+        self.ventana.setWindowTitle("Modificar Producto")
         self.ventana.llenarTabla()
         self.close()
 
