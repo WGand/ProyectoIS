@@ -89,6 +89,11 @@ class ventanaListarInventario(QDialog):
         self.filtro.setFilterKeyColumn(0)
         self.ui.lineEdit.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.setColumnWidth(0, self.width()/4)
+        self.ui.tableView.setColumnWidth(1, self.width()/6)
+        self.ui.tableView.setColumnWidth(2, self.width()/4)
+        self.ui.tableView.setColumnWidth(3, self.width()/6)
+        self.ui.tableView.setColumnWidth(4, self.width()/7)
         self.ui.tableView.selectionModel().currentChanged.connect(self.irVentanaModificarCantidad)
         self.ui.botonVolver.clicked.connect(self.irVolver)
 
@@ -142,8 +147,8 @@ class ventanaModificarCantidad(QDialog):
         self.producto_.setCantidad(int(self.ui.textCantidad.toPlainText()))
         
     def popUpConfirmarCantidad(self):
-        self.popUp_ConfirmarCantidad = popUp('El producto '+self.producto_.getNombre()+' tiene una cantidad existente de'
-        +str(self.cantidadActual)+'unidades registrada \n¿Desea actualizar a: '+str(self.producto_.getCantidad())+' unidades?','Confirmar Cambios',
+        self.popUp_ConfirmarCantidad = popUp('El producto '+self.producto_.getNombre()+' tiene una cantidad existente de '
+        +str(self.cantidadActual)+' unidades registrada \n¿Desea actualizar a: '+str(self.producto_.getCantidad())+' unidades?','Confirmar Cambios',
         True, 'dubitativo', 'Confirmar', 'Cancelar' )
         self.popUp_ConfirmarCantidad.buttons()[1].pressed.connect(self.guardarCambios)
         self.popUp_ConfirmarCantidad.buttons()[0].pressed.connect(self.close)
@@ -245,10 +250,12 @@ class ventanaModificarProductoCampos(QDialog):
         self.ui.campoNombre.setPlainText(nombre)
         self.conector = ConexionDataBase()
         self.ui.campoPrecio.setPlainText(str(precio))
-        if (iva):
+        if iva == True:
             self.ui.radioButtonSi.setChecked(True)
+            self.ui.radioButtonNo.setChecked(False)
         else:
             self.ui.radioButtonNo.setChecked(True)
+            self.ui.radioButtonSi.setChecked(False)
         self.setWindowTitle("Modificar Producto")
         self.setWindowModality(2)
         self.ui.okBoton.clicked.connect(self.validarIngreso)
