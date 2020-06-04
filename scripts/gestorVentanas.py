@@ -503,7 +503,6 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), int(self.ui.textTelefono.toPlainText())))
         self.conector = ConexionDataBase()
         self.conector.guardarVenta(self.ventana.venta)
-        print('guardando datos cliente')
         self.popUpListo()
         
     def popUpListo(self):

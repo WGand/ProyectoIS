@@ -96,7 +96,6 @@ class Venta():
 		for i in range(len(self.__producto)):
 			if ((nombre == str(self.__producto[i].getNombre())) and (cantidad == self.__producto[i].getCantidad())):
 				del self.__producto[i]
-				print('SE BORRO')
 				break
 
 	def getProducto(self):

@@ -12,7 +12,7 @@ class ConexionDataBase:
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
         ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("froilanroac")
+        ConexionDataBase.db.setUserName("inventarioabasto")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
