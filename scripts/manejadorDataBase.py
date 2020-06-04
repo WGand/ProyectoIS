@@ -240,6 +240,21 @@ class ConexionDataBase:
         self.closeDB()
         return listaProducto
 
+    def recorrerProductoCero(self):
+        listaProducto = []
+        self.openDB()
+        sql = "SELECT * FROM producto WHERE cantidad = 0"
+        query = QSqlQuery(sql)
+        while query.next():
+            nombre = query.value(1)
+            cantidad = query.value(2)
+            precio = query.value(3)
+            iva = query.value(4)
+            objeto = Producto(nombre,cantidad,precio,iva)
+            listaProducto.append(objeto)
+        self.closeDB()
+        return listaProducto
+
     def getIdUltimaVenta(self):
         self.openDB()
         sql = "SELECT id_venta FROM venta;"

@@ -320,7 +320,7 @@ class ventanaEliminarProducto(QDialog):
         # self.ui.tableView.selectionModel().currentRowChanged.connect(self.irProximaVentana)
 
         self.conector = ConexionDataBase()
-        self.result = self.conector.recorrerProducto()
+        self.result = self.conector.recorrerProductoCero()
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
         self.columnas = 3
@@ -342,7 +342,7 @@ class ventanaEliminarProducto(QDialog):
 
     def llenarTabla(self):
         self.conector = ConexionDataBase()
-        self.result = self.conector.recorrerProducto()
+        self.result = self.conector.recorrerProductoCero()
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
         self.columnas = 3
