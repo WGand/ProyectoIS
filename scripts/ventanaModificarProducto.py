@@ -36,5 +36,5 @@ class Ui_Dialogvmp(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Modificar Producto  "))
-        self.campoTexto.setText(_translate("Dialog", "Ingrese Producto a buscar"))
+        #self.campoTexto.setText(_translate("Dialog", "Ingrese Producto a buscar"))
         self.pushButton.setText(_translate("Dialog", "Volver"))

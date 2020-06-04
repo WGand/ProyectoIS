@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
-from objetosPrograma import Cliente, Venta, Producto
+from objetosPrograma import Cliente, Producto
+from objetosPrograma import Venta
 
 class ConexionDataBase:
 
@@ -10,8 +11,8 @@ class ConexionDataBase:
 
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("postgres")
-        ConexionDataBase.db.setUserName("postgres")
+        ConexionDataBase.db.setDatabaseName("inventarioabasto")
+        ConexionDataBase.db.setUserName("inventarioabasto")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
@@ -223,9 +224,10 @@ class ConexionDataBase:
                     else:
                         producto_.setIva(query.value(i))
             return producto_
-    def recorrerProducto(connection):
+  
+    def recorrerProducto(self):
         listaProducto = []
-        connection.openDB()
+        self.openDB()
         sql = "SELECT * FROM producto"
         query = QSqlQuery(sql)
         while query.next():
@@ -235,21 +237,69 @@ class ConexionDataBase:
             iva = query.value(4)
             objeto = Producto(nombre,cantidad,precio,iva)
             listaProducto.append(objeto)
-        connection.closeDB()
+        self.closeDB()
         return listaProducto
 
-    def guardarVenta(self, venta):
+    def recorrerProductoCero(self):
+        listaProducto = []
         self.openDB()
-        ##(Venta)
-        ##BEGIN
-        ##Verificar si existe el cliente
-        ##Si existe-> buscar su id
-        ##sino -> insertar el cliente y retornar el id del cliente
-        ##insertar venta, con referencia al cliente
-        ##retornar el id de la venta  id_venta
-        ##recorremos la lista de productos de la venta
-        ##  retornar su id id_producto
-        ##  capturamos su cantidad
-        ##  insertamos en venta_producto haciendo referencia con id_venta, id_producto
-        ##END
+        sql = "SELECT * FROM producto WHERE cantidad = 0"
+        query = QSqlQuery(sql)
+        while query.next():
+            nombre = query.value(1)
+            cantidad = query.value(2)
+            precio = query.value(3)
+            iva = query.value(4)
+            objeto = Producto(nombre,cantidad,precio,iva)
+            listaProducto.append(objeto)
         self.closeDB()
+        return listaProducto
+
+    def getIdUltimaVenta(self):
+        self.openDB()
+        sql = "SELECT id_venta FROM venta;"
+        query = QSqlQuery()
+        query.exec_(sql)
+        while query.next():
+            i = query.value(0)
+        self.closeDB()
+        return i
+
+    def getIdCliente(self,cedula): #Devuelve True si esta en la DB
+        self.openDB()
+        sql = "SELECT id_cliente FROM cliente WHERE cedula = " + str(cedula) + ";"
+        query = QSqlQuery()
+        query.exec_(sql)
+        while query.next():
+            i = query.value(0)
+        self.closeDB()
+        return i
+    
+    def getIdProducto(self,nombre): #Devuelve True si esta en la DB
+        self.openDB()
+        sql = "SELECT id_producto FROM producto WHERE nombre = '" + str(nombre) + "';"
+        query = QSqlQuery()
+        query.exec_(sql)
+        while query.next():
+            i = query.value(0)
+        self.closeDB()
+        return i
+
+    def guardarVenta(self, venta ):
+        self.openDB()
+        clienteIntenso = Cliente()
+        clienteIntenso.setCedula(venta.getCliente().getCedula())
+        clienteIntenso.setNombre(venta.getCliente().getNombre())
+        clienteIntenso.setTelefono(venta.getCliente().getTelefono())
+        if(self.validarCliente(int(clienteIntenso.getCedula()))):
+            id_cliente = self.getIdCliente(int(clienteIntenso.getCedula()))
+        else:
+            self.insertCliente(clienteIntenso.getCedula(), clienteIntenso.getTelefono(), clienteIntenso.getNombre())
+            id_cliente = self.getIdCliente(clienteIntenso.getCedula())
+        self.insertVenta(venta.getMonto(), id_cliente)
+        #id_venta = self.getIdUltimaVenta()
+        #for producto_ in venta.getProducto():
+        #    id_producto = self.getIdProducto(producto_.getNombre())
+        #    self.insertVentaProducto(producto_.getCantidad(), id_producto, id_venta)
+        self.closeDB()
+

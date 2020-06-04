@@ -14,7 +14,6 @@ class Ui_Dialogvgp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(403, 306)
-        Dialog.setStyleSheet("background-color: rgb(204, 0, 0);")
         self.gridLayoutWidget = QtWidgets.QWidget(Dialog)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(0, 0, 401, 301))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")

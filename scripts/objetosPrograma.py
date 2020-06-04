@@ -62,15 +62,25 @@ class Producto():
 		return self.__precio
 
 class Venta():
-	def __init__(self, monto = '', cliente = []):
-		self.__monto = monto
+	def __init__(self, cliente = ''):
+		self.__monto = 0.0
 		self.__cliente = cliente
 		self.__producto = []
 	
-	def setMonto(self, monto):
-		self.__monto = monto
+	def setMonto(self):
+		monto_ = float(0)
+		if(self.__producto):	
+			for producto_ in self.__producto:
+				if(producto_.getIva()):
+					monto_ += (producto_.getPrecio() + producto_.getPrecio() * 0.16) * producto_.getCantidad()
+				else:
+					monto_ += (producto_.getPrecio()) * producto_.getCantidad()
+			self.__monto = monto_
+		else:
+			self.__monto = 0
 	
 	def getMonto(self):
+		self.setMonto()
 		return self.__monto
 	
 	def setCliente(self, cliente):
@@ -82,5 +92,19 @@ class Venta():
 	def addProducto(self, producto):
 		self.__producto.append(producto)
 
+	def delProducto(self, nombre, cantidad):
+		for i in range(len(self.__producto)):
+			if ((nombre == str(self.__producto[i].getNombre())) and (cantidad == self.__producto[i].getCantidad())):
+				del self.__producto[i]
+				break
+
 	def getProducto(self):
 		return self.__producto
+
+	def truncate(self, f, n):
+		'''Truncates/pads a float f to n decimal places without rounding'''
+		s = '{}'.format(f)
+		if 'e' in s or 'E' in s:
+			return '{0:.{1}f}'.format(f, n)
+		i, p, d = s.partition('.')
+		return '.'.join([i, (d+'0'*n)[:n]])
