@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Dialogvl(object):
+class Ui_Dialoglu(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(700, 500)
@@ -25,13 +25,6 @@ class Ui_Dialogvl(object):
         self.labelContrasena = QtWidgets.QLabel(Dialog)
         self.labelContrasena.setGeometry(QtCore.QRect(230, 325, 120, 31))
         self.labelContrasena.setObjectName("labelContrasena")
-        self.parche = QtWidgets.QLabel(Dialog)
-        self.parche.setGeometry(QtCore.QRect(350, 40, 31, 31))
-        self.parche.setAutoFillBackground(False)
-        self.parche.setStyleSheet("background-color: rgb(36, 39, 42);")
-        self.parche.setText("")
-        self.parche.setTextFormat(QtCore.Qt.AutoText)
-        self.parche.setObjectName("parche")
         self.botonEntrar = QtWidgets.QPushButton(Dialog)
         self.botonEntrar.setGeometry(QtCore.QRect(320, 370, 90, 25))
         self.botonEntrar.setObjectName("botonEntrar")
