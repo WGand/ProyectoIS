@@ -1,16 +1,7 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'ventanaLogin.ui'
-#
-# Created by: PyQt5 UI code generator 5.14.2
-#
-# WARNING! All changes made in this file will be lost!
-
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Dialog(object):
+class Ui_Dialogvl(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(700, 500)
@@ -54,13 +45,3 @@ class Ui_Dialog(object):
         self.labelUsuario.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:16pt; color:#eeeeec;\">Usuario:</span></p></body></html>"))
         self.labelContrasena.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:16pt; color:#eeeeec;\">Contraseña:</span></p></body></html>"))
         self.botonEntrar.setText(_translate("Dialog", "Entrar"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Dialog = QtWidgets.QDialog()
-    ui = Ui_Dialog()
-    ui.setupUi(Dialog)
-    Dialog.show()
-    sys.exit(app.exec_())
