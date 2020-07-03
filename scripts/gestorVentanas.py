@@ -1,6 +1,6 @@
 #Import basura de QT
 from PyQt5 import uic
-from PyQt5.QtWidgets import QHeaderView, QMainWindow, QDialog, QMessageBox, QVBoxLayout
+from PyQt5.QtWidgets import QHeaderView, QMainWindow, QDialog, QMessageBox, QVBoxLayout, QTableView
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore, QtGui
 from PyQt5 import Qt
@@ -88,12 +88,13 @@ class ventanaListarInventario(QDialog):
         self.filtro.setFilterKeyColumn(0)
         self.ui.lineEdit.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ui.tableView.setColumnWidth(0, self.width()/4)
         self.ui.tableView.setColumnWidth(1, self.width()/6)
         self.ui.tableView.setColumnWidth(2, self.width()/4)
         self.ui.tableView.setColumnWidth(3, self.width()/6)
         self.ui.tableView.setColumnWidth(4, self.width()/7)
-        self.ui.tableView.selectionModel().currentChanged.connect(self.irVentanaModificarCantidad)
+        self.ui.tableView.clicked.connect(self.irVentanaModificarCantidad)
         self.ui.botonVolver.clicked.connect(self.irVolver)
 
     def irVentanaModificarCantidad(self):
@@ -520,12 +521,23 @@ class ventanaRegistrarVenta(QDialog):
         self.ui.BarraBusqueda.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableInventario.setModel(self.filtro)
         self.ui.tableInventario.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.tableInventario.selectionModel().currentRowChanged.connect(self.irVentanaAnadirCantidadVenta) 
-        if(self.ui.tableVenta.currentIndex().column() != 0 and (self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),0).data() != '')):
-            self.ui.tableVenta.selectionModel().currentRowChanged.connect(self.popUpEliminarProductoVenta)
+        self.ui.tableVenta.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.tableInventario.clicked.connect(self.irVentanaAnadirCantidadVenta)
+        self.ui.tableInventario.setColumnWidth(1, self.width()/11)
+        self.ui.tableInventario.setColumnWidth(2, self.width()/8)
+        self.ui.tableInventario.setColumnWidth(0, self.width()/9)
+        self.ui.tableInventario.setColumnWidth(3, self.width()/12)
+        self.ui.tableInventario.setColumnWidth(4, self.width()/14)
+        self.ui.tableVenta.setColumnWidth(1, self.width()/11)
+        self.ui.tableVenta.setColumnWidth(2, self.width()/8)
+        self.ui.tableVenta.setColumnWidth(0, self.width()/9)
+        self.ui.tableVenta.setColumnWidth(3, self.width()/12)
+        self.ui.tableVenta.setColumnWidth(4, self.width()/14)
+        if(self.ui.tableVenta.currentIndex().column() != 0 or (self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),0).data() != '')):
+            self.ui.tableVenta.clicked.connect(self.popUpEliminarProductoVenta)
 
     def irVentanaAnadirCantidadVenta(self):
-        if(self.ui.tableVenta.currentIndex().column() != 0):
+        if(self.ui.tableInventario.currentIndex().column() != 0):
             self.nombreModificar = self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data()
             self.filaModificar = self.ui.tableInventario.currentIndex().row()
             self.ventana_AnadirCantidadVenta = ventanaAnadirCantidadVenta(self, self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data())
@@ -556,6 +568,11 @@ class ventanaRegistrarVenta(QDialog):
             self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
             self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
             self.modelVenta.setItem(filas, 4, QtGui.QStandardItem("Anular"))
+        self.ui.tableVenta.setColumnWidth(1, self.width()/11)
+        self.ui.tableVenta.setColumnWidth(2, self.width()/8)
+        self.ui.tableVenta.setColumnWidth(0, self.width()/9)
+        self.ui.tableVenta.setColumnWidth(3, self.width()/12)
+        self.ui.tableVenta.setColumnWidth(4, self.width()/14)
         self.actualizarMonto()
 
     def cambiarDatoInventario(self):
@@ -601,6 +618,11 @@ class ventanaRegistrarVenta(QDialog):
                         self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
                         self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
                         self.modelVenta.setItem(filas, 4, QtGui.QStandardItem(""))
+        self.ui.tableVenta.setColumnWidth(1, self.width()/11)
+        self.ui.tableVenta.setColumnWidth(2, self.width()/8)
+        self.ui.tableVenta.setColumnWidth(0, self.width()/9)
+        self.ui.tableVenta.setColumnWidth(3, self.width()/12)
+        self.ui.tableVenta.setColumnWidth(4, self.width()/14)
         self.actualizarMonto()
             
     def popUpFinalizarVenta(self):
