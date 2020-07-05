@@ -21,6 +21,9 @@ class Ui_Dialogvacv(object):
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
         self.botonMas = QtWidgets.QPushButton(self.gridLayoutWidget)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("../assets/iconoLogo.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Dialog.setWindowIcon(icon)
         self.botonMas.setStyleSheet("color: rgb(223, 0, 0);\n"
 "")
         self.botonMas.setObjectName("botonMas")

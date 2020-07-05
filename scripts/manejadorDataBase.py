@@ -54,8 +54,26 @@ class ConexionDataBase:
         else:
             return False
         self.closeDB()
+    
+    def validarUsuario(self, nombre):
+        self.openDB()
+        sql = "SELECT FROM usuario WHERE nombre = " + str(nombre) + ";"
+        query = QSqlQuery()
+        query.exec_(sql)
+        if (query.size() > 0):
+            return True
+        else:
+            return False
+        self.closeDB()
 
     #Insert
+    def insertUsuario(self, nombre, clave, admin):
+        self.openDB()
+        sql = "INSERT INTO usuario(nombre, clave, administrador) VALUES ('"+str(nombre)+"',crypt('"+str(nombre)+"', gen_salt('bf')),"+str(admin)+");"
+        query = QSqlQuery()
+        query.exec_(sql)
+        self.closeDB()
+
     def insertCliente(self, cedula, telefono, nombre):
         self.openDB()
         if (self.validarCliente(cedula) == False):
