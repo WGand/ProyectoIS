@@ -8,7 +8,6 @@ class ConexionDataBase:
     db = QSqlDatabase.addDatabase("QPSQL")
 
     def __init__(self):
-
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
         ConexionDataBase.db.setDatabaseName("inventarioabasto")
@@ -69,7 +68,7 @@ class ConexionDataBase:
     #Insert
     def insertUsuario(self, nombre, clave, admin):
         self.openDB()
-        sql = "INSERT INTO usuario(nombre, clave, administrador) VALUES ('"+str(nombre)+"',crypt('"+str(nombre)+"', gen_salt('bf')),"+str(admin)+");"
+        sql = "INSERT INTO usuario(nombre, clave, admininstrador) VALUES ('"+str(nombre)+"',crypt('"+str(nombre)+"', gen_salt('bf')),"+str(admin)+");"
         query = QSqlQuery()
         query.exec_(sql)
         self.closeDB()
@@ -320,4 +319,3 @@ class ConexionDataBase:
         #    id_producto = self.getIdProducto(producto_.getNombre())
         #    self.insertVentaProducto(producto_.getCantidad(), id_producto, id_venta)
         self.closeDB()
-

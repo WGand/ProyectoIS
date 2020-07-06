@@ -20,6 +20,8 @@ from ventanaEliminarProducto import Ui_Dialogvep
 from ventanaModificarCantidad import Ui_Dialogvmc
 from ventanaModificarProductoCampos import Ui_Dialogvmpc
 from ventanaAnadirCantidadVenta import Ui_Dialogvacv
+from ventanaRegistrarUsuario import Ui_QDialogvru
+from ventanaGestionarUsuario import Ui_Dialogvgu
 #Import Database
 from manejadorDataBase import ConexionDataBase
 from objetosPrograma import Venta, Producto, Cliente
@@ -40,19 +42,24 @@ class Validaciones():
             except ValueError:
                 return True
 
+    def doesnthasSpace(self, string_):
+        for letra in string_:
+            if(letra == ' '):
+                return False
+        return True
+
     def isNotDigit(self, string_):
         try:
             int(string_)
             return False
         except ValueError:
             return True
-
-    def isNotNumeric(self, string_):
-        try:
-
-            return False
-        except ValueError:
-            return True
+    
+    def hasNumber(self, string_):
+        for letra in string_:
+            if(letra.isdigit() == True):
+                return True
+        return False
 
     def isNotAlpha(self, string_):
         for i in range(0, len(string_)):
@@ -481,6 +488,55 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.close()
         self.ventana.cerrarSignal()
 
+class ventanaRegistrarUsuario(QDialog):
+    def __init__(self):
+        super(ventanaRegistrarUsuario, self).__init__()
+        self.ui = Ui_QDialogvru()
+        self.ui.setupUi(self)
+        self.ui.labelCheck.setVisible(False)
+        self.ui.labelX.setVisible(False)
+        self.ui.buttonAceptar.setDisabled(True)
+        self.ui.buttonVolver.clicked.connect(self.close)
+        self.ui.lineEditContrasena.textChanged.connect(self.confirmacionContrasena)
+        self.ui.lineEditConfirmacion.textChanged.connect(self.confirmacionContrasena)
+        self.ui.lineEditUsuario.textChanged.connect(self.validarIngreso)
+    
+    def confirmacionContrasena(self):
+        if(self.ui.lineEditContrasena.text() == ''):
+            return 0
+        elif(str(self.ui.lineEditContrasena.text()) != str(self.ui.lineEditConfirmacion.text())):
+            self.ui.labelCheck.setVisible(False)
+            self.ui.labelX.setVisible(True)
+        elif(str(self.ui.lineEditContrasena.text()) == str(self.ui.lineEditConfirmacion.text())):
+            self.ui.labelX.setVisible(False)
+            self.ui.labelCheck.setVisible(True)
+        self.validarIngreso()
+    
+    def validarIngreso(self):
+        if((str(self.ui.lineEditUsuario.text()) != '') and (str(self.ui.lineEditContrasena.text()) != '') and (str(self.ui.lineEditConfirmacion.text()) != '')):
+            validador = Validaciones()
+            if((validador.doesnthasSpace(self.ui.lineEditUsuario.text())) and (len(self.ui.lineEditContrasena.text()) >= 7) and (validador.hasNumber(self.ui.lineEditContrasena.text()))
+            and (self.ui.lineEditContrasena.text() == self.ui.lineEditConfirmacion.text())):
+                self.ui.buttonAceptar.setEnabled(True)
+            else:
+                self.ui.buttonAceptar.setDisabled(True)
+        else:
+            self.ui.buttonAceptar.setDisabled(True)
+            
+            
+
+class ventanaGestionarUsuario(QDialog):
+    def __init__(self):    
+        super(ventanaGestionarUsuario, self).__init__()
+        self.ui = Ui_Dialogvgu()
+        self.ui.setupUi(self)
+        self.ui.botonAnadirUsuario.clicked.connect(self.irVentanaRegistrarUsuario)
+        self.ui.botonVolver.clicked.connect(self.close)
+    
+    def irVentanaRegistrarUsuario(self):
+        self.ventana_RegistrarUsuario = ventanaRegistrarUsuario()
+        self.ventana_RegistrarUsuario.show()
+
 class ventanaRegistrarVenta(QDialog):
     def __init__(self):
         super(ventanaRegistrarVenta, self).__init__()
@@ -710,6 +766,7 @@ class ventanaMenu(QMainWindow):
         self.ui.botonGestionarProducto.clicked.connect(self.irGestionarProducto) #conexion entre el boton y su ventana, mas accion. IDEM a todos los botones
         self.ui.botonListarInventario.clicked.connect(self.irListarInventario)
         self.ui.botonRegistrarVenta.clicked.connect(self.irRegistrarVenta)
+        self.ui.botonGestionarUsuario.clicked.connect(self.irGestionarUsuario)
         self.ui.botonSalir.clicked.connect(self.salir)
         self.centerOnScreen()
 
@@ -724,6 +781,10 @@ class ventanaMenu(QMainWindow):
     def irRegistrarVenta(self):
         self.ventana_RegistrarVenta = ventanaRegistrarVenta()
         self.ventana_RegistrarVenta.show()
+    
+    def irGestionarUsuario(self):
+        self.ventana_GestionarUsuario = ventanaGestionarUsuario()
+        self.ventana_GestionarUsuario.show()
 
     def salir(self):
         self.close()
