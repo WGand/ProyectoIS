@@ -497,17 +497,21 @@ class ventanaRegistrarUsuario(QDialog):
         self.ui.labelX.setVisible(False)
         self.ui.buttonAceptar.setDisabled(True)
         self.ui.buttonVolver.clicked.connect(self.close)
+        self.ui.lineEditContrasena.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.ui.lineEditConfirmacion.setEchoMode(QtWidgets.QLineEdit.Password)
         self.ui.lineEditContrasena.textChanged.connect(self.confirmacionContrasena)
         self.ui.lineEditConfirmacion.textChanged.connect(self.confirmacionContrasena)
         self.ui.lineEditUsuario.textChanged.connect(self.validarIngreso)
+        self.ui.buttonAceptar.clicked.connect(self.verificar)
     
     def confirmacionContrasena(self):
+        validador = Validaciones()
         if(self.ui.lineEditContrasena.text() == ''):
             return 0
         elif(str(self.ui.lineEditContrasena.text()) != str(self.ui.lineEditConfirmacion.text())):
             self.ui.labelCheck.setVisible(False)
             self.ui.labelX.setVisible(True)
-        elif(str(self.ui.lineEditContrasena.text()) == str(self.ui.lineEditConfirmacion.text())):
+        elif(str(self.ui.lineEditContrasena.text()) == str(self.ui.lineEditConfirmacion.text()) and (validador.hasNumber(self.ui.lineEditContrasena.text()))):
             self.ui.labelX.setVisible(False)
             self.ui.labelCheck.setVisible(True)
         self.validarIngreso()
@@ -522,7 +526,9 @@ class ventanaRegistrarUsuario(QDialog):
                 self.ui.buttonAceptar.setDisabled(True)
         else:
             self.ui.buttonAceptar.setDisabled(True)
-            
+    
+    def verificar(self):
+        pass
             
 
 class ventanaGestionarUsuario(QDialog):

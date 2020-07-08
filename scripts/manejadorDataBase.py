@@ -21,6 +21,17 @@ class ConexionDataBase:
         ConexionDataBase.db.close()
 
     #Select
+    def validarUsuario(self,nombre): #Devuelve True si esta en la DB
+        self.openDB()
+        sql = "SELECT FROM usuario WHERE nombre = " + str(nombre) + ";"
+        query = QSqlQuery()
+        query.exec_(sql)
+        if (query.size() > 0):
+            return True
+        else:
+            return False
+        self.closeDB()
+
     def validarCliente(self,cedula): #Devuelve True si esta en la DB
         self.openDB()
         sql = "SELECT FROM cliente WHERE cedula = " + str(cedula) + ";"
