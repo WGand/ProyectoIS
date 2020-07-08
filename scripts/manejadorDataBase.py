@@ -23,12 +23,14 @@ class ConexionDataBase:
     #Select
     def validarUsuario(self,nombre): #Devuelve True si esta en la DB
         self.openDB()
-        sql = "SELECT FROM usuario WHERE nombre = " + str(nombre) + ";"
+        sql = "SELECT FROM usuario WHERE nombre = '" + str(nombre) + "';"
         query = QSqlQuery()
         query.exec_(sql)
         if (query.size() > 0):
+            self.closeDB()
             return True
         else:
+            self.closeDB()
             return False
         self.closeDB()
 
@@ -38,8 +40,10 @@ class ConexionDataBase:
         query = QSqlQuery()
         query.exec_(sql)
         if (query.size() > 0):
+            self.closeDB()
             return True
         else:
+            self.closeDB()
             return False
         self.closeDB()
 
@@ -49,8 +53,10 @@ class ConexionDataBase:
         query = QSqlQuery()
         query.exec_(sql)
         if (query.size() > 0):
+            self.closeDB()
             return True
         else:
+            self.closeDB()
             return False
         self.closeDB()
 
@@ -60,19 +66,10 @@ class ConexionDataBase:
         query = QSqlQuery()
         query.exec_(sql)
         if (query.size() > 0):
+            self.closeDB()
             return True
         else:
-            return False
-        self.closeDB()
-    
-    def validarUsuario(self, nombre):
-        self.openDB()
-        sql = "SELECT FROM usuario WHERE nombre = " + str(nombre) + ";"
-        query = QSqlQuery()
-        query.exec_(sql)
-        if (query.size() > 0):
-            return True
-        else:
+            self.closeDB()
             return False
         self.closeDB()
 

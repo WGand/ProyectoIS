@@ -502,7 +502,7 @@ class ventanaRegistrarUsuario(QDialog):
         self.ui.lineEditContrasena.textChanged.connect(self.confirmacionContrasena)
         self.ui.lineEditConfirmacion.textChanged.connect(self.confirmacionContrasena)
         self.ui.lineEditUsuario.textChanged.connect(self.validarIngreso)
-        self.ui.buttonAceptar.clicked.connect(self.verificar)
+        self.ui.buttonAceptar.clicked.connect(self.verificarUsuario)
     
     def confirmacionContrasena(self):
         validador = Validaciones()
@@ -527,9 +527,26 @@ class ventanaRegistrarUsuario(QDialog):
         else:
             self.ui.buttonAceptar.setDisabled(True)
     
-    def verificar(self):
-        pass
-            
+    def verificarUsuario(self):
+        conexion = ConexionDataBase()
+        if(conexion.validarUsuario(self.ui.lineEditUsuario.text())):
+            self.popUpUsuarioError()
+        else:
+            if(self.ui.radioButtonSi.isChecked()):
+                adminBool = True
+            else:
+                adminBool = False
+            conexion.insertUsuario(self.ui.lineEditUsuario.text(), self.ui.lineEditContrasena.text(), adminBool)
+            self.popUpUsuarioCreado()
+    
+    def popUpUsuarioError(self):
+        self.popUp_UsuarioError = popUp('El usuario ingresado ya se encuentra en el sistema.', '', False, 'advertencia', 'Ok')
+        self.popUp_UsuarioError.exec_()
+
+    def popUpUsuarioCreado(self):
+        self.popUp_UsuarioCreado = popUp('El usuario se ha creado exitosamente.', '', False, 'informativo', 'Ok')
+        self.popUp_UsuarioCreado.buttons()[0].pressed.connect(self.close)
+        self.popUp_UsuarioCreado.exec_()
 
 class ventanaGestionarUsuario(QDialog):
     def __init__(self):    
