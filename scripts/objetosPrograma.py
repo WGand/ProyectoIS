@@ -1,5 +1,16 @@
 from abc import ABC, abstractmethod
 
+class usuario():
+	def __init__(self, nombre = '', admin = ''):
+		self.__nombre = nombre
+		self.__admin = admin
+	
+	def getNombre(self):
+		return self.__nombre
+	
+	def isAdmin(self):
+		return self.__admin
+
 class Persona(ABC):
 	def __init__(self, nombre = '', cedula = '', telefono = ''):
 		self._nombre = nombre
