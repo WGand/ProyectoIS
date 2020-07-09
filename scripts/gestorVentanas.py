@@ -22,6 +22,7 @@ from ventanaModificarProductoCampos import Ui_Dialogvmpc
 from ventanaAnadirCantidadVenta import Ui_Dialogvacv
 from ventanaRegistrarUsuario import Ui_QDialogvru
 from ventanaGestionarUsuario import Ui_Dialogvgu
+from ventanaEliminarUsuario import Ui_Dialogveu
 #Import Database
 from manejadorDataBase import ConexionDataBase
 from objetosPrograma import Venta, Producto, Cliente
@@ -66,6 +67,54 @@ class Validaciones():
             if((string_[i].isdigit() == True) or ((string_[i].isalnum() == False) and (string_[i] != ' ') )):
                 return True
         return False
+
+class ventanaEliminarUsuario(QDialog):
+    def __init__(self):
+        super(ventanaEliminarUsuario, self).__init__()
+        self.ui = Ui_Dialogveu()
+        self.ui.setupUi(self)
+        self.setWindowTitle("Eliminar Usuario")
+        self.setWindowModality(2)
+        self.db = ConexionDataBase()
+        self.result = self.db.recorrerUsuarioCero()
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Administrador', 'Eliminar'])
+        self.fila = len(self.result)
+        for filas in range(self.fila):
+            usuarios = self.result[filas]
+            admin = False
+            if usuarios.isAdmin():
+                admin = True
+            else:
+                admin = False
+            self.model.setItem(filas, 0, QtGui.QStandardItem(usuarios.getNombre()))
+            self.model.setItem(filas, 1, QtGui.QStandardItem(str(admin)))
+            self.model.setItem(filas, 2, QtGui.QStandardItem("Eliminar"))
+        self.filtro = QtCore.QSortFilterProxyModel()
+        self.filtro.setFilterCaseSensitivity(0)
+        self.filtro.setSourceModel(self.model)
+        self.filtro.setFilterKeyColumn(0)
+        self.ui.barraBusqueda.textChanged.connect(self.filtro.setFilterRegExp)
+        self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.setColumnWidth(0, self.width()/1.9)
+        self.ui.tableView.setColumnWidth(1, self.width()/5)
+        self.ui.tableView.setColumnWidth(2, self.width()/5)
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.botonVolver.clicked.connect(self.volver)
+        self.ui.tableView.clicked.connect(self.popUpEliminarUsuario)
+
+    def popUpEliminarUsuario(self):
+        if(self.ui.tableView.currentIndex().column() != 0):
+            usuario = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()
+            self.ui.tableView.clearSelection()
+            self.popUp_EliminarUsuario = popUp('Desea eliminar el usuario: ' + usuario, 'Confirmar eliminación de usuario', True, "advertencia", "Confirmar", "Cancelar")
+            #self.popUp_EliminarUsuario.buttons()[0].pressed.connect(self.popUp_EliminarUsuario.cerrarPopup)
+            #self.popUp_EliminarUsuario.buttons()[1].pressed.connect(self.popUp_EliminarUsuario.cerrarPopup)
+            self.popUp_EliminarUsuario.cerrarPopup()
+            self.popUp_EliminarUsuario.exec()
+
+    def volver(self):
+        self.close()
 
 class ventanaListarInventario(QDialog):
     def __init__(self):
@@ -554,11 +603,16 @@ class ventanaGestionarUsuario(QDialog):
         self.ui = Ui_Dialogvgu()
         self.ui.setupUi(self)
         self.ui.botonAnadirUsuario.clicked.connect(self.irVentanaRegistrarUsuario)
+        self.ui.botonEliminarUsuario.clicked.connect(self.irVentanaEliminarUsuario)
         self.ui.botonVolver.clicked.connect(self.close)
     
     def irVentanaRegistrarUsuario(self):
         self.ventana_RegistrarUsuario = ventanaRegistrarUsuario()
         self.ventana_RegistrarUsuario.show()
+
+    def irVentanaEliminarUsuario(self):
+        self.ventana_EliminarUsuario = ventanaEliminarUsuario()
+        self.ventana_EliminarUsuario.show()
 
 class ventanaRegistrarVenta(QDialog):
     def __init__(self):

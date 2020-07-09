@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
-from objetosPrograma import Cliente, Producto
+from objetosPrograma import Cliente, Producto, usuario
 from objetosPrograma import Venta
 
 class ConexionDataBase:
@@ -10,8 +10,8 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
@@ -19,6 +19,19 @@ class ConexionDataBase:
     
     def closeDB(self):
         ConexionDataBase.db.close()
+
+    def recorrerUsuarioCero(self):
+        listaUsuarios = []
+        self.openDB()
+        sql = "SELECT nombre, admininstrador FROM usuario;"
+        query = QSqlQuery(sql)
+        while query.next():
+            nombre = query.value(0)
+            admin = query.value(1)
+            objeto = usuario(nombre, admin)
+            listaUsuarios.append(objeto)
+        self.closeDB()
+        return listaUsuarios
 
     #Select
     def validarUsuario(self,nombre): #Devuelve True si esta en la DB
@@ -32,7 +45,6 @@ class ConexionDataBase:
         else:
             self.closeDB()
             return False
-        self.closeDB()
 
     def validarCliente(self,cedula): #Devuelve True si esta en la DB
         self.openDB()
@@ -45,7 +57,6 @@ class ConexionDataBase:
         else:
             self.closeDB()
             return False
-        self.closeDB()
 
     def validarProducto(self,nombre): #Devuelve True si esta en la DB
         self.openDB()
@@ -58,7 +69,6 @@ class ConexionDataBase:
         else:
             self.closeDB()
             return False
-        self.closeDB()
 
     def validarVendedor(self,cedula): #Devuelve True si esta en la DB
         self.openDB()
@@ -71,7 +81,6 @@ class ConexionDataBase:
         else:
             self.closeDB()
             return False
-        self.closeDB()
 
     #Insert
     def insertUsuario(self, nombre, clave, admin):
@@ -177,8 +186,8 @@ class ConexionDataBase:
         self.closeDB()
 
     def modificarCantidadProducto(self, nuevaCantidad, nombre):
-        self.openDB()
         if (self.validarProducto(nombre) == True):
+            self.openDB()
             sql = "UPDATE producto SET cantidad = " + str(nuevaCantidad) +" WHERE nombre = '"+ str(nombre) +"';"
             query = QSqlQuery()
             query.exec_(sql)
