@@ -34,7 +34,8 @@ class ConexionDataBase:
         return listaUsuarios
 
     #Select
-    def validarUsuario(self,nombre): #Devuelve True si esta en la DB
+
+    def validarUsuario(self, nombre): #Devuelve True si esta en la DB
         sql = "SELECT FROM usuario WHERE nombre = '" + str(nombre) + "';"
         query = QSqlQuery()
         self.openDB()
@@ -45,6 +46,25 @@ class ConexionDataBase:
         else:
             return False
 
+    #Precondicion: Existe el usuario.
+    def validarClave(self, nombre, clave):
+        sql = "SELECT clave FROM usuario WHERE nombre = '"+str(nombre)+"';"
+        query = QSqlQuery()
+        self.openDB()
+        query.exec_(sql)
+        self.closeDB()
+        while query.next():
+            hash_ = query.value(0)
+        sql2 = "SELECT FROM usuario WHERE nombre = '"+str(nombre)+"' and clave = crypt('"+str(clave)+"', '"+str(hash_)+"');"
+        query2 = QSqlQuery()
+        self.openDB()
+        query2.exec_(sql2)
+        self.closeDB()
+        if (query2.size() > 0):
+            return True
+        else:
+            return False
+        
     def validarCliente(self,cedula): #Devuelve True si esta en la DB
         sql = "SELECT FROM cliente WHERE cedula = " + str(cedula) + ";"
         query = QSqlQuery()
@@ -80,7 +100,7 @@ class ConexionDataBase:
 
     #Insert
     def insertUsuario(self, nombre, clave, admin):
-        sql = "INSERT INTO usuario(nombre, clave, admininstrador) VALUES ('"+str(nombre)+"',crypt('"+str(nombre)+"', gen_salt('bf')),"+str(admin)+");"
+        sql = "INSERT INTO usuario(nombre, clave, admininstrador) VALUES ('"+str(nombre)+"',crypt('"+str(clave)+"', gen_salt('bf')),"+str(admin)+");"
         query = QSqlQuery()
         self.openDB()
         query.exec_(sql)

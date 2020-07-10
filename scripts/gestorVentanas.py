@@ -23,10 +23,12 @@ from ventanaAnadirCantidadVenta import Ui_Dialogvacv
 from ventanaRegistrarUsuario import Ui_QDialogvru
 from ventanaGestionarUsuario import Ui_Dialogvgu
 from ventanaEliminarUsuario import Ui_Dialogveu
+from ventanaLogin import Ui_Dialogvl
 #Import Database
 from manejadorDataBase import ConexionDataBase
 from objetosPrograma import Venta, Producto, Cliente
-
+USER = ''
+ADMIN = ''
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
     switch = {
         "advertencia": QtWidgets.QMessageBox.Warning,
@@ -867,3 +869,50 @@ class ventanaMenu(QMainWindow):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                           (resolution.height() / 2) - (self.frameSize().height() / 2))
+
+class ventanaLogin(QDialog):
+    def __init__(self):
+        super(ventanaLogin, self).__init__()
+        self.ui = Ui_Dialogvl()
+        self.ui.setupUi(self)
+        self.setWindowTitle('Login')
+        self.db = ConexionDataBase()
+        self.ui.lineEditContrasena.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.ui.botonEntrar.clicked.connect(self.__iniciarSesion)
+        self.ui.lineEditUsuario.textChanged.connect(self.cambiarColorBlanco)
+        self.ui.lineEditContrasena.textChanged.connect(self.cambiarColorBlanco)
+   
+    def __irVentanaMenu(self):
+        self.ventana_Menu = ventanaMenu()
+        self.ventana_Menu.show()
+        self.hide()
+
+    def cambiarColorBlanco(self):
+        self.ui.lineEditUsuario.setStyleSheet('background-color: rgb(238, 238, 236);')
+        self.ui.lineEditContrasena.setStyleSheet('background-color: rgb(238, 238, 236);')
+
+    def cambiarColorRojo(self):
+        self.ui.lineEditUsuario.setStyleSheet('background-color: rgb(255, 153, 153);')
+        self.ui.lineEditContrasena.setStyleSheet('background-color: rgb(255, 153, 153);')
+
+    def __iniciarSesion(self):
+        usuario = self.ui.lineEditUsuario.text()
+        clave = self.ui.lineEditContrasena.text()
+        if((usuario != '') and (clave != '')):
+            if(self.db.validarUsuario(usuario)):
+                if(self.db.validarClave(usuario, clave)):
+                    global USER
+                    global ADMIN
+
+                    self.__irVentanaMenu()
+                else:
+                    self.cambiarColorRojo()
+            else:
+                self.cambiarColorRojo()
+        else:
+            if(usuario == ''):
+                self.ui.lineEditUsuario.setStyleSheet('background-color: rgb(255, 153, 153);')
+            if(clave == ''):
+                self.ui.lineEditContrasena.setStyleSheet('background-color: rgb(255, 153, 153);')
+        
+
