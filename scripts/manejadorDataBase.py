@@ -10,8 +10,8 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("postgres")
-        ConexionDataBase.db.setUserName("postgres")
+        ConexionDataBase.db.setDatabaseName("inventarioabasto")
+        ConexionDataBase.db.setUserName("inventarioabasto")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
@@ -22,15 +22,15 @@ class ConexionDataBase:
 
     def recorrerUsuarioCero(self):
         listaUsuarios = []
-        self.openDB()
         sql = "SELECT nombre, admininstrador FROM usuario;"
+        self.openDB()
         query = QSqlQuery(sql)
+        self.closeDB()
         while query.next():
             nombre = query.value(0)
             admin = query.value(1)
             objeto = usuario(nombre, admin)
             listaUsuarios.append(objeto)
-        self.closeDB()
         return listaUsuarios
 
     #Select
@@ -132,7 +132,7 @@ class ConexionDataBase:
         self.closeDB()
 
     def deleteProducto(self, nombre):
-        sql = "DELETE FROM producto WHERE nombre = '" + nombre + "';"
+        sql = "DELETE FROM producto WHERE nombre = '" + str(nombre) + "';"
         query = QSqlQuery()
         self.openDB()
         query.exec_(sql)
@@ -276,7 +276,7 @@ class ConexionDataBase:
     def recorrerProductoCero(self):
         listaProducto = []
         sql = "SELECT * FROM producto WHERE cantidad = 0"
-        query = QSqlQuery(sql)
+        query = QSqlQuery()
         self.openDB()
         query.exec_(sql)
         self.closeDB()

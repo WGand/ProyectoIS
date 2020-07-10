@@ -387,7 +387,7 @@ class ventanaEliminarProducto(QDialog):
         self.ui.pushButton.clicked.connect(self.volver)
 
     def llenarTabla(self):
-        self.conector = ConexionDataBase()
+        self.ui.tableView.clearSpans()
         self.result = self.conector.recorrerProductoCero()
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
@@ -403,10 +403,7 @@ class ventanaEliminarProducto(QDialog):
         self.filtro.setFilterCaseSensitivity(0)
         self.filtro.setSourceModel(self.model)
         self.filtro.setFilterKeyColumn(0)
-        self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
-        #self.ui.tableView.selectionModel().currentChanged.connect(self.irProximaVentana)
-        self.ui.pushButton.clicked.connect(self.volver)
 
     def volver(self):
         self.close()        
@@ -415,12 +412,12 @@ class ventanaEliminarProducto(QDialog):
         self.productoEliminar = self.conector.busquedaProducto(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
         self.popUp_EliminarProducto = popUp('Se eliminara el producto: '+self.productoEliminar.getNombre()+'\n¿Desea continuar?', 'Eliminar', True, 'advertencia', 'Confirmar', 'Cancelar')    
         self.popUp_EliminarProducto.buttons()[1].pressed.connect(self.eliminarProducto)
-        self.popUp_EliminarProducto.cerrarPopup()
         self.popUp_EliminarProducto.exec_()
 
     def eliminarProducto(self):
-        self.conector.deleteProducto(self.productoEliminar.getNombre())
+        self.conector.deleteProducto(self.productoEliminar.getNombre())    
         self.llenarTabla()
+        self.popUp_EliminarProducto.close()
 
 class ventanaAnadirCantidadVenta(QDialog):
     def __init__(self, ventana, nombre):
