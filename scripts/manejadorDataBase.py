@@ -10,8 +10,8 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
@@ -19,6 +19,16 @@ class ConexionDataBase:
     
     def closeDB(self):
         ConexionDataBase.db.close()
+
+    def buscarUsuario(self, nombre):
+        sql = "SELECT nombre, admininstrador from usuario WHERE nombre = '" + nombre + "';"
+        query = QSqlQuery()
+        self.openDB()
+        query.exec_(sql)
+        self.closeDB()
+        while query.next():
+            user = usuario(query.value(0), query.value(1))
+        return user
 
     def recorrerUsuarioCero(self):
         listaUsuarios = []

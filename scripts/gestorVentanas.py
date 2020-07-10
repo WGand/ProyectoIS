@@ -1,6 +1,6 @@
 #Import basura de QT
 from PyQt5 import uic
-from PyQt5.QtWidgets import QHeaderView, QMainWindow, QDialog, QMessageBox, QVBoxLayout, QTableView
+from PyQt5.QtWidgets import QMainWindow, QDialog, QMessageBox, QVBoxLayout, QTableView
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore, QtGui
 from PyQt5 import Qt
@@ -10,6 +10,7 @@ from PyQt5.QtSql import *
 from PyQt5.QtSql import QSqlQuery, QSqlTableModel
 #Import Ventanas
 from ventanaMenu import Ui_MainWindow
+from ventanaMenuNoAdmin import Ui_MainWindowna
 from ventanaGestionarProducto import Ui_Dialogvgp
 from ventanaListarInventario import Ui_Dialogvli
 from ventanaRegistrarVenta import Ui_Dialogvrv
@@ -26,9 +27,8 @@ from ventanaEliminarUsuario import Ui_Dialogveu
 from ventanaLogin import Ui_Dialogvl
 #Import Database
 from manejadorDataBase import ConexionDataBase
-from objetosPrograma import Venta, Producto, Cliente
-USER = ''
-ADMIN = ''
+from objetosPrograma import Venta, Producto, Cliente, usuario
+USER = usuario()
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
     switch = {
         "advertencia": QtWidgets.QMessageBox.Warning,
@@ -37,6 +37,7 @@ def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
         "critico" : QtWidgets.QMessageBox.Critical
     }
     return switch.get(tipo)
+
 class Validaciones():
     def isNotFloat(self, string_):
             try:
@@ -128,7 +129,10 @@ class ventanaListarInventario(QDialog):
         self.db = ConexionDataBase()
         self.result = self.db.recorrerProducto()
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio','IVA','Modificar'])
+        if USER.isAdmin():
+            self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio','IVA','Modificar'])
+        else:
+            self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio','IVA'])
         self.columnas = 4
         self.nombreModificar = ''
         self.filaModificar = 0
@@ -139,7 +143,8 @@ class ventanaListarInventario(QDialog):
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
             self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
             self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
-            self.model.setItem(filas, 4, QtGui.QStandardItem("Modificar"))
+            if USER.isAdmin():
+                self.model.setItem(filas, 4, QtGui.QStandardItem("Modificar"))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
         self.filtro.setSourceModel(self.model)
@@ -147,12 +152,18 @@ class ventanaListarInventario(QDialog):
         self.ui.lineEdit.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.tableView.setColumnWidth(0, self.width()/4)
-        self.ui.tableView.setColumnWidth(1, self.width()/6)
-        self.ui.tableView.setColumnWidth(2, self.width()/4)
-        self.ui.tableView.setColumnWidth(3, self.width()/6)
-        self.ui.tableView.setColumnWidth(4, self.width()/7)
-        self.ui.tableView.clicked.connect(self.irVentanaModificarCantidad)
+        if USER.isAdmin():
+            self.ui.tableView.setColumnWidth(0, self.width()/4)
+            self.ui.tableView.setColumnWidth(1, self.width()/6)
+            self.ui.tableView.setColumnWidth(2, self.width()/4)
+            self.ui.tableView.setColumnWidth(3, self.width()/6)
+            self.ui.tableView.setColumnWidth(4, self.width()/7)
+            self.ui.tableView.clicked.connect(self.irVentanaModificarCantidad)
+        else:
+            self.ui.tableView.setColumnWidth(0, self.width()/3)
+            self.ui.tableView.setColumnWidth(1, self.width()/4.1)
+            self.ui.tableView.setColumnWidth(2, self.width()/5)
+            self.ui.tableView.setColumnWidth(3, self.width()/5)
         self.ui.botonVolver.clicked.connect(self.irVolver)
 
     def irVentanaModificarCantidad(self):
@@ -836,19 +847,27 @@ class ventanaAnadirProducto(QDialog):
 class ventanaMenu(QMainWindow):
     def __init__(self):
         super(ventanaMenu, self).__init__()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        if USER.isAdmin():
+            self.ui = Ui_MainWindow()
+            self.ui.setupUi(self)
+            self.ui.botonGestionarProducto.clicked.connect(self.irGestionarProducto) #conexion entre el boton y su ventana, mas accion. IDEM a todos los botones
+            self.ui.botonGestionarUsuario.clicked.connect(self.irGestionarUsuario)
+        else:
+            self.ui = Ui_MainWindowna()
+            self.ui.setupUi(self)
         self.setWindowTitle("Menu")
-        self.ui.botonGestionarProducto.clicked.connect(self.irGestionarProducto) #conexion entre el boton y su ventana, mas accion. IDEM a todos los botones
         self.ui.botonListarInventario.clicked.connect(self.irListarInventario)
         self.ui.botonRegistrarVenta.clicked.connect(self.irRegistrarVenta)
-        self.ui.botonGestionarUsuario.clicked.connect(self.irGestionarUsuario)
         self.ui.botonSalir.clicked.connect(self.salir)
         self.centerOnScreen()
 
     def irGestionarProducto(self):
-        self.ventana_GestionarProducto = ventanaGestionarProducto() #ventana_GestionarProducto en vez de ventanaGestionarProducto para confusion en el interpretador, IDEM a todas las ventanas
-        self.ventana_GestionarProducto.show()
+            self.ventana_GestionarProducto = ventanaGestionarProducto() #ventana_GestionarProducto en vez de ventanaGestionarProducto para confusion en el interpretador, IDEM a todas las ventanas
+            self.ventana_GestionarProducto.show()
+
+    def irGestionarUsuario(self):
+            self.ventana_GestionarUsuario = ventanaGestionarUsuario()
+            self.ventana_GestionarUsuario.show()    
 
     def irListarInventario(self):
         self.ventana_ListarInventario = ventanaListarInventario()
@@ -857,10 +876,6 @@ class ventanaMenu(QMainWindow):
     def irRegistrarVenta(self):
         self.ventana_RegistrarVenta = ventanaRegistrarVenta()
         self.ventana_RegistrarVenta.show()
-    
-    def irGestionarUsuario(self):
-        self.ventana_GestionarUsuario = ventanaGestionarUsuario()
-        self.ventana_GestionarUsuario.show()
 
     def salir(self):
         self.close()
@@ -902,8 +917,7 @@ class ventanaLogin(QDialog):
             if(self.db.validarUsuario(usuario)):
                 if(self.db.validarClave(usuario, clave)):
                     global USER
-                    global ADMIN
-
+                    USER = self.db.buscarUsuario(usuario)
                     self.__irVentanaMenu()
                 else:
                     self.cambiarColorRojo()
@@ -914,5 +928,3 @@ class ventanaLogin(QDialog):
                 self.ui.lineEditUsuario.setStyleSheet('background-color: rgb(255, 153, 153);')
             if(clave == ''):
                 self.ui.lineEditContrasena.setStyleSheet('background-color: rgb(255, 153, 153);')
-        
-
