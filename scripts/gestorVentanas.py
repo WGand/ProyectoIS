@@ -79,6 +79,26 @@ class ventanaEliminarUsuario(QDialog):
         self.setWindowTitle("Eliminar Usuario")
         self.setWindowModality(2)
         self.db = ConexionDataBase()
+        self.actualizarTabla()
+        self.ui.botonVolver.clicked.connect(self.volver)
+        self.ui.tableView.clicked.connect(self.verificarUsuario)
+
+    def verificarUsuario(self):
+        if(self.ui.tableView.currentIndex().column() != 0):
+            self.usuarioEliminar = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()
+            self.ui.tableView.clearSelection()
+            global USER
+            if(USER.getNombre() != self.usuarioEliminar):
+                self.popUpEliminarUsuario()
+            else:
+                self.popUpUsuarioConectado()
+
+    def popUpUsuarioConectado(self):
+        self.popUp_EliminarUsuario = popUp('No se puede eliminar el usuario con el que se encuentra conectado.', 'Notificación', False, "informativo", "Ok")
+        self.popUp_EliminarUsuario.cerrarPopup()
+        self.popUp_EliminarUsuario.exec()
+    
+    def actualizarTabla(self):
         self.result = self.db.recorrerUsuarioCero()
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Nombre', 'Administrador', 'Eliminar'])
@@ -99,22 +119,20 @@ class ventanaEliminarUsuario(QDialog):
         self.filtro.setFilterKeyColumn(0)
         self.ui.barraBusqueda.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ui.tableView.setColumnWidth(0, self.width()/1.9)
         self.ui.tableView.setColumnWidth(1, self.width()/5)
         self.ui.tableView.setColumnWidth(2, self.width()/5)
-        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.botonVolver.clicked.connect(self.volver)
-        self.ui.tableView.clicked.connect(self.popUpEliminarUsuario)
-
+                
     def popUpEliminarUsuario(self):
-        if(self.ui.tableView.currentIndex().column() != 0):
-            usuario = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()
-            self.ui.tableView.clearSelection()
-            self.popUp_EliminarUsuario = popUp('Desea eliminar el usuario: ' + usuario, 'Confirmar eliminación de usuario', True, "advertencia", "Confirmar", "Cancelar")
-            #self.popUp_EliminarUsuario.buttons()[0].pressed.connect(self.popUp_EliminarUsuario.cerrarPopup)
-            #self.popUp_EliminarUsuario.buttons()[1].pressed.connect(self.popUp_EliminarUsuario.cerrarPopup)
-            self.popUp_EliminarUsuario.cerrarPopup()
-            self.popUp_EliminarUsuario.exec()
+        self.popUp_EliminarUsuario = popUp('Desea eliminar el usuario: ' + self.usuarioEliminar, 'Confirmar eliminación de usuario', True, "advertencia", "Confirmar", "Cancelar")
+        self.popUp_EliminarUsuario.buttons()[1].pressed.connect(self.eliminarUsuario)
+        self.popUp_EliminarUsuario.cerrarPopup()
+        self.popUp_EliminarUsuario.exec()
+
+    def eliminarUsuario(self):
+        self.db.deleteUsuario(self.usuarioEliminar)
+        self.actualizarTabla()
 
     def volver(self):
         self.close()

@@ -10,8 +10,8 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("postgres")
-        ConexionDataBase.db.setUserName("postgres")
+        ConexionDataBase.db.setDatabaseName("inventarioabasto")
+        ConexionDataBase.db.setUserName("inventarioabasto")
         ConexionDataBase.db.setPassword("123456")
 
     def openDB(self):
@@ -154,6 +154,13 @@ class ConexionDataBase:
         self.closeDB()
 
     #Delete
+    def deleteUsuario(self, nombre):
+        sql = "DELETE FROM usuario WHERE nombre = '" + str(nombre) + "';"
+        query = QSqlQuery()
+        self.openDB()
+        query.exec_(sql)
+        self.closeDB()
+
     def deleteCliente(self, cedula):
         sql = "DELETE FROM cliente WHERE cedula = " + str(cedula) + ";"
         query = QSqlQuery()
@@ -269,7 +276,6 @@ class ConexionDataBase:
         return query
 
     def busquedaProducto(self, nombre):
-
         sql = "SELECT cantidad, precio, iva FROM producto WHERE nombre = '"+str(nombre)+"';"
         query = QSqlQuery()
         self.openDB()
