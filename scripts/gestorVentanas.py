@@ -863,7 +863,7 @@ class ventanaAnadirProducto(QDialog):
         self.close()
 
 class ventanaMenu(QMainWindow):
-    def __init__(self):
+    def __init__(self, login):
         super(ventanaMenu, self).__init__()
         if USER.isAdmin():
             self.ui = Ui_MainWindow()
@@ -873,10 +873,12 @@ class ventanaMenu(QMainWindow):
         else:
             self.ui = Ui_MainWindowna()
             self.ui.setupUi(self)
+        self.login = login
         self.setWindowTitle("Menu")
         self.ui.botonListarInventario.clicked.connect(self.irListarInventario)
         self.ui.botonRegistrarVenta.clicked.connect(self.irRegistrarVenta)
         self.ui.botonSalir.clicked.connect(self.salir)
+        self.ui.botonCerrarSesion.clicked.connect(self.cerrarSesion)
         self.centerOnScreen()
 
     def irGestionarProducto(self):
@@ -894,6 +896,14 @@ class ventanaMenu(QMainWindow):
     def irRegistrarVenta(self):
         self.ventana_RegistrarVenta = ventanaRegistrarVenta()
         self.ventana_RegistrarVenta.show()
+    
+    def cerrarSesion(self):
+        global USER
+        USER = ''
+        self.login.ui.lineEditUsuario.setText('')
+        self.login.ui.lineEditContrasena.setText('')
+        self.login.setVisible(True)
+        self.salir()
 
     def salir(self):
         self.close()
@@ -916,9 +926,9 @@ class ventanaLogin(QDialog):
         self.ui.lineEditContrasena.textChanged.connect(self.cambiarColorBlanco)
    
     def __irVentanaMenu(self):
-        self.ventana_Menu = ventanaMenu()
+        self.ventana_Menu = ventanaMenu(self)
         self.ventana_Menu.show()
-        self.hide()
+        self.setVisible(False)
 
     def cambiarColorBlanco(self):
         self.ui.lineEditUsuario.setStyleSheet('background-color: rgb(238, 238, 236);')

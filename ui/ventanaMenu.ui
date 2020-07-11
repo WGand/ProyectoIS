@@ -178,7 +178,7 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QPushButton" name="botonajgsdvagsb">
+      <widget class="QPushButton" name="botonCerrarSesion">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -192,7 +192,7 @@
         </size>
        </property>
        <property name="text">
-        <string>ajbdkiahsbla</string>
+        <string>Cerrar sesión</string>
        </property>
       </widget>
      </item>
