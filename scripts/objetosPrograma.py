@@ -42,11 +42,12 @@ class Vendedor(Persona):
 	pass
 
 class Producto():
-	def __init__(self, nombre = '', cantidad = '', precio = '', iva = ''):
+	def __init__(self, nombre = '', cantidad = '', precioVenta = '', iva = '', precioCompra =''):
 		self.__nombre = nombre
 		self.__cantidad = cantidad
-		self.__precio = precio
+		self.__precioVenta = precioVenta
 		self.__iva = iva
+		self.__precioCompra = precioCompra
 	
 	def setIva(self, iva):
 		self.__iva = iva
@@ -66,11 +67,17 @@ class Producto():
 	def getCantidad(self):
 		return self.__cantidad
 	
-	def setPrecio(self, precio):
-		self.__precio = precio
+	def setPrecioVenta(self, precioVenta):
+		self.__precioVenta = precioVenta
 	
-	def getPrecio(self):
-		return self.__precio
+	def setPrecioCompra(self, precioCompra):
+		self.__precioCompra = precioCompra
+	
+	def getPrecioCompra(self):
+			return self.__precioCompra
+
+	def getPrecioVenta(self):
+		return self.__precioVenta
 
 class Venta():
 	def __init__(self, cliente = ''):

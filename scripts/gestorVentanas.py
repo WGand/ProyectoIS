@@ -131,7 +131,7 @@ class ventanaEliminarUsuario(QDialog):
         self.popUp_EliminarUsuario.exec()
 
     def eliminarUsuario(self):
-        self.db.deleteUsuario(self.usuarioEliminar)
+        self.db.eliminarUsuario(self.usuarioEliminar)
         self.actualizarTabla()
 
     def volver(self):
@@ -363,7 +363,7 @@ class ventanaModificarProductoCampos(QDialog):
                 self.popUp_AdvertenciaDatoIncorrecto.cerrarPopup()
                 self.popUp_AdvertenciaDatoIncorrecto.exec()
             else:
-                self.conector.modificarPrecioProducto(self.ui.campoPrecio.toPlainText(),self.nombre)
+                self.conector.modificarPrecioventaProducto(self.ui.campoPrecio.toPlainText(),self.nombre)
                 if (self.ui.radioButtonSi.isChecked() == True):
                     self.conector.modificarIvaProducto("True",self.nombre)
                 elif(self.ui.radioButtonSi.isChecked() == False):
@@ -446,7 +446,7 @@ class ventanaEliminarProducto(QDialog):
         self.popUp_EliminarProducto.exec_()
 
     def eliminarProducto(self):
-        self.conector.deleteProducto(self.productoEliminar.getNombre())    
+        self.conector.eliminarProducto(self.productoEliminar.getNombre())    
         self.llenarTabla()
         self.popUp_EliminarProducto.close()
 
@@ -606,14 +606,14 @@ class ventanaRegistrarUsuario(QDialog):
     
     def verificarUsuario(self):
         conexion = ConexionDataBase()
-        if(conexion.validarUsuario(self.ui.lineEditUsuario.text())):
+        if(conexion.verificarUsuario(self.ui.lineEditUsuario.text())):
             self.popUpUsuarioError()
         else:
             if(self.ui.radioButtonSi.isChecked()):
                 adminBool = True
             else:
                 adminBool = False
-            conexion.insertUsuario(self.ui.lineEditUsuario.text(), self.ui.lineEditContrasena.text(), adminBool)
+            conexion.insertarUsuario(self.ui.lineEditUsuario.text(), self.ui.lineEditContrasena.text(), adminBool)
             self.popUpUsuarioCreado()
     
     def popUpUsuarioError(self):
@@ -845,15 +845,15 @@ class ventanaAnadirProducto(QDialog):
                 self.popUp_AdvertenciaDatoIncorrecto.cerrarPopup()
                 self.popUp_AdvertenciaDatoIncorrecto.exec()
             else:
-                if(self.conector.validarProducto(self.ui.campoTextoNombre.toPlainText())):
+                if(self.conector.verificarProducto(self.ui.campoTextoNombre.toPlainText())):
                     self.popUp_ProductoExistente = popUp('El nombre del producto ingresado ya se encuentra registrado.', 'Error', False, 'informativo', 'Ok')
                     self.popUp_ProductoExistente.cerrarPopup()
                     self.popUp_ProductoExistente.exec_()
                 else:
                     if (self.ui.radioSi.isChecked() == True):
-                        self.conector.insertProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecio.toPlainText(), True)
+                        self.conector.insertarProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecio.toPlainText(), True)
                     else:
-                        self.conector.insertProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecio.toPlainText(), False)
+                        self.conector.insertarProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecio.toPlainText(), False)
                     self.popUp_InfoDatosCorrectos = popUp('Se agregó el nuevo producto exitosamente.', 'Éxito', False, 'informativo', 'Ok')
                     self.popUp_InfoDatosCorrectos.buttons()[0].pressed.connect(self.close)
                     self.popUp_InfoDatosCorrectos.cerrarPopup()
@@ -942,8 +942,8 @@ class ventanaLogin(QDialog):
         usuario = self.ui.lineEditUsuario.text()
         clave = self.ui.lineEditContrasena.text()
         if((usuario != '') and (clave != '')):
-            if(self.db.validarUsuario(usuario)):
-                if(self.db.validarClave(usuario, clave)):
+            if(self.db.verificarUsuario(usuario)):
+                if(self.db.verificarClave(usuario, clave)):
                     global USER
                     USER = self.db.buscarUsuario(usuario)
                     self.__irVentanaMenu()
