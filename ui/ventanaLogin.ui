@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>700</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Login</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../assets/iconoLogo.jpg</normaloff>../assets/iconoLogo.jpg</iconset>
+  </property>
+  <widget class="QLabel" name="labelLogo">
+   <property name="geometry">
+    <rect>
+     <x>-220</x>
+     <y>-290</y>
+     <width>1051</width>
+     <height>791</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>../assets/abastoLogo.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditUsuario">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>280</y>
+     <width>150</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditContrasena">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>325</y>
+     <width>150</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelUsuario">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>280</y>
+     <width>120</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt; color:#eeeeec;&quot;&gt;Usuario:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelContrasena">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>325</y>
+     <width>120</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt; color:#eeeeec;&quot;&gt;Contraseña:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="botonEntrar">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>370</y>
+     <width>90</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Entrar</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

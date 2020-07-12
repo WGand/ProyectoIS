@@ -1,6 +1,6 @@
 #Import basura de QT
 from PyQt5 import uic
-from PyQt5.QtWidgets import QHeaderView, QMainWindow, QDialog, QMessageBox, QVBoxLayout
+from PyQt5.QtWidgets import QMainWindow, QDialog, QMessageBox, QVBoxLayout, QTableView
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore, QtGui
 from PyQt5 import Qt
@@ -10,6 +10,7 @@ from PyQt5.QtSql import *
 from PyQt5.QtSql import QSqlQuery, QSqlTableModel
 #Import Ventanas
 from ventanaMenu import Ui_MainWindow
+from ventanaMenuNoAdmin import Ui_MainWindowna
 from ventanaGestionarProducto import Ui_Dialogvgp
 from ventanaListarInventario import Ui_Dialogvli
 from ventanaRegistrarVenta import Ui_Dialogvrv
@@ -20,10 +21,14 @@ from ventanaEliminarProducto import Ui_Dialogvep
 from ventanaModificarCantidad import Ui_Dialogvmc
 from ventanaModificarProductoCampos import Ui_Dialogvmpc
 from ventanaAnadirCantidadVenta import Ui_Dialogvacv
+from ventanaRegistrarUsuario import Ui_QDialogvru
+from ventanaGestionarUsuario import Ui_Dialogvgu
+from ventanaEliminarUsuario import Ui_Dialogveu
+from ventanaLogin import Ui_Dialogvl
 #Import Database
 from manejadorDataBase import ConexionDataBase
-from objetosPrograma import Venta, Producto, Cliente
-
+from objetosPrograma import Venta, Producto, Cliente, usuario
+USER = usuario()
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
     switch = {
         "advertencia": QtWidgets.QMessageBox.Warning,
@@ -32,6 +37,7 @@ def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
         "critico" : QtWidgets.QMessageBox.Critical
     }
     return switch.get(tipo)
+
 class Validaciones():
     def isNotFloat(self, string_):
             try:
@@ -40,25 +46,96 @@ class Validaciones():
             except ValueError:
                 return True
 
+    def doesnthasSpace(self, string_):
+        for letra in string_:
+            if(letra == ' '):
+                return False
+        return True
+
     def isNotDigit(self, string_):
         try:
             int(string_)
             return False
         except ValueError:
             return True
-
-    def isNotNumeric(self, string_):
-        try:
-
-            return False
-        except ValueError:
-            return True
+    
+    def hasNumber(self, string_):
+        for letra in string_:
+            if(letra.isdigit() == True):
+                return True
+        return False
 
     def isNotAlpha(self, string_):
         for i in range(0, len(string_)):
             if((string_[i].isdigit() == True) or ((string_[i].isalnum() == False) and (string_[i] != ' ') )):
                 return True
         return False
+
+class ventanaEliminarUsuario(QDialog):
+    def __init__(self):
+        super(ventanaEliminarUsuario, self).__init__()
+        self.ui = Ui_Dialogveu()
+        self.ui.setupUi(self)
+        self.setWindowTitle("Eliminar Usuario")
+        self.setWindowModality(2)
+        self.db = ConexionDataBase()
+        self.actualizarTabla()
+        self.ui.botonVolver.clicked.connect(self.volver)
+        self.ui.tableView.clicked.connect(self.verificarUsuario)
+
+    def verificarUsuario(self):
+        if(self.ui.tableView.currentIndex().column() != 0):
+            self.usuarioEliminar = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()
+            self.ui.tableView.clearSelection()
+            global USER
+            if(USER.getNombre() != self.usuarioEliminar):
+                self.popUpEliminarUsuario()
+            else:
+                self.popUpUsuarioConectado()
+
+    def popUpUsuarioConectado(self):
+        self.popUp_EliminarUsuario = popUp('No se puede eliminar el usuario con el que se encuentra conectado.', 'Notificación', False, "informativo", "Ok")
+        self.popUp_EliminarUsuario.cerrarPopup()
+        self.popUp_EliminarUsuario.exec()
+    
+    def actualizarTabla(self):
+        self.result = self.db.recorrerUsuarioCero()
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Administrador', 'Eliminar'])
+        self.fila = len(self.result)
+        for filas in range(self.fila):
+            usuarios = self.result[filas]
+            admin = False
+            if usuarios.isAdmin():
+                admin = True
+            else:
+                admin = False
+            self.model.setItem(filas, 0, QtGui.QStandardItem(usuarios.getNombre()))
+            self.model.setItem(filas, 1, QtGui.QStandardItem(str(admin)))
+            self.model.setItem(filas, 2, QtGui.QStandardItem("Eliminar"))
+        self.filtro = QtCore.QSortFilterProxyModel()
+        self.filtro.setFilterCaseSensitivity(0)
+        self.filtro.setSourceModel(self.model)
+        self.filtro.setFilterKeyColumn(0)
+        self.ui.barraBusqueda.textChanged.connect(self.filtro.setFilterRegExp)
+        self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.tableView.setColumnWidth(0, self.width()/1.9)
+        self.ui.tableView.setColumnWidth(1, self.width()/5)
+        self.ui.tableView.setColumnWidth(2, self.width()/5)
+                
+    def popUpEliminarUsuario(self):
+        self.popUp_EliminarUsuario = popUp('Desea eliminar el usuario: ' + self.usuarioEliminar, 'Confirmar eliminación de usuario', True, "advertencia", "Confirmar", "Cancelar")
+        self.popUp_EliminarUsuario.buttons()[1].pressed.connect(self.eliminarUsuario)
+        self.popUp_EliminarUsuario.cerrarPopup()
+        self.popUp_EliminarUsuario.exec()
+
+    def eliminarUsuario(self):
+        self.db.deleteUsuario(self.usuarioEliminar)
+        self.actualizarTabla()
+
+    def volver(self):
+        self.close()
 
 class ventanaListarInventario(QDialog):
     def __init__(self):
@@ -70,7 +147,10 @@ class ventanaListarInventario(QDialog):
         self.db = ConexionDataBase()
         self.result = self.db.recorrerProducto()
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio','IVA','Modificar'])
+        if USER.isAdmin():
+            self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio','IVA','Modificar'])
+        else:
+            self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio','IVA'])
         self.columnas = 4
         self.nombreModificar = ''
         self.filaModificar = 0
@@ -81,19 +161,27 @@ class ventanaListarInventario(QDialog):
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
             self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
             self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
-            self.model.setItem(filas, 4, QtGui.QStandardItem("Modificar"))
+            if USER.isAdmin():
+                self.model.setItem(filas, 4, QtGui.QStandardItem("Modificar"))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
         self.filtro.setSourceModel(self.model)
         self.filtro.setFilterKeyColumn(0)
         self.ui.lineEdit.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
-        self.ui.tableView.setColumnWidth(0, self.width()/4)
-        self.ui.tableView.setColumnWidth(1, self.width()/6)
-        self.ui.tableView.setColumnWidth(2, self.width()/4)
-        self.ui.tableView.setColumnWidth(3, self.width()/6)
-        self.ui.tableView.setColumnWidth(4, self.width()/7)
-        self.ui.tableView.selectionModel().currentChanged.connect(self.irVentanaModificarCantidad)
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        if USER.isAdmin():
+            self.ui.tableView.setColumnWidth(0, self.width()/4)
+            self.ui.tableView.setColumnWidth(1, self.width()/6)
+            self.ui.tableView.setColumnWidth(2, self.width()/4)
+            self.ui.tableView.setColumnWidth(3, self.width()/6)
+            self.ui.tableView.setColumnWidth(4, self.width()/7)
+            self.ui.tableView.clicked.connect(self.irVentanaModificarCantidad)
+        else:
+            self.ui.tableView.setColumnWidth(0, self.width()/3)
+            self.ui.tableView.setColumnWidth(1, self.width()/4.1)
+            self.ui.tableView.setColumnWidth(2, self.width()/5)
+            self.ui.tableView.setColumnWidth(3, self.width()/5)
         self.ui.botonVolver.clicked.connect(self.irVolver)
 
     def irVentanaModificarCantidad(self):
@@ -330,7 +418,7 @@ class ventanaEliminarProducto(QDialog):
         self.ui.pushButton.clicked.connect(self.volver)
 
     def llenarTabla(self):
-        self.conector = ConexionDataBase()
+        self.ui.tableView.clearSpans()
         self.result = self.conector.recorrerProductoCero()
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
@@ -346,10 +434,7 @@ class ventanaEliminarProducto(QDialog):
         self.filtro.setFilterCaseSensitivity(0)
         self.filtro.setSourceModel(self.model)
         self.filtro.setFilterKeyColumn(0)
-        self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
-        #self.ui.tableView.selectionModel().currentChanged.connect(self.irProximaVentana)
-        self.ui.pushButton.clicked.connect(self.volver)
 
     def volver(self):
         self.close()        
@@ -358,12 +443,12 @@ class ventanaEliminarProducto(QDialog):
         self.productoEliminar = self.conector.busquedaProducto(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
         self.popUp_EliminarProducto = popUp('Se eliminara el producto: '+self.productoEliminar.getNombre()+'\n¿Desea continuar?', 'Eliminar', True, 'advertencia', 'Confirmar', 'Cancelar')    
         self.popUp_EliminarProducto.buttons()[1].pressed.connect(self.eliminarProducto)
-        self.popUp_EliminarProducto.cerrarPopup()
         self.popUp_EliminarProducto.exec_()
 
     def eliminarProducto(self):
-        self.conector.deleteProducto(self.productoEliminar.getNombre())
+        self.conector.deleteProducto(self.productoEliminar.getNombre())    
         self.llenarTabla()
+        self.popUp_EliminarProducto.close()
 
 class ventanaAnadirCantidadVenta(QDialog):
     def __init__(self, ventana, nombre):
@@ -480,6 +565,83 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.close()
         self.ventana.cerrarSignal()
 
+class ventanaRegistrarUsuario(QDialog):
+    def __init__(self):
+        super(ventanaRegistrarUsuario, self).__init__()
+        self.ui = Ui_QDialogvru()
+        self.ui.setupUi(self)
+        self.ui.labelCheck.setVisible(False)
+        self.ui.labelX.setVisible(False)
+        self.ui.buttonAceptar.setDisabled(True)
+        self.ui.buttonVolver.clicked.connect(self.close)
+        self.ui.lineEditContrasena.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.ui.lineEditConfirmacion.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.ui.lineEditContrasena.textChanged.connect(self.confirmacionContrasena)
+        self.ui.lineEditConfirmacion.textChanged.connect(self.confirmacionContrasena)
+        self.ui.lineEditUsuario.textChanged.connect(self.validarIngreso)
+        self.ui.buttonAceptar.clicked.connect(self.verificarUsuario)
+    
+    def confirmacionContrasena(self):
+        validador = Validaciones()
+        if(self.ui.lineEditContrasena.text() == ''):
+            return 0
+        elif(str(self.ui.lineEditContrasena.text()) != str(self.ui.lineEditConfirmacion.text())):
+            self.ui.labelCheck.setVisible(False)
+            self.ui.labelX.setVisible(True)
+        elif(str(self.ui.lineEditContrasena.text()) == str(self.ui.lineEditConfirmacion.text()) and (validador.hasNumber(self.ui.lineEditContrasena.text()))):
+            self.ui.labelX.setVisible(False)
+            self.ui.labelCheck.setVisible(True)
+        self.validarIngreso()
+    
+    def validarIngreso(self):
+        if((str(self.ui.lineEditUsuario.text()) != '') and (str(self.ui.lineEditContrasena.text()) != '') and (str(self.ui.lineEditConfirmacion.text()) != '')):
+            validador = Validaciones()
+            if((validador.doesnthasSpace(self.ui.lineEditUsuario.text())) and (len(self.ui.lineEditContrasena.text()) >= 7) and (validador.hasNumber(self.ui.lineEditContrasena.text()))
+            and (self.ui.lineEditContrasena.text() == self.ui.lineEditConfirmacion.text())):
+                self.ui.buttonAceptar.setEnabled(True)
+            else:
+                self.ui.buttonAceptar.setDisabled(True)
+        else:
+            self.ui.buttonAceptar.setDisabled(True)
+    
+    def verificarUsuario(self):
+        conexion = ConexionDataBase()
+        if(conexion.validarUsuario(self.ui.lineEditUsuario.text())):
+            self.popUpUsuarioError()
+        else:
+            if(self.ui.radioButtonSi.isChecked()):
+                adminBool = True
+            else:
+                adminBool = False
+            conexion.insertUsuario(self.ui.lineEditUsuario.text(), self.ui.lineEditContrasena.text(), adminBool)
+            self.popUpUsuarioCreado()
+    
+    def popUpUsuarioError(self):
+        self.popUp_UsuarioError = popUp('El usuario ingresado ya se encuentra en el sistema.', '', False, 'advertencia', 'Ok')
+        self.popUp_UsuarioError.exec_()
+
+    def popUpUsuarioCreado(self):
+        self.popUp_UsuarioCreado = popUp('El usuario se ha creado exitosamente.', '', False, 'informativo', 'Ok')
+        self.popUp_UsuarioCreado.buttons()[0].pressed.connect(self.close)
+        self.popUp_UsuarioCreado.exec_()
+
+class ventanaGestionarUsuario(QDialog):
+    def __init__(self):    
+        super(ventanaGestionarUsuario, self).__init__()
+        self.ui = Ui_Dialogvgu()
+        self.ui.setupUi(self)
+        self.ui.botonAnadirUsuario.clicked.connect(self.irVentanaRegistrarUsuario)
+        self.ui.botonEliminarUsuario.clicked.connect(self.irVentanaEliminarUsuario)
+        self.ui.botonVolver.clicked.connect(self.close)
+    
+    def irVentanaRegistrarUsuario(self):
+        self.ventana_RegistrarUsuario = ventanaRegistrarUsuario()
+        self.ventana_RegistrarUsuario.show()
+
+    def irVentanaEliminarUsuario(self):
+        self.ventana_EliminarUsuario = ventanaEliminarUsuario()
+        self.ventana_EliminarUsuario.show()
+
 class ventanaRegistrarVenta(QDialog):
     def __init__(self):
         super(ventanaRegistrarVenta, self).__init__()
@@ -520,12 +682,23 @@ class ventanaRegistrarVenta(QDialog):
         self.ui.BarraBusqueda.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableInventario.setModel(self.filtro)
         self.ui.tableInventario.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.ui.tableInventario.selectionModel().currentRowChanged.connect(self.irVentanaAnadirCantidadVenta) 
-        if(self.ui.tableVenta.currentIndex().column() != 0 and (self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),0).data() != '')):
-            self.ui.tableVenta.selectionModel().currentRowChanged.connect(self.popUpEliminarProductoVenta)
+        self.ui.tableVenta.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.tableInventario.clicked.connect(self.irVentanaAnadirCantidadVenta)
+        self.ui.tableInventario.setColumnWidth(1, self.width()/11)
+        self.ui.tableInventario.setColumnWidth(2, self.width()/8)
+        self.ui.tableInventario.setColumnWidth(0, self.width()/9)
+        self.ui.tableInventario.setColumnWidth(3, self.width()/12)
+        self.ui.tableInventario.setColumnWidth(4, self.width()/14)
+        self.ui.tableVenta.setColumnWidth(1, self.width()/11)
+        self.ui.tableVenta.setColumnWidth(2, self.width()/8)
+        self.ui.tableVenta.setColumnWidth(0, self.width()/9)
+        self.ui.tableVenta.setColumnWidth(3, self.width()/12)
+        self.ui.tableVenta.setColumnWidth(4, self.width()/14)
+        if(self.ui.tableVenta.currentIndex().column() != 0 or (self.ui.tableVenta.model().index(self.ui.tableVenta.selectionModel().currentIndex().row(),0).data() != '')):
+            self.ui.tableVenta.clicked.connect(self.popUpEliminarProductoVenta)
 
     def irVentanaAnadirCantidadVenta(self):
-        if(self.ui.tableVenta.currentIndex().column() != 0):
+        if(self.ui.tableInventario.currentIndex().column() != 0):
             self.nombreModificar = self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data()
             self.filaModificar = self.ui.tableInventario.currentIndex().row()
             self.ventana_AnadirCantidadVenta = ventanaAnadirCantidadVenta(self, self.ui.tableInventario.model().index(self.ui.tableInventario.currentIndex().row(), 0).data())
@@ -556,6 +729,11 @@ class ventanaRegistrarVenta(QDialog):
             self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
             self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
             self.modelVenta.setItem(filas, 4, QtGui.QStandardItem("Anular"))
+        self.ui.tableVenta.setColumnWidth(1, self.width()/11)
+        self.ui.tableVenta.setColumnWidth(2, self.width()/8)
+        self.ui.tableVenta.setColumnWidth(0, self.width()/9)
+        self.ui.tableVenta.setColumnWidth(3, self.width()/12)
+        self.ui.tableVenta.setColumnWidth(4, self.width()/14)
         self.actualizarMonto()
 
     def cambiarDatoInventario(self):
@@ -601,6 +779,11 @@ class ventanaRegistrarVenta(QDialog):
                         self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
                         self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
                         self.modelVenta.setItem(filas, 4, QtGui.QStandardItem(""))
+        self.ui.tableVenta.setColumnWidth(1, self.width()/11)
+        self.ui.tableVenta.setColumnWidth(2, self.width()/8)
+        self.ui.tableVenta.setColumnWidth(0, self.width()/9)
+        self.ui.tableVenta.setColumnWidth(3, self.width()/12)
+        self.ui.tableVenta.setColumnWidth(4, self.width()/14)
         self.actualizarMonto()
             
     def popUpFinalizarVenta(self):
@@ -680,20 +863,31 @@ class ventanaAnadirProducto(QDialog):
         self.close()
 
 class ventanaMenu(QMainWindow):
-    def __init__(self):
+    def __init__(self, login):
         super(ventanaMenu, self).__init__()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        if USER.isAdmin():
+            self.ui = Ui_MainWindow()
+            self.ui.setupUi(self)
+            self.ui.botonGestionarProducto.clicked.connect(self.irGestionarProducto) #conexion entre el boton y su ventana, mas accion. IDEM a todos los botones
+            self.ui.botonGestionarUsuario.clicked.connect(self.irGestionarUsuario)
+        else:
+            self.ui = Ui_MainWindowna()
+            self.ui.setupUi(self)
+        self.login = login
         self.setWindowTitle("Menu")
-        self.ui.botonGestionarProducto.clicked.connect(self.irGestionarProducto) #conexion entre el boton y su ventana, mas accion. IDEM a todos los botones
         self.ui.botonListarInventario.clicked.connect(self.irListarInventario)
         self.ui.botonRegistrarVenta.clicked.connect(self.irRegistrarVenta)
         self.ui.botonSalir.clicked.connect(self.salir)
+        self.ui.botonCerrarSesion.clicked.connect(self.cerrarSesion)
         self.centerOnScreen()
 
     def irGestionarProducto(self):
-        self.ventana_GestionarProducto = ventanaGestionarProducto() #ventana_GestionarProducto en vez de ventanaGestionarProducto para confusion en el interpretador, IDEM a todas las ventanas
-        self.ventana_GestionarProducto.show()
+            self.ventana_GestionarProducto = ventanaGestionarProducto() #ventana_GestionarProducto en vez de ventanaGestionarProducto para confusion en el interpretador, IDEM a todas las ventanas
+            self.ventana_GestionarProducto.show()
+
+    def irGestionarUsuario(self):
+            self.ventana_GestionarUsuario = ventanaGestionarUsuario()
+            self.ventana_GestionarUsuario.show()    
 
     def irListarInventario(self):
         self.ventana_ListarInventario = ventanaListarInventario()
@@ -702,6 +896,14 @@ class ventanaMenu(QMainWindow):
     def irRegistrarVenta(self):
         self.ventana_RegistrarVenta = ventanaRegistrarVenta()
         self.ventana_RegistrarVenta.show()
+    
+    def cerrarSesion(self):
+        global USER
+        USER = ''
+        self.login.ui.lineEditUsuario.setText('')
+        self.login.ui.lineEditContrasena.setText('')
+        self.login.setVisible(True)
+        self.salir()
 
     def salir(self):
         self.close()
@@ -710,3 +912,47 @@ class ventanaMenu(QMainWindow):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                           (resolution.height() / 2) - (self.frameSize().height() / 2))
+
+class ventanaLogin(QDialog):
+    def __init__(self):
+        super(ventanaLogin, self).__init__()
+        self.ui = Ui_Dialogvl()
+        self.ui.setupUi(self)
+        self.setWindowTitle('Login')
+        self.db = ConexionDataBase()
+        self.ui.lineEditContrasena.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.ui.botonEntrar.clicked.connect(self.__iniciarSesion)
+        self.ui.lineEditUsuario.textChanged.connect(self.cambiarColorBlanco)
+        self.ui.lineEditContrasena.textChanged.connect(self.cambiarColorBlanco)
+   
+    def __irVentanaMenu(self):
+        self.ventana_Menu = ventanaMenu(self)
+        self.ventana_Menu.show()
+        self.setVisible(False)
+
+    def cambiarColorBlanco(self):
+        self.ui.lineEditUsuario.setStyleSheet('background-color: rgb(238, 238, 236);')
+        self.ui.lineEditContrasena.setStyleSheet('background-color: rgb(238, 238, 236);')
+
+    def cambiarColorRojo(self):
+        self.ui.lineEditUsuario.setStyleSheet('background-color: rgb(255, 153, 153);')
+        self.ui.lineEditContrasena.setStyleSheet('background-color: rgb(255, 153, 153);')
+
+    def __iniciarSesion(self):
+        usuario = self.ui.lineEditUsuario.text()
+        clave = self.ui.lineEditContrasena.text()
+        if((usuario != '') and (clave != '')):
+            if(self.db.validarUsuario(usuario)):
+                if(self.db.validarClave(usuario, clave)):
+                    global USER
+                    USER = self.db.buscarUsuario(usuario)
+                    self.__irVentanaMenu()
+                else:
+                    self.cambiarColorRojo()
+            else:
+                self.cambiarColorRojo()
+        else:
+            if(usuario == ''):
+                self.ui.lineEditUsuario.setStyleSheet('background-color: rgb(255, 153, 153);')
+            if(clave == ''):
+                self.ui.lineEditContrasena.setStyleSheet('background-color: rgb(255, 153, 153);')

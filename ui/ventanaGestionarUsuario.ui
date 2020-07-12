@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>421</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Gestionar Usuarios</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../assets/iconoLogo.jpg</normaloff>../assets/iconoLogo.jpg</iconset>
+  </property>
+  <widget class="QPushButton" name="botonAnadirUsuario">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>70</y>
+     <width>180</width>
+     <height>70</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Añadir Usuario</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="botonEliminarUsuario">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>175</y>
+     <width>180</width>
+     <height>70</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Eliminar Usuario</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="botonVolver">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>280</y>
+     <width>180</width>
+     <height>70</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Volver</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
