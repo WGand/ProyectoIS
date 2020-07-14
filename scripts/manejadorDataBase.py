@@ -9,10 +9,40 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
     
+    def recorrerProveedor(self):
+        listaProveedor = []
+        sql = "SELECT nombre from proveedor;"
+        query = self.excuteQuery(sql)
+        while query.next():
+            listaProveedor.append(str(query.value(0)))
+        return listaProveedor
+
+    def getIdProducto(self,nombre): #Devuelve True si esta en la DB
+        sql = "SELECT id_producto FROM producto WHERE nombre = '" + str(nombre) + "';"
+        query = self.excuteQuery(sql)
+        while query.next():
+            i = query.value(0)
+        return i
+
+    def verificarProveedor(self, nombre): #Devuelve True si esta en la DB
+        sql = "SELECT FROM proveedor WHERE nombre = '" + str(nombre) + "';"
+        query = self.excuteQuery(sql)
+        if (query.size() > 0):
+            return False
+        else:
+            return True
+
+    def getIdProveedor(self,nombre):
+        sql = "SELECT id_proveedor FROM proveedor WHERE nombre = '" + str(nombre) + "';"
+        query = self.excuteQuery(sql)
+        while query.next():
+            i = query.value(0)
+        return i
+
     def excuteQuery(self, sql):
         ConexionDataBase.db.open()
         query = QSqlQuery(sql)
