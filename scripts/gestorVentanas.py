@@ -148,9 +148,9 @@ class ventanaListarInventario(QDialog):
         self.result = self.db.recorrerProducto()
         self.model = QStandardItemModel()
         if USER.isAdmin():
-            self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio','IVA','Modificar'])
+            self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio Compra','Precio Venta','IVA','Modificar'])
         else:
-            self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio','IVA'])
+            self.model.setHorizontalHeaderLabels(['Nombre','Cantidad','Precio Compra','Precio Venta','IVA'])
         self.columnas = 4
         self.nombreModificar = ''
         self.filaModificar = 0
@@ -159,10 +159,11 @@ class ventanaListarInventario(QDialog):
             objects = self.result[filas]
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
-            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioCompra())))
+            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getPrecioVenta())))
+            self.model.setItem(filas, 4, QtGui.QStandardItem(str(objects.getIva())))
             if USER.isAdmin():
-                self.model.setItem(filas, 4, QtGui.QStandardItem("Modificar"))
+                self.model.setItem(filas, 5, QtGui.QStandardItem("Modificar"))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
         self.filtro.setSourceModel(self.model)
@@ -172,16 +173,18 @@ class ventanaListarInventario(QDialog):
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         if USER.isAdmin():
             self.ui.tableView.setColumnWidth(0, self.width()/4)
-            self.ui.tableView.setColumnWidth(1, self.width()/6)
-            self.ui.tableView.setColumnWidth(2, self.width()/4)
-            self.ui.tableView.setColumnWidth(3, self.width()/6)
-            self.ui.tableView.setColumnWidth(4, self.width()/7)
+            self.ui.tableView.setColumnWidth(1, self.width()/7)
+            self.ui.tableView.setColumnWidth(2, self.width()/6)
+            self.ui.tableView.setColumnWidth(3, self.width()/7)
+            self.ui.tableView.setColumnWidth(4, self.width()/7.4)
+            self.ui.tableView.setColumnWidth(5, self.width()/7)
             self.ui.tableView.clicked.connect(self.irVentanaModificarCantidad)
         else:
-            self.ui.tableView.setColumnWidth(0, self.width()/3)
-            self.ui.tableView.setColumnWidth(1, self.width()/4.1)
-            self.ui.tableView.setColumnWidth(2, self.width()/5)
-            self.ui.tableView.setColumnWidth(3, self.width()/5)
+            self.ui.tableView.setColumnWidth(0, self.width()/4)
+            self.ui.tableView.setColumnWidth(1, self.width()/7)
+            self.ui.tableView.setColumnWidth(2, self.width()/4.4)
+            self.ui.tableView.setColumnWidth(3, self.width()/4.5)
+            self.ui.tableView.setColumnWidth(4, self.width()/7.4)
         self.ui.botonVolver.clicked.connect(self.irVolver)
 
     def irVentanaModificarCantidad(self):
@@ -208,7 +211,7 @@ class ventanaModificarCantidad(QDialog):
         self.producto_ = self.conector.busquedaProducto(nombre)
         self.cantidadActual = self.producto_.getCantidad()
         self.ui.textCantidad.setText(str(self.producto_.getCantidad()))
-        self.ui.labelInformacion.setText('Producto: '+str(self.producto_.getNombre())+'\nCantidad actual: '+str(self.producto_.getCantidad())+'\nPrecio: '+ str(self.producto_.getPrecio()))
+        self.ui.labelInformacion.setText('Producto: '+str(self.producto_.getNombre())+'\nCantidad actual: '+str(self.producto_.getCantidad())+'\nPrecio Compra: '+ str(self.producto_.getPrecioCompra()) +'\nPrecio Venta: '+ str(self.producto_.getPrecioVenta()))
         self.ui.botonMas.clicked.connect(self.sumar)
         self.ui.botonMenos.clicked.connect(self.restar)
         self.ui.textCantidad.setReadOnly(True)
