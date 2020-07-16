@@ -13,6 +13,10 @@ class ConexionDataBase:
         ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
     
+    def insertarMovimiento(self, tipo, monto, justificacion, usuario):
+        sql = "INSERT INTO movimiento(tipo, monto, justificacion, usuario) VALUES ("+str(tipo)+","+str(monto)+",'"+justificacion+"','"+usuario+"');"
+        self.excuteQuery(sql)
+    
     def recorrerProveedor(self):
         listaProveedor = []
         sql = "SELECT nombre from proveedor;"
