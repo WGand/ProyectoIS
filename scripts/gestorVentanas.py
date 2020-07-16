@@ -219,6 +219,19 @@ class ventanaModificarCantidad(QDialog):
         self.setWindowTitle("Modificar Cantidad")
         self.setWindowModality(2)
         self.ventana = ventana
+        self.lista = QtCore.QStringListModel()
+        self.ui.LineEditOtro.setDisabled(1)
+        self.ui.comboBoxJustificaciones.setModel(self.lista)
+        self.ui.comboBoxJustificaciones.activated.connect(self.activarJustificacionEscrita)
+        self.listaProveedores = QtCore.QStringListModel()
+        self.listaProveedores.setStringList(self.conector.buscarProveedoresProducto(nombre))
+        self.ui.comboBoxProveedores.setModel(self.listaProveedores)
+
+    def activarJustificacionEscrita(self):
+        if self.ui.comboBoxJustificaciones.currentText() in "Otros":
+            self.ui.LineEditOtro.setDisabled(0)
+        if self.ui.comboBoxJustificaciones.currentText() in "Compra":
+            self.ui.comboBoxProveedores.setHidden(0)
 
     def sumar(self):
         sumando = int(self.ui.textCantidad.toPlainText())
@@ -227,6 +240,7 @@ class ventanaModificarCantidad(QDialog):
         sumando += 1
         self.ui.textCantidad.setText(str(sumando))
         self.producto_.setCantidad(int(self.ui.textCantidad.toPlainText()))
+        self.justificaciones()
 
     def restar(self):
         restando = int(self.ui.textCantidad.toPlainText())
@@ -235,7 +249,21 @@ class ventanaModificarCantidad(QDialog):
         restando -= 1
         self.ui.textCantidad.setText(str(restando))
         self.producto_.setCantidad(int(self.ui.textCantidad.toPlainText()))
+        self.justificaciones()
         
+    def justificaciones(self):
+        if self.cantidadActual < int(self.ui.textCantidad.toPlainText()):
+            self.lista.setStringList(['Opciones','Compra','Otros'])
+            self.ui.comboBoxJustificaciones.setCurrentIndex(0)
+        elif self.cantidadActual == int(self.ui.textCantidad.toPlainText()):
+            self.lista.setStringList([])
+            self.ui.LineEditOtro.setDisabled(1)
+            self.ui.LineEditOtro.setText("")
+        else:
+            self.lista.setStringList(['Opciones','Daño','Robo','Vencimiento','Otros'])
+            self.ui.comboBoxJustificaciones.setCurrentIndex(0)
+        
+
     def popUpConfirmarCantidad(self):
         self.popUp_ConfirmarCantidad = popUp('El producto '+self.producto_.getNombre()+' tiene una cantidad existente de '
         +str(self.cantidadActual)+' unidades registrada \n¿Desea actualizar a: '+str(self.producto_.getCantidad())+' unidades?','Confirmar Cambios',
@@ -460,13 +488,13 @@ class ventanaAnadirCantidadVenta(QDialog):
         self.ui.setupUi(self)
         self.conector = ConexionDataBase()
         self.producto_ = self.conector.busquedaProducto(nombre)
-        self.productoVenta = Producto(self.producto_.getNombre(), 0, self.producto_.getPrecio(), self.producto_.getIva())
+        self.productoVenta = Producto(self.producto_.getNombre(), 0, self.producto_.getPrecioVenta(), self.producto_.getIva())
         self.cantidadActual = self.producto_.getCantidad()
         self.ui.botonMenos.setDisabled(True)
         if (self.producto_.getCantidad() == 0):
             self.ui.botonMas.setDisabled(True)
         self.ui.textCantidad.setText('0')
-        self.ui.labelInformacion.setText('Producto: '+str(self.producto_.getNombre())+'\nCantidad actual: '+str(self.producto_.getCantidad())+'\nPrecio: '+ str(self.producto_.getPrecio()))
+        self.ui.labelInformacion.setText('Producto: '+str(self.producto_.getNombre())+'\nCantidad actual: '+str(self.producto_.getCantidad())+'\nPrecio: '+ str(self.producto_.getPrecioVenta()))
         self.ui.botonMas.clicked.connect(self.sumar)
         self.ui.botonMenos.clicked.connect(self.restar)
         self.ui.textCantidad.setReadOnly(True)
@@ -555,7 +583,7 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.popUp_ConfirmarDatosCliente.cerrarPopup()
         self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), int(self.ui.textTelefono.toPlainText())))
         self.conector = ConexionDataBase()
-        self.conector.guardarVenta(self.ventana.venta)
+        self.conector.guardarVenta(self.ventana.venta, USER.getNombre())
         self.popUpListo()
         
     def popUpListo(self):
@@ -675,7 +703,7 @@ class ventanaRegistrarVenta(QDialog):
             objects = self.result[filas]
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioVenta())))
             self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
             self.model.setItem(filas, 4, QtGui.QStandardItem("Añadir"))
         self.filtro = QtCore.QSortFilterProxyModel()
@@ -725,11 +753,11 @@ class ventanaRegistrarVenta(QDialog):
         for filas in range(len(self.venta.getProducto())):
             objeto.setNombre(productoJodedor[filas].getNombre())
             objeto.setCantidad(productoJodedor[filas].getCantidad())
-            objeto.setPrecio(productoJodedor[filas].getPrecio())
+            objeto.setPrecioVenta(productoJodedor[filas].getPrecioVenta())
             objeto.setIva(productoJodedor[filas].getIva())
             self.modelVenta.setItem(filas, 0, QtGui.QStandardItem(str(objeto.getNombre())))
             self.modelVenta.setItem(filas, 1, QtGui.QStandardItem(str(objeto.getCantidad())))
-            self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
+            self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecioVenta())))
             self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
             self.modelVenta.setItem(filas, 4, QtGui.QStandardItem("Anular"))
         self.ui.tableVenta.setColumnWidth(1, self.width()/11)
@@ -767,11 +795,11 @@ class ventanaRegistrarVenta(QDialog):
                         for filas in range(len(self.venta.getProducto())):
                             objeto.setNombre(productoJodedor[filas].getNombre())
                             objeto.setCantidad(productoJodedor[filas].getCantidad())
-                            objeto.setPrecio(productoJodedor[filas].getPrecio())
+                            objeto.setPrecio(productoJodedor[filas].getPrecioVenta())
                             objeto.setIva(productoJodedor[filas].getIva())
                             self.modelVenta.setItem(filas, 0, QtGui.QStandardItem(str(objeto.getNombre())))
                             self.modelVenta.setItem(filas, 1, QtGui.QStandardItem(str(objeto.getCantidad())))
-                            self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
+                            self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecioVenta())))
                             self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
                             self.modelVenta.setItem(filas, 4, QtGui.QStandardItem("Anular"))
                 elif(i == 0 ):
@@ -779,7 +807,7 @@ class ventanaRegistrarVenta(QDialog):
                         objeto = Producto('', '','','')
                         self.modelVenta.setItem(filas, 0, QtGui.QStandardItem(str(objeto.getNombre())))
                         self.modelVenta.setItem(filas, 1, QtGui.QStandardItem(str(objeto.getCantidad())))
-                        self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecio())))
+                        self.modelVenta.setItem(filas, 2, QtGui.QStandardItem(str(objeto.getPrecioVenta())))
                         self.modelVenta.setItem(filas, 3, QtGui.QStandardItem(str(objeto.getIva())))
                         self.modelVenta.setItem(filas, 4, QtGui.QStandardItem(""))
         self.ui.tableVenta.setColumnWidth(1, self.width()/11)

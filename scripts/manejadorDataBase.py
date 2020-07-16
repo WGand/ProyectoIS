@@ -32,6 +32,22 @@ class ConexionDataBase:
             i = query.value(0)
         return i
 
+    def buscarProveedoresProducto(self, nombre):
+        listaProveedorID = []
+        listaProveedor = []
+        idproducto = self.getIdProducto(nombre)
+        sql = "SELECT proveedor_id FROM proveedor_producto WHERE producto_id = '" + str(idproducto) + "';"
+        query = self.excuteQuery(sql)
+        while query.next():
+            listaProveedorID.append(str(query.value(0)))
+        for i in listaProveedorID:
+            sql = "SELECT nombre FROM proveedor WHERE id_proveedor = '" + str(i) + "';"
+            query = self.excuteQuery(sql)
+            query.next()
+            listaProveedor.append(str(query.value(0)))
+        return listaProveedor
+        
+
     def verificarProveedor(self, nombre): #Devuelve True si esta en la DB
         sql = "SELECT FROM proveedor WHERE nombre = '" + str(nombre) + "';"
         query = self.excuteQuery(sql)
@@ -122,7 +138,7 @@ class ConexionDataBase:
         self.excuteQuery(sql)
 
     def insertarVenta(self, monto, cliente_id, usuario_id):
-        sql = "INSERT INTO venta(monto, cliente_id, usuario_id) VALUES ("+str(monto)+", "+str(cliente_id)+", "+str(usuario_id)+"));"
+        sql = "INSERT INTO venta(monto, cliente_id, usuario_id) VALUES ("+str(monto)+", "+str(cliente_id)+", "+str(usuario_id)+");"
         self.excuteQuery(sql)
     
     def insertarCompra(self, monto):
@@ -227,15 +243,21 @@ class ConexionDataBase:
     def getIdHproducto(self,nombre): #Devuelve True si esta en la DB
         sql = "SELECT id_producto FROM hproducto WHERE nombre = '" + str(nombre) + "';"
         query = self.excuteQuery(sql)
-        while query.next():
-            i = query.value(0)
+        if query.size() > 1:
+            while query.next():
+                i = query.value(0)
+        else:
+            i = 0
         return i
 
     def getIdUltimaVenta(self):
         sql = "SELECT id_venta FROM venta;"
         query = self.excuteQuery(sql)
-        while query.next():
-            i = query.value(0)
+        if query.size() > 1:
+            while query.next():
+                i = query.value(0)
+        else:
+            i = 0
         return i
 
     def getIdCliente(self,cedula): #Devuelve True si esta en la DB

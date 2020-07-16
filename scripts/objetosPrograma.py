@@ -90,9 +90,9 @@ class Venta():
 		if(self.__producto):	
 			for producto_ in self.__producto:
 				if(producto_.getIva()):
-					monto_ += (producto_.getPrecio() + producto_.getPrecio() * 0.16) * producto_.getCantidad()
+					monto_ += (producto_.getPrecioVenta() + producto_.getPrecio() * 0.16) * producto_.getCantidad()
 				else:
-					monto_ += (producto_.getPrecio()) * producto_.getCantidad()
+					monto_ += (producto_.getPrecioVenta()) * producto_.getCantidad()
 			self.__monto = monto_
 		else:
 			self.__monto = 0
