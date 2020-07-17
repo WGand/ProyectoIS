@@ -9,8 +9,8 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
     
     def insertarMovimiento(self, tipo, monto, justificacion, usuario):

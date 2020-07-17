@@ -214,6 +214,8 @@ class ventanaModificarCantidad(QDialog):
         self.ui.labelInformacion.setText('Producto: '+str(self.producto_.getNombre())+'\nCantidad actual: '+str(self.producto_.getCantidad())+'\nPrecio Compra: '+ str(self.producto_.getPrecioCompra()) +'\nPrecio Venta: '+ str(self.producto_.getPrecioVenta()))
         self.ui.botonMas.clicked.connect(self.sumar)
         self.ui.botonMenos.clicked.connect(self.restar)
+        self.ui.botonMas.clicked.connect(self.activarJustificacionEscrita)
+        self.ui.botonMenos.clicked.connect(self.activarJustificacionEscrita)
         self.ui.textCantidad.setReadOnly(True)
         self.ui.botonOk.pressed.connect(self.popUpConfirmarCantidad)
         self.setWindowTitle("Modificar Cantidad")
@@ -228,10 +230,14 @@ class ventanaModificarCantidad(QDialog):
         self.ui.comboBoxProveedores.setModel(self.listaProveedores)
 
     def activarJustificacionEscrita(self):
-        if self.ui.comboBoxJustificaciones.currentText() in "Otros":
+        if self.ui.comboBoxJustificaciones.currentText() == "Otros":
             self.ui.LineEditOtro.setDisabled(0)
-        if self.ui.comboBoxJustificaciones.currentText() in "Compra":
+        if self.ui.comboBoxJustificaciones.currentText() == "Compra":
             self.ui.comboBoxProveedores.setHidden(0)
+        if self.ui.comboBoxJustificaciones.currentText() != "Compra":
+            self.ui.comboBoxProveedores.setHidden(1)
+        if self.ui.comboBoxJustificaciones.currentText() != "Otros":
+            self.ui.LineEditOtro.setDisabled(1)
 
     def sumar(self):
         sumando = int(self.ui.textCantidad.toPlainText())
@@ -265,19 +271,30 @@ class ventanaModificarCantidad(QDialog):
         
 
     def popUpConfirmarCantidad(self):
-        self.popUp_ConfirmarCantidad = popUp('El producto '+self.producto_.getNombre()+' tiene una cantidad existente de '
-        +str(self.cantidadActual)+' unidades registrada \n¿Desea actualizar a: '+str(self.producto_.getCantidad())+' unidades?','Confirmar Cambios',
-        True, 'dubitativo', 'Confirmar', 'Cancelar' )
-        self.popUp_ConfirmarCantidad.buttons()[1].pressed.connect(self.guardarCambios)
-        self.popUp_ConfirmarCantidad.buttons()[0].pressed.connect(self.close)
-        self.popUp_ConfirmarCantidad.cerrarPopup()
-        self.popUp_ConfirmarCantidad.exec_()
+        if self.ui.comboBoxJustificaciones.currentText() != "":
+            self.popUp_ConfirmarCantidad = popUp('El producto '+self.producto_.getNombre()+' tiene una cantidad existente de '
+            +str(self.cantidadActual)+' unidades registrada \n¿Desea actualizar a: '+str(self.producto_.getCantidad())+' unidades?','Confirmar Cambios',
+            True, 'dubitativo', 'Confirmar', 'Cancelar' )
+            self.popUp_ConfirmarCantidad.buttons()[1].pressed.connect(self.guardarCambios)
+            self.popUp_ConfirmarCantidad.buttons()[0].pressed.connect(self.close)
+            self.popUp_ConfirmarCantidad.cerrarPopup()
+            self.popUp_ConfirmarCantidad.exec_()
 
     def irVolver(self):
         self.close()
 
     def guardarCambios(self):
+        justificacion = ""
         self.conector.modificarCantidadProducto(self.producto_.getCantidad(), self.producto_.getNombre())
+        if self.ui.comboBoxJustificaciones.currentText() == "Otros":
+            justificacion = self.ui.LineEditOtro.text()
+        else:
+            justificacion = self.ui.comboBoxJustificaciones.currentText()
+        if self.cantidadActual < self.producto_.getCantidad():
+            self.conector.insertarMovimiento(True, 0, justificacion, USER.getNombre())
+            self.conector.insertarCompra(int(self.producto_.getCantidad()) * int(self.producto_.getPrecioCompra()))
+        else:
+            self.conector.insertarMovimiento(True, 1, justificacion, USER.getNombre())
         self.ventana.cambiarDato()
         self.irVolver()
 
@@ -319,21 +336,27 @@ class ventanaModificarProducto(QDialog):
         self.conector = ConexionDataBase()
         self.result = self.conector.recorrerProducto()
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio Compra', 'Precio Venta', 'IVA'])
         self.columnas = 3
         self.fila = len(self.result)
         for filas in range(self.fila):
             objects = self.result[filas]
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioVenta())))
-            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioCompra())))
+            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getPrecioVenta())))
+            self.model.setItem(filas, 4, QtGui.QStandardItem(str(objects.getIva())))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
         self.filtro.setSourceModel(self.model)
         self.filtro.setFilterKeyColumn(0)
         self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.setColumnWidth(0, self.width()/4.1)
+        self.ui.tableView.setColumnWidth(1, self.width()/6)
+        self.ui.tableView.setColumnWidth(2, self.width()/4.5)
+        self.ui.tableView.setColumnWidth(3, self.width()/4.5)
+        self.ui.tableView.setColumnWidth(4, self.width()/8)
         self.ui.tableView.selectionModel().currentChanged.connect(self.irProximaVentana)
         self.ui.pushButton.clicked.connect(self.volver)
 
@@ -345,30 +368,38 @@ class ventanaModificarProducto(QDialog):
             objects = self.result[filas]
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioVenta())))
-            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioCompra())))
+            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getPrecioVenta())))
+            self.model.setItem(filas, 4, QtGui.QStandardItem(str(objects.getIva())))
+        self.ui.tableView.setColumnWidth(0, self.width()/4.1)
+        self.ui.tableView.setColumnWidth(1, self.width()/6)
+        self.ui.tableView.setColumnWidth(2, self.width()/4.5)
+        self.ui.tableView.setColumnWidth(3, self.width()/4.5)
+        self.ui.tableView.setColumnWidth(4, self.width()/8)
 
     def irProximaVentana(self):
         if(self.ui.tableView.currentIndex().column() != 0):
             nombre = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()
-            precio = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 2).data()
-            iva = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 3).data()
-            self.ventanaModificarProductoCampos = ventanaModificarProductoCampos(self, nombre, precio ,iva)
+            precioVenta = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 3).data()
+            precioCompra = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 2).data()
+            iva = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 4).data()
+            self.ventanaModificarProductoCampos = ventanaModificarProductoCampos(self, nombre, precioVenta, precioCompra, iva)
             self.ventanaModificarProductoCampos.show()
 
     def volver(self):
         self.close()
 
 class ventanaModificarProductoCampos(QDialog):
-    def __init__(self, ventana, nombre, precio, iva):
+    def __init__(self, ventana, nombre, precioVenta, precioCompra, iva):
         super(ventanaModificarProductoCampos, self).__init__()
         self.ui = Ui_Dialogvmpc()
         self.ui.setupUi(self)
         self.ui.botonCancelar.clicked.connect(self.volver)
-        self.ui.campoNombre.setPlainText(nombre)
+        self.ui.campoNombre.setText(nombre)
         self.conector = ConexionDataBase()
-        self.ui.campoPrecio.setPlainText(str(precio))
-        if iva == True:
+        self.ui.campoPrecioCompra.setText(str(precioCompra))
+        self.ui.campoPrecioVenta.setText(str(precioVenta))
+        if iva == "True":
             self.ui.radioButtonSi.setChecked(True)
             self.ui.radioButtonNo.setChecked(False)
         else:
@@ -378,28 +409,30 @@ class ventanaModificarProductoCampos(QDialog):
         self.setWindowModality(2)
         self.ui.okBoton.clicked.connect(self.validarIngreso)
         self.nombre = nombre
-        self.precio = precio
+        self.precioVenta = precioVenta
+        self.precioCompra = precioCompra
         self.iva = iva
         self.ventana = ventana
 
     def validarIngreso(self):
-        if ((len(self.ui.campoNombre.toPlainText()) == 0) or (len(self.ui.campoPrecio.toPlainText()) == 0) or ((self.ui.radioButtonSi.isChecked() == False) and (self.ui.radioButtonNo.isChecked() == False))):
+        if ((len(self.ui.campoNombre.text()) == 0) or (len(self.ui.campoPrecioVenta.text()) == 0) or (len(self.ui.campoPrecioCompra.text()) == 0) or ((self.ui.radioButtonSi.isChecked() == False) and (self.ui.radioButtonNo.isChecked() == False))):
             self.popUp_AdvertenciaDatoIncompleto = popUp('No se llenaron todos los datos requeridos.', 'Error', False, 'informativo', 'Ok')
             self.popUp_AdvertenciaDatoIncompleto.cerrarPopup()
             self.popUp_AdvertenciaDatoIncompleto.exec()
         else: #Validar
             validador = Validaciones()
-            if ((validador.isNotFloat(self.ui.campoPrecio.toPlainText())) or (validador.isNotAlpha(self.ui.campoNombre.toPlainText()))):
+            if ((validador.isNotFloat(self.ui.campoPrecioVenta.text())) or (validador.isNotFloat(self.ui.campoPrecioCompra.text())) or (validador.isNotAlpha(self.ui.campoNombre.text()))):
                 self.popUp_AdvertenciaDatoIncorrecto = popUp('Algún dato se ingresó con caracteres invalidos.', 'Error', False, 'advertencia', 'Ok')
                 self.popUp_AdvertenciaDatoIncorrecto.cerrarPopup()
                 self.popUp_AdvertenciaDatoIncorrecto.exec()
             else:
-                self.conector.modificarPrecioventaProducto(self.ui.campoPrecio.toPlainText(),self.nombre)
+                self.conector.modificarPrecioventaProducto(self.ui.campoPrecioVenta.text(),self.nombre)
+                self.conector.modificarPreciocompraProducto(self.ui.campoPrecioCompra.text(),self.nombre)
                 if (self.ui.radioButtonSi.isChecked() == True):
                     self.conector.modificarIvaProducto("True",self.nombre)
                 elif(self.ui.radioButtonSi.isChecked() == False):
                     self.conector.modificarIvaProducto("False",self.nombre)
-                self.conector.modificarNombreProducto(self.ui.campoNombre.toPlainText(),self.nombre)
+                self.conector.modificarNombreProducto(self.ui.campoNombre.text(),self.nombre)
                 self.popUp_ModificarProducto = popUp('¿Desea modificar otro producto?', 'Producto modificado correctamente', True, 'informativo', 'Si', 'No')
 
                 self.popUp_ModificarProducto.buttons()[1].pressed.connect(self.cerrarPopUp)
