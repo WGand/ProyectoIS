@@ -235,12 +235,12 @@ class ventanaModificarCantidad(QDialog):
     def activarJustificacionEscrita(self):
         if self.ui.comboBoxJustificaciones.currentText() == "Otros":
             self.ui.LineEditOtro.setDisabled(0)
+        else:
+            self.ui.LineEditOtro.setDisabled(1)
         if self.ui.comboBoxJustificaciones.currentText() == "Compra":
             self.ui.comboBoxProveedores.setHidden(0)
-        if self.ui.comboBoxJustificaciones.currentText() != "Compra":
+        else:
             self.ui.comboBoxProveedores.setHidden(1)
-        if self.ui.comboBoxJustificaciones.currentText() != "Otros":
-            self.ui.LineEditOtro.setDisabled(1)
 
     def sumar(self):
         sumando = int(self.ui.textCantidad.toPlainText())
@@ -274,7 +274,7 @@ class ventanaModificarCantidad(QDialog):
         
 
     def popUpConfirmarCantidad(self):
-        if self.ui.comboBoxJustificaciones.currentText() != "":
+        if self.ui.comboBoxJustificaciones.currentText() != "" and self.ui.comboBoxJustificaciones.currentText() != "Opciones":
             self.popUp_ConfirmarCantidad = popUp('El producto '+self.producto_.getNombre()+' tiene una cantidad existente de '
             +str(self.cantidadActual)+' unidades registrada \n¿Desea actualizar a: '+str(self.producto_.getCantidad())+' unidades?','Confirmar Cambios',
             True, 'dubitativo', 'Confirmar', 'Cancelar' )
@@ -294,10 +294,13 @@ class ventanaModificarCantidad(QDialog):
         else:
             justificacion = self.ui.comboBoxJustificaciones.currentText()
         if self.cantidadActual < self.producto_.getCantidad():
+            if self.ui.comboBoxJustificaciones.currentText() != "Otros":
+                idproveedor = self.conector.getIdProveedor(self.ui.comboBoxProveedores.currentText())
+                self.conector.insertarCompra(int(self.producto_.getCantidad()) * int(self.producto_.getPrecioCompra()), idproveedor)
             self.conector.insertarMovimiento(True, 0, justificacion, USER.getNombre())
-            self.conector.insertarCompra(int(self.producto_.getCantidad()) * int(self.producto_.getPrecioCompra()))
+            self.conector.insertarMovimiento(False,int(self.producto_.getCantidad())*int(self.producto_.getPrecioCompra()), justificacion, USER.getNombre())
         else:
-            self.conector.insertarMovimiento(True, 1, justificacion, USER.getNombre())
+            self.conector.insertarMovimiento(True, 0, justificacion, USER.getNombre())
         self.ventana.cambiarDato()
         self.irVolver()
 

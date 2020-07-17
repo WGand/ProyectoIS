@@ -141,8 +141,8 @@ class ConexionDataBase:
         sql = "INSERT INTO venta(monto, cliente_id, usuario_id) VALUES ("+str(monto)+", "+str(cliente_id)+", "+str(usuario_id)+");"
         self.excuteQuery(sql)
     
-    def insertarCompra(self, monto):
-        sql = "insert into compra(monto) values ("+str(monto)+");"
+    def insertarCompra(self, monto, proveedor_id):
+        sql = "insert into compra(monto, proveedor_id) values ("+str(monto)+", "+str(proveedor_id)+");"
         self.excuteQuery(sql)
     
     def insertarHproducto(self, nombre):

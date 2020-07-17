@@ -56,6 +56,7 @@ create table proveedor_producto (
 create table compra (
         id_compra SERIAL,
         monto real not null,
+        proveedor_id INTEGER references proveedor (id_proveedor),
         fecha timestamp default current_timestamp,
         primary key (id_compra)
 );
