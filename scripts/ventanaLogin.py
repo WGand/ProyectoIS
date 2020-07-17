@@ -28,8 +28,19 @@ class Ui_Dialogvl(object):
         self.botonEntrar = QtWidgets.QPushButton(Dialog)
         self.botonEntrar.setGeometry(QtCore.QRect(320, 370, 90, 25))
         self.botonEntrar.setObjectName("botonEntrar")
+        self.label = QtWidgets.QLabel(Dialog)
+        self.label.setGeometry(QtCore.QRect(270, 430, 191, 21))
+        self.label.setOpenExternalLinks(False)
+        self.label.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
+        self.label.setObjectName("label")
+
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def setupClickToggle(self):
+        def mousePressEvent(*args, **kwargs):
+            print("click")
+        self.label.mousePressEvent = mousePressEvent
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -37,3 +48,4 @@ class Ui_Dialogvl(object):
         self.labelUsuario.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:16pt; color:#eeeeec;\">Usuario:</span></p></body></html>"))
         self.labelContrasena.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:16pt; color:#eeeeec;\">Contraseña:</span></p></body></html>"))
         self.botonEntrar.setText(_translate("Dialog", "Entrar"))
+        self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#eeeeec;\"><a>¿Ha olvidado su contraseña?</a></span></p></body></html>"))
