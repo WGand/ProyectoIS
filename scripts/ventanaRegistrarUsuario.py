@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_QDialogvru(object):
     def setupUi(self, QDialog):
         QDialog.setObjectName("QDialog")
-        QDialog.resize(700, 450)
+        QDialog.resize(700, 460)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../assets/iconoLogo.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         QDialog.setWindowIcon(icon)
@@ -30,21 +30,21 @@ class Ui_QDialogvru(object):
         self.lineEditConfirmacion.setGeometry(QtCore.QRect(311, 265, 200, 25))
         self.lineEditConfirmacion.setObjectName("lineEditConfirmacion")
         self.radioButtonSi = QtWidgets.QRadioButton(QDialog)
-        self.radioButtonSi.setGeometry(QtCore.QRect(321, 300, 42, 23))
+        self.radioButtonSi.setGeometry(QtCore.QRect(321, 335, 42, 23))
         self.radioButtonSi.setChecked(False)
         self.radioButtonSi.setObjectName("radioButtonSi")
         self.radioButtonNo = QtWidgets.QRadioButton(QDialog)
-        self.radioButtonNo.setGeometry(QtCore.QRect(363, 300, 42, 23))
+        self.radioButtonNo.setGeometry(QtCore.QRect(363, 335, 42, 23))
         self.radioButtonNo.setChecked(True)
         self.radioButtonNo.setObjectName("radioButtonNo")
         self.buttonVolver = QtWidgets.QPushButton(QDialog)
-        self.buttonVolver.setGeometry(QtCore.QRect(250, 340, 90, 25))
+        self.buttonVolver.setGeometry(QtCore.QRect(250, 375, 90, 25))
         self.buttonVolver.setObjectName("buttonVolver")
         self.buttonAceptar = QtWidgets.QPushButton(QDialog)
-        self.buttonAceptar.setGeometry(QtCore.QRect(355, 340, 90, 25))
+        self.buttonAceptar.setGeometry(QtCore.QRect(355, 375, 90, 25))
         self.buttonAceptar.setObjectName("buttonAceptar")
         self.labelAdministrador = QtWidgets.QLabel(QDialog)
-        self.labelAdministrador.setGeometry(QtCore.QRect(190, 300, 130, 23))
+        self.labelAdministrador.setGeometry(QtCore.QRect(190, 335, 130, 23))
         self.labelAdministrador.setObjectName("labelAdministrador")
         self.labelInfo = QtWidgets.QLabel(QDialog)
         self.labelInfo.setGeometry(QtCore.QRect(170, 100, 371, 71))
@@ -62,6 +62,12 @@ class Ui_QDialogvru(object):
         self.labelX.setText("")
         self.labelX.setPixmap(QtGui.QPixmap("../assets/iconoX.png"))
         self.labelX.setObjectName("labelX")
+        self.labelCorreo = QtWidgets.QLabel(QDialog)
+        self.labelCorreo.setGeometry(QtCore.QRect(190, 300, 120, 31))
+        self.labelCorreo.setObjectName("labelCorreo")
+        self.lineEditCorreo = QtWidgets.QLineEdit(QDialog)
+        self.lineEditCorreo.setGeometry(QtCore.QRect(310, 305, 200, 25))
+        self.lineEditCorreo.setObjectName("lineEditCorreo")
 
         self.retranslateUi(QDialog)
         QtCore.QMetaObject.connectSlotsByName(QDialog)
@@ -82,6 +88,7 @@ class Ui_QDialogvru(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">Info: El ususario es sensible a las mayúsculas.</span></p>\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">La contraseña debe contener mínimo 7 carácteres</span></p>\n"
-"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">y al menos 1 número.</span></p></body></html>"))
+"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">Info:</span></p>\n"
+"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">La contraseña debe contener mínimo 7 carácteres,</span></p>\n"
+"<p style=\" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">al menos 1 número y al menos 1 mayúscula.</span></p></body></html>"))
+        self.labelCorreo.setText(_translate("QDialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Correo:</span></p></body></html>"))

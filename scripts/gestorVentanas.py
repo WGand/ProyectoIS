@@ -25,9 +25,12 @@ from ventanaRegistrarUsuario import Ui_QDialogvru
 from ventanaGestionarUsuario import Ui_Dialogvgu
 from ventanaEliminarUsuario import Ui_Dialogveu
 from ventanaLogin import Ui_Dialogvl
+from ventanaConfirmarCorreo import Ui_Dialogvcc
 #Import Database
 from manejadorDataBase import ConexionDataBase
 from objetosPrograma import Venta, Producto, Cliente, usuario
+#Import Correos
+from gestorCorreo import GestorCorreo
 USER = usuario()
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
     switch = {
@@ -629,11 +632,42 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.close()
         self.ventana.cerrarSignal()
 
+class ventanaConfirmarCorreo(QDialog):
+    def __init__(self, ventana, correo):
+        super(ventanaConfirmarCorreo, self).__init__()
+        self.ui = Ui_Dialogvcc()
+        self.ui.setupUi(self)
+        self.setWindowModality(2)
+        self.ventanaAnterior = ventana
+        self.correo = correo
+        self.enviarCorreo = GestorCorreo()
+        self.codigo = self.enviarCorreo.codigoConfirmacion(correo)
+        self.ui.botonAceptar.clicked.connect(self.validarCodigo)
+        self.ui.botonVolver.clicked.connect(self.volver)
+        self.enviarCorreo = GestorCorreo()
+        self.codigo = self.enviarCorreo.codigoConfirmacion(correo)
+    
+    def validarCodigo(self):
+        if(self.ui.lineEditCodigo.text() == str(self.codigo) and (self.codigo != 0)):
+            self.ventanaAnterior.crearUsuario()
+            self.volver()
+        else:
+            self.popUpCodigoIncorrecto()
+
+    def popUpCodigoIncorrecto(self):
+        popUp_CodigoIncorrecto = popUp('El código ingresado no es correcto.', 'Error', False, 'critico', 'Ok' )
+        popUp_CodigoIncorrecto.exec_()
+
+    def volver(self):
+        self.ventanaAnterior.setDisabled(0)
+        self.close()
+
 class ventanaRegistrarUsuario(QDialog):
     def __init__(self):
         super(ventanaRegistrarUsuario, self).__init__()
         self.ui = Ui_QDialogvru()
         self.ui.setupUi(self)
+        self.setWindowModality(2)
         self.ui.labelCheck.setVisible(False)
         self.ui.labelX.setVisible(False)
         self.ui.buttonAceptar.setDisabled(True)
@@ -643,6 +677,7 @@ class ventanaRegistrarUsuario(QDialog):
         self.ui.lineEditContrasena.textChanged.connect(self.confirmacionContrasena)
         self.ui.lineEditConfirmacion.textChanged.connect(self.confirmacionContrasena)
         self.ui.lineEditUsuario.textChanged.connect(self.validarIngreso)
+        self.ui.lineEditCorreo.textChanged.connect(self.validarIngreso)
         self.ui.buttonAceptar.clicked.connect(self.verificarUsuario)
     
     def confirmacionContrasena(self):
@@ -661,25 +696,34 @@ class ventanaRegistrarUsuario(QDialog):
         if((str(self.ui.lineEditUsuario.text()) != '') and (str(self.ui.lineEditContrasena.text()) != '') and (str(self.ui.lineEditConfirmacion.text()) != '')):
             validador = Validaciones()
             if((validador.doesnthasSpace(self.ui.lineEditUsuario.text())) and (len(self.ui.lineEditContrasena.text()) >= 7) and (validador.hasNumber(self.ui.lineEditContrasena.text()))
-            and (self.ui.lineEditContrasena.text() == self.ui.lineEditConfirmacion.text())):
+            and (self.ui.lineEditContrasena.text() == self.ui.lineEditConfirmacion.text()) and (self.ui.lineEditCorreo.text() != '')):
                 self.ui.buttonAceptar.setEnabled(True)
             else:
                 self.ui.buttonAceptar.setDisabled(True)
         else:
             self.ui.buttonAceptar.setDisabled(True)
     
+    def irVentanaConfirmarCorreo(self):
+        self.setDisabled(1)
+        self.ventana_ConfirmarCorreo = ventanaConfirmarCorreo(self, self.ui.lineEditCorreo.text())
+        self.ventana_ConfirmarCorreo.show()
+
+    def crearUsuario(self):
+        conexion = ConexionDataBase()
+        conexion.insertarUsuario(self.ui.lineEditUsuario.text(), self.ui.lineEditContrasena.text(), self.adminBool, self.ui.lineEditCorreo.text())
+        self.popUpUsuarioCreado()
+
     def verificarUsuario(self):
         conexion = ConexionDataBase()
         if(conexion.verificarUsuario(self.ui.lineEditUsuario.text())):
             self.popUpUsuarioError()
         else:
             if(self.ui.radioButtonSi.isChecked()):
-                adminBool = True
+                self.adminBool = True
             else:
-                adminBool = False
-            conexion.insertarUsuario(self.ui.lineEditUsuario.text(), self.ui.lineEditContrasena.text(), adminBool)
-            self.popUpUsuarioCreado()
-    
+                self.adminBool = False
+            self.irVentanaConfirmarCorreo()
+
     def popUpUsuarioError(self):
         self.popUp_UsuarioError = popUp('El usuario ingresado ya se encuentra en el sistema.', '', False, 'advertencia', 'Ok')
         self.popUp_UsuarioError.exec_()
@@ -694,6 +738,7 @@ class ventanaGestionarUsuario(QDialog):
         super(ventanaGestionarUsuario, self).__init__()
         self.ui = Ui_Dialogvgu()
         self.ui.setupUi(self)
+        self.setWindowModality(2)
         self.ui.botonAnadirUsuario.clicked.connect(self.irVentanaRegistrarUsuario)
         self.ui.botonEliminarUsuario.clicked.connect(self.irVentanaEliminarUsuario)
         self.ui.botonVolver.clicked.connect(self.close)

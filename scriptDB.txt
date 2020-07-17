@@ -4,6 +4,7 @@ create table usuario (
         nombre text unique not null,
         clave text not null,
         admininstrador bool not null,
+        correo text not null,
         primary key (id_usuario)
 );
 CREATE TABLE cliente (
@@ -67,4 +68,4 @@ create table movimiento (
         fecha timestamp default current_timestamp,
         primary key (id_movimiento)
 );
-insert into usuario(nombre, clave, admininstrador) values ('admin', crypt('1234567', gen_salt('bf') ), True);
+insert into usuario(nombre, clave, admininstrador, correo) values ('admin', crypt('1234567', gen_salt('bf')), true, 'prueba@prueba.com' );
