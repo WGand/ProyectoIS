@@ -125,8 +125,8 @@ class ConexionDataBase:
         else:
             return False
 
-    def insertarUsuario(self, nombre, clave, admin):
-        sql = "INSERT INTO usuario(nombre, clave, admininstrador) VALUES ('"+str(nombre)+"',crypt('"+str(clave)+"', gen_salt('bf')),"+str(admin)+");"
+    def insertarUsuario(self, nombre, clave, admin, correo):
+        sql = "INSERT INTO usuario(nombre, clave, admininstrador, correo) VALUES ('"+str(nombre)+"',crypt('"+str(clave)+"', gen_salt('bf')),"+str(admin)+", '"+correo+"');"
         self.excuteQuery(sql)
 
     def insertarCliente(self, cedula, telefono, nombre):

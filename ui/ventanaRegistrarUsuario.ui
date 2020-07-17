@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>700</width>
-    <height>450</height>
+    <height>460</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -103,7 +103,7 @@
    <property name="geometry">
     <rect>
      <x>321</x>
-     <y>300</y>
+     <y>335</y>
      <width>42</width>
      <height>23</height>
     </rect>
@@ -119,7 +119,7 @@
    <property name="geometry">
     <rect>
      <x>363</x>
-     <y>300</y>
+     <y>335</y>
      <width>42</width>
      <height>23</height>
     </rect>
@@ -135,7 +135,7 @@
    <property name="geometry">
     <rect>
      <x>250</x>
-     <y>340</y>
+     <y>375</y>
      <width>90</width>
      <height>25</height>
     </rect>
@@ -148,7 +148,7 @@
    <property name="geometry">
     <rect>
      <x>355</x>
-     <y>340</y>
+     <y>375</y>
      <width>90</width>
      <height>25</height>
     </rect>
@@ -161,7 +161,7 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>300</y>
+     <y>335</y>
      <width>130</width>
      <height>23</height>
     </rect>
@@ -231,6 +231,29 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="pixmap">
     <pixmap>../assets/iconoX.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelCorreo">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>300</y>
+     <width>120</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Correo:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditCorreo">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>305</y>
+     <width>200</width>
+     <height>25</height>
+    </rect>
    </property>
   </widget>
  </widget>
