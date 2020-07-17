@@ -9,8 +9,8 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("postgres")
-        ConexionDataBase.db.setUserName("postgres")
+        ConexionDataBase.db.setDatabaseName("inventarioabasto")
+        ConexionDataBase.db.setUserName("inventarioabasto")
         ConexionDataBase.db.setPassword("123456")
     
     def insertarMovimiento(self, tipo, monto, justificacion, usuario):
@@ -130,7 +130,7 @@ class ConexionDataBase:
         self.excuteQuery(sql)
 
     def insertarCliente(self, cedula, telefono, nombre):
-        sql = "INSERT INTO cliente(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"');"
+        sql = "INSERT INTO cliente(cedula, telefono, nombre) VALUES ("+str(cedula)+", '"+str(telefono)+"', '"+str(nombre)+"');"
         self.excuteQuery(sql)
     
     def insertarProducto(self, nombre, cantidad, precioventa, iva, preciocompra):
@@ -162,7 +162,7 @@ class ConexionDataBase:
         self.excuteQuery(sql)
 
     def insertarVentaHproducto(self, cantidad, hproducto_id, venta_id):
-        sql = "INSERT INTO venta_producto(cantidad, hproducto_id, venta_id) VALUES ("+str(cantidad)+", "+str(hproducto_id)+", "+str(venta_id)+");"
+        sql = "INSERT INTO venta_hproducto(cantidad, hproducto_id, venta_id) VALUES ("+str(cantidad)+", "+str(hproducto_id)+", "+str(venta_id)+");"
         self.excuteQuery(sql)
 
     #Delete
@@ -241,19 +241,16 @@ class ConexionDataBase:
         return listaProducto
     
     def getIdHproducto(self,nombre): #Devuelve True si esta en la DB
-        sql = "SELECT id_producto FROM hproducto WHERE nombre = '" + str(nombre) + "';"
+        sql = "SELECT id_hproducto FROM hproducto WHERE nombre = '" + str(nombre) + "';"
         query = self.excuteQuery(sql)
-        if query.size() > 1:
-            while query.next():
-                i = query.value(0)
-        else:
-            i = 0
+        while query.next():
+            i = query.value(0)
         return i
 
     def getIdUltimaVenta(self):
         sql = "SELECT id_venta FROM venta;"
         query = self.excuteQuery(sql)
-        if query.size() > 1:
+        if query.size() > 0:
             while query.next():
                 i = query.value(0)
         else:
@@ -274,19 +271,20 @@ class ConexionDataBase:
             i = query.value(0)
         return i
 
-    def guardarVenta(self, venta, usuario ):
-        clienteIntenso = Cliente()
-        clienteIntenso.setCedula(venta.getCliente().getCedula())
-        clienteIntenso.setNombre(venta.getCliente().getNombre())
-        clienteIntenso.setTelefono(venta.getCliente().getTelefono())
-        if(self.verificarCliente(int(clienteIntenso.getCedula()))):
-            id_cliente = self.getIdCliente(int(clienteIntenso.getCedula()))
+    def guardarVenta(self, venta, usuario):
+        clienteVenta = Cliente()
+        clienteVenta.setCedula(venta.getCliente().getCedula())
+        clienteVenta.setNombre(venta.getCliente().getNombre())
+        clienteVenta.setTelefono(venta.getCliente().getTelefono())
+        if(self.verificarCliente(int(clienteVenta.getCedula()))):
+            id_cliente = self.getIdCliente(int(clienteVenta.getCedula()))
         else:
-            self.insertarCliente(clienteIntenso.getCedula(), clienteIntenso.getTelefono(), clienteIntenso.getNombre())
-            id_cliente = self.getIdCliente(clienteIntenso.getCedula())
+            self.insertarCliente(clienteVenta.getCedula(), clienteVenta.getTelefono(), clienteVenta.getNombre())
+            id_cliente = self.getIdCliente(clienteVenta.getCedula())
         id_usuario = self.getIdUsuario(usuario)
         self.insertarVenta(venta.getMonto(), id_cliente, id_usuario)
         id_venta = self.getIdUltimaVenta()
         for producto_ in venta.getProducto():
+            print(producto_.getNombre())
             id_hproducto = self.getIdHproducto(producto_.getNombre())
             self.insertarVentaHproducto(producto_.getCantidad(), id_hproducto, id_venta)

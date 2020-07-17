@@ -9,7 +9,7 @@ create table usuario (
 CREATE TABLE cliente (
         id_cliente SERIAL,
         cedula INTEGER not null,
-        telefono bigint not null,
+        telefono text not null,
         nombre text not null,
         primary key (id_cliente)
 );
@@ -67,3 +67,4 @@ create table movimiento (
         fecha timestamp default current_timestamp,
         primary key (id_movimiento)
 );
+insert into usuario(nombre, clave, admininstrador) values ('admin', crypt('1234567', gen_salt('bf') ), True);

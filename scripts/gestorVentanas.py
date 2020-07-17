@@ -326,7 +326,7 @@ class ventanaModificarProducto(QDialog):
             objects = self.result[filas]
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioVenta())))
             self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
@@ -345,7 +345,7 @@ class ventanaModificarProducto(QDialog):
             objects = self.result[filas]
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioVenta())))
             self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
 
     def irProximaVentana(self):
@@ -437,7 +437,7 @@ class ventanaEliminarProducto(QDialog):
             objects = self.result[filas]
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioVenta())))
             self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
@@ -459,7 +459,7 @@ class ventanaEliminarProducto(QDialog):
             objects = self.result[filas]
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecio())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioVenta())))
             self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
@@ -581,7 +581,7 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
     
     def guardarDatosCliente(self):
         self.popUp_ConfirmarDatosCliente.cerrarPopup()
-        self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), int(self.ui.textTelefono.toPlainText())))
+        self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), str(self.ui.textTelefono.toPlainText())))
         self.conector = ConexionDataBase()
         self.conector.guardarVenta(self.ventana.venta, USER.getNombre())
         self.popUpListo()
