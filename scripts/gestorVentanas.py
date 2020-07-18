@@ -263,13 +263,16 @@ class ventanaModificarCantidad(QDialog):
     def justificaciones(self):
         if self.cantidadActual < int(self.ui.textCantidad.toPlainText()):
             self.lista.setStringList(['Opciones','Compra','Otros'])
+            self.ui.textCantidad.setStyleSheet('background-color: rgb(153, 255, 153);')
             self.ui.comboBoxJustificaciones.setCurrentIndex(0)
         elif self.cantidadActual == int(self.ui.textCantidad.toPlainText()):
             self.lista.setStringList([])
             self.ui.LineEditOtro.setDisabled(1)
             self.ui.LineEditOtro.setText("")
+            self.ui.textCantidad.setStyleSheet('background-color: rgb(238, 238, 236);')
         else:
             self.lista.setStringList(['Opciones','Daño','Robo','Vencimiento','Otros'])
+            self.ui.textCantidad.setStyleSheet('background-color: rgb(255, 153, 153);')
             self.ui.comboBoxJustificaciones.setCurrentIndex(0)
         
 
@@ -297,7 +300,6 @@ class ventanaModificarCantidad(QDialog):
             if self.ui.comboBoxJustificaciones.currentText() != "Otros":
                 idproveedor = self.conector.getIdProveedor(self.ui.comboBoxProveedores.currentText())
                 self.conector.insertarCompra(int(self.producto_.getCantidad()) * int(self.producto_.getPrecioCompra()), idproveedor)
-            self.conector.insertarMovimiento(True, 0, justificacion, USER.getNombre())
             self.conector.insertarMovimiento(False,int(self.producto_.getCantidad())*int(self.producto_.getPrecioCompra()), justificacion, USER.getNombre())
         else:
             self.conector.insertarMovimiento(True, 0, justificacion, USER.getNombre())
@@ -647,7 +649,6 @@ class ventanaConfirmarCorreo(QDialog):
         self.codigo = self.enviarCorreo.codigoConfirmacion(correo)
         self.ui.botonAceptar.clicked.connect(self.validarCodigo)
         self.ui.botonVolver.clicked.connect(self.volver)
-        self.enviarCorreo = GestorCorreo()
         self.codigo = self.enviarCorreo.codigoConfirmacion(correo)
     
     def validarCodigo(self):
@@ -972,6 +973,7 @@ class ventanaAnadirProducto(QDialog):
                     else:
                         self.proveedorExiste()
                         self.conector.insertarProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecioVenta.toPlainText(), False, self.ui.campoTextoPrecioCompra.toPlainText())
+                    self.conector.insertarCompra(int(self.ui.campoTextoCantidad.toPlainText())*int(self.ui.campoTextoPrecioCompra.toPlainText()), self.ui.campoTextoProveedor.text())
                     self.conector.insertarHproducto(self.ui.campoTextoNombre.toPlainText())
                     id_producto = self.conector.getIdProducto(self.ui.campoTextoNombre.toPlainText())
                     id_proveedor = self.conector.getIdProveedor(self.ui.campoTextoProveedor.text())
