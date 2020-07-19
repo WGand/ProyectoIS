@@ -625,6 +625,7 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), str(self.ui.textTelefono.toPlainText())))
         self.conector = ConexionDataBase()
         self.conector.guardarVenta(self.ventana.venta, USER.getNombre())
+        self.conector.insertarMovimiento(True, self.ventana.venta.getMonto(),'Venta', USER.getNombre())
         self.popUpListo()
         
     def popUpListo(self):
@@ -691,7 +692,7 @@ class ventanaRegistrarUsuario(QDialog):
         elif(str(self.ui.lineEditContrasena.text()) != str(self.ui.lineEditConfirmacion.text())):
             self.ui.labelCheck.setVisible(False)
             self.ui.labelX.setVisible(True)
-        elif(str(self.ui.lineEditContrasena.text()) == str(self.ui.lineEditConfirmacion.text()) and (validador.hasNumber(self.ui.lineEditContrasena.text()))):
+        elif(str(self.ui.lineEditContrasena.text()) == str(self.ui.lineEditConfirmacion.text()) and (validador.hasNumber(self.ui.lineEditContrasena.text())) and (len(self.ui.lineEditContrasena.text()) >= 7)):
             self.ui.labelX.setVisible(False)
             self.ui.labelCheck.setVisible(True)
         self.validarIngreso()
