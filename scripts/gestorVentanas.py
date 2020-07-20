@@ -628,6 +628,7 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), str(self.ui.textTelefono.toPlainText())))
         self.conector = ConexionDataBase()
         self.conector.guardarVenta(self.ventana.venta, USER.getNombre())
+        self.conector.insertarMovimiento(True, self.ventana.venta.getMonto(),'Venta', USER.getNombre())
         self.popUpListo()
         
     def popUpListo(self):
