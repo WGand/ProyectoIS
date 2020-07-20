@@ -1,5 +1,6 @@
 import random
 import smtplib
+from urllib.request import urlopen
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 class GestorCorreo():
@@ -33,3 +34,14 @@ class GestorCorreo():
             return codigo
         else:
             return 0
+
+class verificarConexion():
+    def __init__(self):
+        self.pagina = "http://216.58.192.142"
+    
+    def verificar(self):
+        try:
+            urlopen(self.pagina, timeout = 1)
+            return True
+        except:
+            return False

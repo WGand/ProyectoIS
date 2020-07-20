@@ -32,8 +32,9 @@ from ventanaRecuperarUsuario import Ui_QDialogvruu
 from manejadorDataBase import ConexionDataBase
 from objetosPrograma import Venta, Producto, Cliente, usuario
 #Import Correos
-from gestorCorreo import GestorCorreo
+from gestorCorreo import GestorCorreo, verificarConexion
 USER = usuario()
+comprobar = verificarConexion()
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
     switch = {
         "advertencia": QtWidgets.QMessageBox.Warning,
@@ -755,12 +756,19 @@ class ventanaGestionarUsuario(QDialog):
         self.ui.botonVolver.clicked.connect(self.close)
     
     def irVentanaRegistrarUsuario(self):
-        self.ventana_RegistrarUsuario = ventanaRegistrarUsuario()
-        self.ventana_RegistrarUsuario.show()
+        if comprobar.verificar():
+            self.ventana_RegistrarUsuario = ventanaRegistrarUsuario()
+            self.ventana_RegistrarUsuario.show()
+        else:
+            self.popUpErrorConexion()
 
     def irVentanaEliminarUsuario(self):
         self.ventana_EliminarUsuario = ventanaEliminarUsuario()
         self.ventana_EliminarUsuario.show()
+
+    def popUpErrorConexion(self):
+        self.popUp_ErrorConexion = popUp('No hay conexión a la red en este momento', '', False, 'critico', 'Ok')
+        self.popUp_ErrorConexion.exec_()
 
 class ventanaRegistrarVenta(QDialog):
     def __init__(self):
@@ -1122,9 +1130,16 @@ class ventanaLogin(QDialog):
         self.ui.label.mousePressEvent = functools.partial(self.irVentanaRecuperarUsuario)
 
     def irVentanaRecuperarUsuario(self, event):
-        self.vetanana_RecuperarUsuario = ventanaRecuperarUsuario(self)
-        self.vetanana_RecuperarUsuario.show()
-        self.setVisible(False)
+        if comprobar.verificar():
+            self.vetanana_RecuperarUsuario = ventanaRecuperarUsuario(self)
+            self.vetanana_RecuperarUsuario.show()
+            self.setVisible(False)
+        else:
+            self.popUpErrorConexion()
+
+    def popUpErrorConexion(self):
+        self.popUp_ErrorConexion = popUp('No hay conexión a la red en este momento', '', False, 'critico', 'Ok')
+        self.popUp_ErrorConexion.exec_()
 
     def __irVentanaMenu(self):
         self.ventana_Menu = ventanaMenu(self)
@@ -1157,3 +1172,4 @@ class ventanaLogin(QDialog):
                 self.ui.lineEditUsuario.setStyleSheet('background-color: rgb(255, 153, 153);')
             if(clave == ''):
                 self.ui.lineEditContrasena.setStyleSheet('background-color: rgb(255, 153, 153);')
+                
