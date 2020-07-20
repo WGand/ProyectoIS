@@ -76,6 +76,16 @@ class ConexionDataBase:
             user = usuario(query.value(0), query.value(1))
         return user
 
+    def buscarUsuarioCompleto(self, nombre):
+        sql = "SELECT nombre, admininstrador, correo from usuario WHERE nombre = '" + nombre + "';"
+        query = self.excuteQuery(sql)
+        if (query.size() > 0):
+            while query.next():
+                user = usuario(query.value(0), query.value(1), query.value(2))
+            return user
+        else:
+            return usuario()
+
     def recorrerUsuarioCero(self):
         listaUsuarios = []
         sql = "SELECT nombre, admininstrador FROM usuario;"
@@ -127,6 +137,10 @@ class ConexionDataBase:
 
     def insertarUsuario(self, nombre, clave, admin, correo):
         sql = "INSERT INTO usuario(nombre, clave, admininstrador, correo) VALUES ('"+str(nombre)+"',crypt('"+str(clave)+"', gen_salt('bf')),"+str(admin)+", '"+correo+"');"
+        self.excuteQuery(sql)
+
+    def actualizarUsuario(self, nombre, clave):
+        sql = "UPDATE usuario SET clave = crypt('"+str(clave)+"', gen_salt('bf')) WHERE nombre = '"+ str(nombre) +"';"
         self.excuteQuery(sql)
 
     def insertarCliente(self, cedula, telefono, nombre):

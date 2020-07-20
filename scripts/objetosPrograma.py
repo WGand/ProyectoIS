@@ -1,15 +1,19 @@
 from abc import ABC, abstractmethod
 
 class usuario():
-	def __init__(self, nombre = '', admin = ''):
+	def __init__(self, nombre = '', admin = '', correo = ''):
 		self.__nombre = nombre
 		self.__admin = admin
+		self.__correo = correo
 	
 	def getNombre(self):
 		return self.__nombre
 	
 	def isAdmin(self):
 		return self.__admin
+	
+	def getCorreo(self):
+		return self.__correo
 
 class Persona(ABC):
 	def __init__(self, nombre = '', cedula = '', telefono = ''):

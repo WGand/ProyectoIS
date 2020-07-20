@@ -8,6 +8,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5 import QtSql
 from PyQt5.QtSql import *
 from PyQt5.QtSql import QSqlQuery, QSqlTableModel
+import functools
 #Import Ventanas
 from ventanaMenu import Ui_MainWindow
 from ventanaMenuNoAdmin import Ui_MainWindowna
@@ -26,6 +27,7 @@ from ventanaGestionarUsuario import Ui_Dialogvgu
 from ventanaEliminarUsuario import Ui_Dialogveu
 from ventanaLogin import Ui_Dialogvl
 from ventanaConfirmarCorreo import Ui_Dialogvcc
+from ventanaRecuperarUsuario import Ui_QDialogvruu
 #Import Database
 from manejadorDataBase import ConexionDataBase
 from objetosPrograma import Venta, Producto, Cliente, usuario
@@ -646,17 +648,22 @@ class ventanaConfirmarCorreo(QDialog):
         self.ventanaAnterior = ventana
         self.correo = correo
         self.enviarCorreo = GestorCorreo()
-        self.codigo = self.enviarCorreo.codigoConfirmacion(correo)
-        self.ui.botonAceptar.clicked.connect(self.validarCodigo)
+        self.ui.botonAceptar.clicked.connect(self.validarCodigoDos)
         self.ui.botonVolver.clicked.connect(self.volver)
         self.codigo = self.enviarCorreo.codigoConfirmacion(correo)
-    
-    def validarCodigo(self):
-        if(self.ui.lineEditCodigo.text() == str(self.codigo) and (self.codigo != 0)):
-            self.ventanaAnterior.crearUsuario()
+
+    def validarCodigoDos(self):
+        if self.validarCodigo():
+            self.ventanaAnterior.correoConfirmado()
             self.volver()
         else:
             self.popUpCodigoIncorrecto()
+
+    def validarCodigo(self):
+        if(self.ui.lineEditCodigo.text() == str(self.codigo) and (self.codigo != 0)):
+            return 1
+        else:
+            return 0
 
     def popUpCodigoIncorrecto(self):
         popUp_CodigoIncorrecto = popUp('El código ingresado no es correcto.', 'Error', False, 'critico', 'Ok' )
@@ -691,7 +698,7 @@ class ventanaRegistrarUsuario(QDialog):
         elif(str(self.ui.lineEditContrasena.text()) != str(self.ui.lineEditConfirmacion.text())):
             self.ui.labelCheck.setVisible(False)
             self.ui.labelX.setVisible(True)
-        elif(str(self.ui.lineEditContrasena.text()) == str(self.ui.lineEditConfirmacion.text()) and (validador.hasNumber(self.ui.lineEditContrasena.text()))):
+        elif(str(self.ui.lineEditContrasena.text()) == str(self.ui.lineEditConfirmacion.text()) and (validador.hasNumber(self.ui.lineEditContrasena.text())) and (len(self.ui.lineEditContrasena.text()) >= 7)):
             self.ui.labelX.setVisible(False)
             self.ui.labelCheck.setVisible(True)
         self.validarIngreso()
@@ -712,7 +719,7 @@ class ventanaRegistrarUsuario(QDialog):
         self.ventana_ConfirmarCorreo = ventanaConfirmarCorreo(self, self.ui.lineEditCorreo.text())
         self.ventana_ConfirmarCorreo.show()
 
-    def crearUsuario(self):
+    def correoConfirmado(self):
         conexion = ConexionDataBase()
         conexion.insertarUsuario(self.ui.lineEditUsuario.text(), self.ui.lineEditContrasena.text(), self.adminBool, self.ui.lineEditCorreo.text())
         self.popUpUsuarioCreado()
@@ -973,12 +980,12 @@ class ventanaAnadirProducto(QDialog):
                     else:
                         self.proveedorExiste()
                         self.conector.insertarProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecioVenta.toPlainText(), False, self.ui.campoTextoPrecioCompra.toPlainText())
-                    self.conector.insertarCompra(int(self.ui.campoTextoCantidad.toPlainText())*int(self.ui.campoTextoPrecioCompra.toPlainText()), self.ui.campoTextoProveedor.text())
                     self.conector.insertarHproducto(self.ui.campoTextoNombre.toPlainText())
                     id_producto = self.conector.getIdProducto(self.ui.campoTextoNombre.toPlainText())
                     id_proveedor = self.conector.getIdProveedor(self.ui.campoTextoProveedor.text())
-                    self.conector.insertarMovimiento(False, 12000, "Comprar producto", USER.getNombre())
+                    self.conector.insertarMovimiento(False, int(self.ui.campoTextoCantidad.toPlainText())*int(self.ui.campoTextoPrecioCompra.toPlainText()), "Comprar producto", USER.getNombre())
                     self.conector.insertarProveedorProducto(id_producto, id_proveedor)
+                    self.conector.insertarCompra(int(self.ui.campoTextoCantidad.toPlainText())*int(self.ui.campoTextoPrecioCompra.toPlainText()), id_proveedor)
                     self.popUp_InfoDatosCorrectos = popUp('Se agregó el nuevo producto exitosamente.', 'Éxito', False, 'informativo', 'Ok')
                     self.popUp_InfoDatosCorrectos.buttons()[0].pressed.connect(self.close)
                     self.popUp_InfoDatosCorrectos.cerrarPopup()
@@ -1042,6 +1049,65 @@ class ventanaMenu(QMainWindow):
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                           (resolution.height() / 2) - (self.frameSize().height() / 2))
 
+class ventanaRecuperarUsuario(QDialog):
+    def __init__(self, ventana):
+        super(ventanaRecuperarUsuario, self).__init__()
+        self.ui = Ui_QDialogvruu()
+        self.ui.setupUi(self)
+        self.setWindowTitle('Recuperar Usuario')
+        self.setWindowModality(2)
+        self.conector = ConexionDataBase()
+        self.ui.labelCheck.setVisible(False)
+        self.ventana = ventana
+        self.ui.labelX.setVisible(False)
+        self.ui.buttonAceptar.setDisabled(True)
+        self.ui.buttonVolver.clicked.connect(self.volver)
+        self.ui.lineEditContrasena.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.ui.lineEditConfirmacion.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.ui.lineEditContrasena.textChanged.connect(self.confirmacionContrasena)
+        self.ui.lineEditConfirmacion.textChanged.connect(self.confirmacionContrasena)
+        self.ui.lineEditUsuario.textChanged.connect(self.validarIngreso)
+        self.ui.lineEditCorreo.textChanged.connect(self.validarIngreso)
+        self.ui.buttonAceptar.clicked.connect(self.irVentanaConfirmarCorreo)
+
+    def confirmacionContrasena(self):
+        validador = Validaciones()
+        if(self.ui.lineEditContrasena.text() == ''):
+            return 0
+        elif(str(self.ui.lineEditContrasena.text()) != str(self.ui.lineEditConfirmacion.text())):
+            self.ui.labelCheck.setVisible(False)
+            self.ui.labelX.setVisible(True)
+        elif(str(self.ui.lineEditContrasena.text()) == str(self.ui.lineEditConfirmacion.text()) and (validador.hasNumber(self.ui.lineEditContrasena.text())) and (len(self.ui.lineEditContrasena.text()) >= 7) and (len(self.ui.lineEditConfirmacion.text()) >= 7)):
+            self.ui.labelX.setVisible(False)
+            self.ui.labelCheck.setVisible(True)
+        self.validarIngreso()
+
+    def popUpContrasenaModificada(self):
+        self.popUp_ContrasenaModificada = popUp('Se ha modificado la contraseña exitosamente.', '', False, 'informativo', 'Ok')
+        self.popUp_ContrasenaModificada.buttons()[0].pressed.connect(self.close)
+        self.popUp_ContrasenaModificada.exec_()
+
+    def validarIngreso(self):
+        self.usuario = self.conector.buscarUsuarioCompleto(self.ui.lineEditUsuario.text())
+        if(self.usuario.getCorreo() == self.ui.lineEditCorreo.text() and self.ui.labelCheck.isVisible()):
+            self.ui.buttonAceptar.setEnabled(True)
+        else:
+            self.ui.buttonAceptar.setDisabled(True)
+
+    def irVentanaConfirmarCorreo(self):
+        self.setDisabled(1)
+        self.ventana_ConfirmarConfirmar = ventanaConfirmarCorreo(self, self.usuario.getCorreo())
+        self.ventana_ConfirmarConfirmar.show()
+
+    def correoConfirmado(self):
+        self.conector.actualizarUsuario(self.ui.lineEditUsuario.text(), self.ui.lineEditContrasena.text())
+        self.popUpContrasenaModificada()
+        self.volver()
+
+    def volver(self):
+        self.ventana.setVisible(1)
+        self.close()
+
 class ventanaLogin(QDialog):
     def __init__(self):
         super(ventanaLogin, self).__init__()
@@ -1053,7 +1119,13 @@ class ventanaLogin(QDialog):
         self.ui.botonEntrar.clicked.connect(self.__iniciarSesion)
         self.ui.lineEditUsuario.textChanged.connect(self.cambiarColorBlanco)
         self.ui.lineEditContrasena.textChanged.connect(self.cambiarColorBlanco)
-   
+        self.ui.label.mousePressEvent = functools.partial(self.irVentanaRecuperarUsuario)
+
+    def irVentanaRecuperarUsuario(self, event):
+        self.vetanana_RecuperarUsuario = ventanaRecuperarUsuario(self)
+        self.vetanana_RecuperarUsuario.show()
+        self.setVisible(False)
+
     def __irVentanaMenu(self):
         self.ventana_Menu = ventanaMenu(self)
         self.ventana_Menu.show()

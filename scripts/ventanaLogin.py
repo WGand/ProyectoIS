@@ -1,6 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_Dialogvl(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -36,11 +35,6 @@ class Ui_Dialogvl(object):
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-
-    def setupClickToggle(self):
-        def mousePressEvent(*args, **kwargs):
-            print("click")
-        self.label.mousePressEvent = mousePressEvent
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
