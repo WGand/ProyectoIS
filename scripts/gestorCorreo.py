@@ -3,6 +3,9 @@ import smtplib
 from urllib.request import urlopen
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
 class GestorCorreo():
     def __init__(self):
         self.correoAbasto = "manejadorabasto@gmail.com"
@@ -26,6 +29,29 @@ class GestorCorreo():
             self.s.quit()
             return 0
 
+    def enviarReporte(self, objetivo, usuario):
+        # open the file to be sent
+        filename = "csv.txt"
+        attachment = open("../CSV/csv.txt", "rb") 
+
+        # instance of MIMEBase and named as p 
+        p = MIMEBase('application', 'octet-stream') 
+
+        # To change the payload into encoded form 
+        p.set_payload((attachment).read()) 
+
+        # encode into base64 
+        encoders.encode_base64(p) 
+
+        p.add_header('Content-Disposition', "attachment; filename= %s" % filename) 
+
+        # attach the instance 'p' to instance 'msg' 
+        self.msg.attach(p) 
+        i = self.sendEmail(objetivo, 'Reporte de movimientos', 'Reporte generado por '+usuario+'.')
+        if i:
+            return 1
+        else:
+            return 0
 
     def codigoConfirmacion(self, objetivo):
         codigo = random.randint(999, 9999)

@@ -56,8 +56,8 @@ class ConexionDataBase:
         else:
             return True
 
-    def buscarMovimientosFecha(self, fecha):
-        sql = "SELECT tipo, monto, justificacion, usuario, fecha FROM movimiento WHERE fecha = '"+str(fecha)+"';"
+    def buscarMovimientos(self):
+        sql = "SELECT tipo, monto, justificacion, usuario, fecha FROM movimiento;"
         query = self.excuteQuery(sql)
         movimientos = []
         if (query.size() > 0):
@@ -82,6 +82,18 @@ class ConexionDataBase:
         query = QSqlQuery(sql)
         ConexionDataBase.db.close()
         return query
+
+    def buscarCorreoAdministradores(self):
+        sql = "SELECT correo from usuario WHERE admininstrador = True;"
+        query = self.excuteQuery(sql)
+        correos = []
+        while query.next():
+            correos.append(str(query.value(0)))
+        return correos
+
+    def borrarMovimientos(self):
+        sql = "TRUNCATE TABLE movimiento;"
+        self.excuteQuery(sql)
 
     def buscarUsuario(self, nombre):
         sql = "SELECT nombre, admininstrador from usuario WHERE nombre = '" + nombre + "';"
