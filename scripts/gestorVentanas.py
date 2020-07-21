@@ -33,6 +33,7 @@ from manejadorDataBase import ConexionDataBase
 from objetosPrograma import Venta, Producto, Cliente, usuario
 #Import Correos
 from gestorCorreo import GestorCorreo, verificarConexion
+from gestorCsv import GestorCsv
 USER = usuario()
 comprobar = verificarConexion()
 def tipoPopUp(tipo): #funcion que retorna la expresion del PopUp
@@ -1015,6 +1016,7 @@ class ventanaMenu(QMainWindow):
             self.ui.setupUi(self)
             self.ui.botonGestionarProducto.clicked.connect(self.irGestionarProducto) #conexion entre el boton y su ventana, mas accion. IDEM a todos los botones
             self.ui.botonGestionarUsuario.clicked.connect(self.irGestionarUsuario)
+            self.ui.botonEnviarReporte.clicked.connect(self.verificarConexion)
         else:
             self.ui = Ui_MainWindowna()
             self.ui.setupUi(self)
@@ -1025,6 +1027,31 @@ class ventanaMenu(QMainWindow):
         self.ui.botonSalir.clicked.connect(self.salir)
         self.ui.botonCerrarSesion.clicked.connect(self.cerrarSesion)
         self.centerOnScreen()
+
+    def verificarConexion(self):
+        if comprobar.verificar():
+            self.popUpEnviarReporte()
+        else:
+            self.popUpErrorConexion()
+
+    def popUpEnviarReporte(self):
+        popUp_EnviarReporte = popUp("¿Desea enviar el reporte de movimientos a los administradores?", 'Enviar Reporte', True, 'dubitativo', 'Si', 'No')
+        popUp_EnviarReporte.buttons()[1].pressed.connect(self.enviarReporte)
+        popUp_EnviarReporte.exec_()
+
+    def enviarReporte(self):
+        conector = ConexionDataBase()
+        correos = conector.buscarCorreoAdministradores()
+        crearCsv = GestorCsv(USER.getNombre())
+        crearCsv.crearArchivo()
+        conector.borrarMovimientos()
+        for cor in correos:
+            enviarCorreo = GestorCorreo()
+            enviarCorreo.enviarReporte(cor, USER.getNombre())
+
+    def popUpErrorConexion(self):
+        self.popUp_ErrorConexion = popUp('No hay conexión a la red en este momento', '', False, 'critico', 'Ok')
+        self.popUp_ErrorConexion.exec_()
 
     def irGestionarProducto(self):
             self.ventana_GestionarProducto = ventanaGestionarProducto() #ventana_GestionarProducto en vez de ventanaGestionarProducto para confusion en el interpretador, IDEM a todas las ventanas

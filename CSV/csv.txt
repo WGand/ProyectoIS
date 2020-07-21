@@ -1,0 +1,7 @@
+Fecha: 2020-07-20,
+Reporte generado por: admin,
+JUSTIFICACION,MONTO,FIRMA,FECHA
+Comprar producto,- 1200.0,admin,2020-07-20
+Venta,+ 348.0,admin,2020-07-20
+
+,MONTO TOTAL: -852.0

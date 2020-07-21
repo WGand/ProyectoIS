@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
-from objetosPrograma import Cliente, Producto, usuario, Venta
+from objetosPrograma import Cliente, Producto, usuario, Venta, Movimiento
 
 class ConexionDataBase:
 
@@ -9,8 +9,8 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("postgres")
-        ConexionDataBase.db.setUserName("postgres")
+        ConexionDataBase.db.setDatabaseName("inventarioabasto")
+        ConexionDataBase.db.setUserName("inventarioabasto")
         ConexionDataBase.db.setPassword("123456")
     
     def insertarMovimiento(self, tipo, monto, justificacion, usuario):
@@ -56,6 +56,20 @@ class ConexionDataBase:
         else:
             return True
 
+    def buscarMovimientos(self):
+        sql = "SELECT tipo, monto, justificacion, usuario, fecha FROM movimiento;"
+        query = self.excuteQuery(sql)
+        movimientos = []
+        if (query.size() > 0):
+            while query.next():
+                if query.value(0):
+                    tipo = True
+                else:
+                    tipo = False
+                movimiento = Movimiento(tipo, query.value(1), query.value(2), query.value(3), query.value(4))
+                movimientos.append(movimiento)
+        return movimientos
+
     def getIdProveedor(self,nombre):
         sql = "SELECT id_proveedor FROM proveedor WHERE nombre = '" + str(nombre) + "';"
         query = self.excuteQuery(sql)
@@ -68,6 +82,18 @@ class ConexionDataBase:
         query = QSqlQuery(sql)
         ConexionDataBase.db.close()
         return query
+
+    def buscarCorreoAdministradores(self):
+        sql = "SELECT correo from usuario WHERE admininstrador = True;"
+        query = self.excuteQuery(sql)
+        correos = []
+        while query.next():
+            correos.append(str(query.value(0)))
+        return correos
+
+    def borrarMovimientos(self):
+        sql = "TRUNCATE TABLE movimiento;"
+        self.excuteQuery(sql)
 
     def buscarUsuario(self, nombre):
         sql = "SELECT nombre, admininstrador from usuario WHERE nombre = '" + nombre + "';"

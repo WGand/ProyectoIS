@@ -1,5 +1,43 @@
 from abc import ABC, abstractmethod
 
+class Movimiento():
+	def __init__(self, tipo = '', monto= '', justificacion= '', usuario= '', fecha= ''):
+		self.__tipo = tipo
+		self.__monto = monto
+		self.__justificacion = justificacion
+		self.__usuario = usuario
+		self.__fecha = fecha
+	
+	def setTipo(self, tipo):
+		self.__tipo = tipo
+	
+	def getTipo(self):
+		return self.__tipo
+
+	def setMonto(self, monto):
+		self.__monto = monto
+	
+	def getMonto(self):
+		return self.__monto
+	
+	def setJustificacion(self, justificacion):
+		self.__justificacion = justificacion
+	
+	def getJustificacion(self):
+		return self.__justificacion
+
+	def setUsuario(self, usuario):
+		self.__usuario = usuario
+	
+	def getUsuario(self):
+		return self.__usuario
+
+	def setFecha(self, fecha):
+		self.__fecha = fecha
+	
+	def getFecha(self):
+		return self.__fecha
+
 class usuario():
 	def __init__(self, nombre = '', admin = '', correo = ''):
 		self.__nombre = nombre
