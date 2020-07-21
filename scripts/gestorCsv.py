@@ -9,7 +9,7 @@ class GestorCsv():
         self.movimientos = self.conector.buscarMovimientos()
 
     def crearArchivo(self):
-        archivo = open(r"../CSV/csv.txt", "w")
+        archivo = open(r"../CSV/csv.csv", "w")
         archivo.write('Fecha: '+str(date.today())+',\nReporte generado por: '+self.culpable+',\n')
         archivo.write('JUSTIFICACION,MONTO,FIRMA,FECHA\n')
         montoTotal = 0

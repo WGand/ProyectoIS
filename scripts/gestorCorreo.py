@@ -31,8 +31,8 @@ class GestorCorreo():
 
     def enviarReporte(self, objetivo, usuario):
         # open the file to be sent
-        filename = "csv.txt"
-        attachment = open("../CSV/csv.txt", "rb") 
+        filename = "csv.csv"
+        attachment = open("../CSV/csv.csv", "rb") 
 
         # instance of MIMEBase and named as p 
         p = MIMEBase('application', 'octet-stream') 

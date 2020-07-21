@@ -325,6 +325,5 @@ class ConexionDataBase:
         self.insertarVenta(venta.getMonto(), id_cliente, id_usuario)
         id_venta = self.getIdUltimaVenta()
         for producto_ in venta.getProducto():
-            print(producto_.getNombre())
             id_hproducto = self.getIdHproducto(producto_.getNombre())
             self.insertarVentaHproducto(producto_.getCantidad(), id_hproducto, id_venta)
