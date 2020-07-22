@@ -522,7 +522,8 @@ class ventanaEliminarProducto(QDialog):
         self.popUp_EliminarProducto.exec_()
 
     def eliminarProducto(self):
-        self.conector.eliminarProducto(self.productoEliminar.getNombre())    
+        self.conector.eliminarProveedorProducto(self.productoEliminar.getNombre())
+        self.conector.eliminarProducto(self.productoEliminar.getNombre()) 
         self.llenarTabla()
         self.popUp_EliminarProducto.close()
 

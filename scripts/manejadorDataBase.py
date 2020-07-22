@@ -25,9 +25,10 @@ class ConexionDataBase:
             listaProveedor.append(str(query.value(0)))
         return listaProveedor
 
-    def getIdProducto(self,nombre): #Devuelve True si esta en la DB
+    def getIdProducto(self,nombre):
         sql = "SELECT id_producto FROM producto WHERE nombre = '" + str(nombre) + "';"
         query = self.excuteQuery(sql)
+        i = 0
         while query.next():
             i = query.value(0)
         return i
@@ -212,6 +213,11 @@ class ConexionDataBase:
 
     def eliminarProducto(self, nombre):
         sql = "DELETE FROM producto WHERE nombre = '" + str(nombre) + "';"
+        self.excuteQuery(sql)
+    
+    def eliminarProveedorProducto(self, nombre):
+        idproducto = self.getIdProducto(nombre)
+        sql = "DELETE FROM proveedor_producto WHERE producto_id = '"+str(idproducto)+"';"
         self.excuteQuery(sql)
 
     #Producto
