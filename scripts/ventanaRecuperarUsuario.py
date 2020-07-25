@@ -64,7 +64,7 @@ class Ui_QDialogvruu(object):
     def retranslateUi(self, QDialog):
         _translate = QtCore.QCoreApplication.translate
         QDialog.setWindowTitle(_translate("QDialog", "Recuperar Usuario"))
-        self.labelTitulo.setText(_translate("QDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600;\">Ingrese los datos del nuevo usuario:</span></p></body></html>"))
+        self.labelTitulo.setText(_translate("QDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600;\">Ingrese los datos del usuario:</span></p></body></html>"))
         self.labelUsuario.setText(_translate("QDialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Usuario:</span></p></body></html>"))
         self.labelUsuario_2.setText(_translate("QDialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Contraseña nueva:</span></p></body></html>"))
         self.labelUsuario_3.setText(_translate("QDialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Confirmación:</span></p></body></html>"))

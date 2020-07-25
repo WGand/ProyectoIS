@@ -490,13 +490,18 @@ class ventanaEliminarProducto(QDialog):
         self.filtro.setFilterKeyColumn(0)
         self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
-        self.ui.tableView.selectionModel().currentChanged.connect(self.popUpEliminarProducto)
+        self.ui.tableView.setColumnWidth(0, self.width()/3.4)
+        self.ui.tableView.setColumnWidth(1, self.width()/5)
+        self.ui.tableView.setColumnWidth(2, self.width()/5)
+        self.ui.tableView.setColumnWidth(3, self.width()/7)
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.ui.tableView.clicked.connect(self.popUpEliminarProducto)
         self.ui.pushButton.clicked.connect(self.volver)
 
     def llenarTabla(self):
         self.ui.tableView.clearSpans()
         self.result = self.conector.recorrerProductoCero()
-        self.model = QStandardItemModel()
+        self.model.clear()
         self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
         self.columnas = 3
         self.fila = len(self.result)
@@ -597,9 +602,19 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
         self.ui = Ui_Dialogvrvdc()
         self.ui.setupUi(self)
         self.ventana = ventana
+        self.conector = ConexionDataBase()
         self.ui.botonOK.clicked.connect(self.validadorDatos)
+        self.ui.textCedula.textChanged.connect(self.existenciaCliente)
         self.setWindowTitle("Datos Cliente")
         self.setWindowModality(2)
+
+    def existenciaCliente(self):
+        if self.conector.verificarCliente(self.ui.textCedula.toPlainText()) :
+            self.ui.textNombre.setDisabled(1)
+            self.ui.textTelefono.setDisabled(1)
+            usuario = self.conector.buscarCliente(self.ui.textCedula.toPlainText())
+            self.ui.textNombre.setPlainText(usuario.getNombre())
+            self.ui.textTelefono.setPlainText(str(usuario.getTelefono()))
 
     def validadorDatos(self):
         validador = Validaciones()
@@ -628,7 +643,6 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
     def guardarDatosCliente(self):
         self.popUp_ConfirmarDatosCliente.cerrarPopup()
         self.ventana.venta.setCliente(Cliente(str(self.ui.textNombre.toPlainText()), int(self.ui.textCedula.toPlainText()), str(self.ui.textTelefono.toPlainText())))
-        self.conector = ConexionDataBase()
         self.conector.guardarVenta(self.ventana.venta, USER.getNombre())
         self.conector.insertarMovimiento(True, self.ventana.venta.getMonto(),'Venta', USER.getNombre())
         self.popUpListo()
@@ -971,7 +985,7 @@ class ventanaAnadirProducto(QDialog):
     def validarIngreso(self):
         if ((len(self.ui.campoTextoNombre.toPlainText()) == 0) or (len(self.ui.campoTextoPrecioCompra.toPlainText()) == 0) or (len(self.ui.campoTextoCantidad.toPlainText()) == 0) or
         ((self.ui.radioSi.isChecked() == False) and (self.ui.radioNo.isChecked() == False)) or (len(self.ui.campoTextoPrecioVenta.toPlainText()) == 0) or (len(self.ui.campoTextoProveedor.text()) == 0)):
-            self.popUp_AdvertenciaDatoIncompleto = popUp('No se llenaron todos los datos requeridos.', 'Error', False, 'informativo', 'Ok')
+            self.popUp_AdvertenciaDatoIncompleto = popUp('No se llenaron todos los datos requeridos.', 'Error', False, 'advertencia', 'Ok')
             self.popUp_AdvertenciaDatoIncompleto.exec()
         else: #Validar
             validador = Validaciones()
@@ -981,7 +995,7 @@ class ventanaAnadirProducto(QDialog):
                 self.popUp_AdvertenciaDatoIncorrecto.exec()
             else:
                 if(self.conector.verificarProducto(self.ui.campoTextoNombre.toPlainText())):
-                    self.popUp_ProductoExistente = popUp('El nombre del producto ingresado ya se encuentra registrado.', 'Error', False, 'informativo', 'Ok')
+                    self.popUp_ProductoExistente = popUp('El nombre del producto ingresado ya se encuentra registrado.', 'Error', False, 'advertencia', 'Ok')
                     self.popUp_ProductoExistente.cerrarPopup()
                     self.popUp_ProductoExistente.exec_()
                 else:
@@ -1004,7 +1018,7 @@ class ventanaAnadirProducto(QDialog):
 
     def proveedorExiste(self):
         if self.db.verificarProveedor(self.ui.campoTextoProveedor.text()):
-            self.db.insertarProveedor(self.ui.campoTextoProveedor.text())
+            self.db.insertarProveedor(self.ui.campoTextoProveedor.text().upper())
 
     def volver(self):
         self.close()
@@ -1017,12 +1031,12 @@ class ventanaMenu(QMainWindow):
             self.ui.setupUi(self)
             self.ui.botonGestionarProducto.clicked.connect(self.irGestionarProducto) #conexion entre el boton y su ventana, mas accion. IDEM a todos los botones
             self.ui.botonGestionarUsuario.clicked.connect(self.irGestionarUsuario)
-            self.ui.botonEnviarReporte.clicked.connect(self.verificarConexion)
         else:
             self.ui = Ui_MainWindowna()
             self.ui.setupUi(self)
         self.login = login
         self.setWindowTitle("Menu")
+        self.ui.botonEnviarReporte.clicked.connect(self.verificarConexion)
         self.ui.botonListarInventario.clicked.connect(self.irListarInventario)
         self.ui.botonRegistrarVenta.clicked.connect(self.irRegistrarVenta)
         self.ui.botonSalir.clicked.connect(self.salir)

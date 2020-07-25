@@ -9,8 +9,8 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
     
     def insertarMovimiento(self, tipo, monto, justificacion, usuario):
@@ -74,9 +74,12 @@ class ConexionDataBase:
     def getIdProveedor(self,nombre):
         sql = "SELECT id_proveedor FROM proveedor WHERE nombre = '" + str(nombre) + "';"
         query = self.excuteQuery(sql)
-        while query.next():
-            i = query.value(0)
-        return i
+        if query.size() > 0:
+            while query.next():
+                i = query.value(0)
+            return i
+        else:
+            return 0
 
     def excuteQuery(self, sql):
         ConexionDataBase.db.open()
@@ -153,6 +156,16 @@ class ConexionDataBase:
             return True
         else:
             return False
+
+    def buscarCliente(self, cedula):
+        sql = "SELECT cedula, telefono, nombre from cliente where cedula = " + str(cedula) + ";"
+        query = self.excuteQuery(sql)
+        if query.size() > 0:
+            while query.next():
+                cliente = Cliente(query.value(2), query.value(0), query.value(1))
+            return cliente
+        else:
+            return 0
 
     def verificarProducto(self,nombre): #Devuelve True si esta en la DB
         sql = "SELECT FROM producto WHERE nombre = '" + str(nombre) + "';"
