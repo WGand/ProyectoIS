@@ -140,9 +140,17 @@ class ventanaEliminarUsuario(QDialog):
     def eliminarUsuario(self):
         self.db.eliminarUsuario(self.usuarioEliminar)
         self.actualizarTabla()
+        self.enviarCorreo()
 
     def volver(self):
         self.close()
+
+    def enviarCorreo(self):       
+        conector = ConexionDataBase()
+        correos = conector.buscarCorreoAdministradores()
+        for cor in correos:
+            enviarCorreo = GestorCorreo()
+            enviarCorreo.enviarCorreoSeguridad(USER.getNombre(), self.usuarioEliminar, cor, "Eliminar")
 
 class ventanaListarInventario(QDialog):
     def __init__(self):
@@ -739,8 +747,10 @@ class ventanaRegistrarUsuario(QDialog):
 
     def correoConfirmado(self):
         conexion = ConexionDataBase()
+        self.nombreUsuario = self.ui.lineEditUsuario.text()
         conexion.insertarUsuario(self.ui.lineEditUsuario.text(), self.ui.lineEditContrasena.text(), self.adminBool, self.ui.lineEditCorreo.text())
         self.popUpUsuarioCreado()
+        self.enviarCorreo()
 
     def verificarUsuario(self):
         conexion = ConexionDataBase()
@@ -761,6 +771,13 @@ class ventanaRegistrarUsuario(QDialog):
         self.popUp_UsuarioCreado = popUp('El usuario se ha creado exitosamente.', '', False, 'informativo', 'Ok')
         self.popUp_UsuarioCreado.buttons()[0].pressed.connect(self.close)
         self.popUp_UsuarioCreado.exec_()
+
+    def enviarCorreo(self):       
+        conector = ConexionDataBase()
+        correos = conector.buscarCorreoAdministradores()
+        for cor in correos:
+            enviarCorreo = GestorCorreo()
+            enviarCorreo.enviarCorreoSeguridad(USER.getNombre(), self.nombreUsuario, cor, "Anadir", self.adminBool)
 
 class ventanaGestionarUsuario(QDialog):
     def __init__(self):    

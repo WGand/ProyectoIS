@@ -29,6 +29,31 @@ class GestorCorreo():
             self.s.quit()
             return 0
 
+    def enviarCorreoSeguridad(self, usuario, usuarioAccion, objetivo, motivo, admin):
+        if motivo == 'Eliminar':
+            asunto = "Usuario eliminado"
+            mensaje = usuario + " ha eliminado a " + usuarioAccion + " del sistema"
+        elif motivo == "Anadir":
+            asunto = "Usuario añadido"
+            if admin:
+                mensaje = usuario + " ha añadido a " + usuarioAccion + " al sistema con permisos de administrador"
+            else:
+                mensaje = mensaje = usuario + " ha añadido a " + usuarioAccion + " al sistema"
+        self.msg['To'] = objetivo
+        self.msg['Subject'] = asunto
+        html = mensaje
+        part2 = MIMEText(html, 'html')
+        self.msg.attach(part2)
+        self.s.login(self.correoAbasto, self.claveCorreoAbasto)
+        try:
+            self.s.sendmail(self.correoAbasto, objetivo, self.msg.as_string())
+            self.s.quit()
+            return 1
+        except:
+            self.s.quit()
+            return 0
+
+
     def enviarReporte(self, objetivo, usuario):
         # open the file to be sent
         filename = "csv.csv"
