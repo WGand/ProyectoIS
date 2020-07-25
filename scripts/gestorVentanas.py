@@ -994,17 +994,16 @@ class ventanaAnadirProducto(QDialog):
                 self.popUp_AdvertenciaDatoIncorrecto.cerrarPopup()
                 self.popUp_AdvertenciaDatoIncorrecto.exec()
             else:
-                if(self.conector.verificarProducto(self.ui.campoTextoNombre.toPlainText())):
+                if(self.conector.verificarProducto(self.ui.campoTextoNombre.toPlainText()) and not self.conector.verificarProveedor(self.ui.campoTextoProveedor.text())):
                     self.popUp_ProductoExistente = popUp('El nombre del producto ingresado ya se encuentra registrado.', 'Error', False, 'advertencia', 'Ok')
                     self.popUp_ProductoExistente.cerrarPopup()
                     self.popUp_ProductoExistente.exec_()
                 else:
                     if (self.ui.radioSi.isChecked() == True):
-                        self.proveedorExiste()
                         self.conector.insertarProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecioVenta.toPlainText(), True, self.ui.campoTextoPrecioCompra.toPlainText())
                     else:
-                        self.proveedorExiste()
                         self.conector.insertarProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecioVenta.toPlainText(), False, self.ui.campoTextoPrecioCompra.toPlainText())
+                    self.proveedorExiste()
                     self.conector.insertarHproducto(self.ui.campoTextoNombre.toPlainText())
                     id_producto = self.conector.getIdProducto(self.ui.campoTextoNombre.toPlainText())
                     id_proveedor = self.conector.getIdProveedor(self.ui.campoTextoProveedor.text())
