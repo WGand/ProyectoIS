@@ -150,7 +150,7 @@ class ventanaEliminarUsuario(QDialog):
         correos = conector.buscarCorreoAdministradores()
         for cor in correos:
             enviarCorreo = GestorCorreo()
-            enviarCorreo.enviarCorreoSeguridad(USER.getNombre(), self.usuarioEliminar, cor, "Eliminar")
+            enviarCorreo.enviarCorreoSeguridad(USER.getNombre(), self.usuarioEliminar, cor, "Eliminar", False)
 
 class ventanaListarInventario(QDialog):
     def __init__(self):
