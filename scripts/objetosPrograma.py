@@ -80,9 +80,6 @@ class Persona(ABC):
 class Cliente(Persona):
 	pass
 
-class Vendedor(Persona):
-	pass
-
 class Producto():
 	def __init__(self, nombre = '', cantidad = '', precioVenta = '', iva = '', precioCompra =''):
 		self.__nombre = nombre

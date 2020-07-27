@@ -1,4 +1,4 @@
-#Import basura de QT
+#Import de QT
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QDialog, QMessageBox, QVBoxLayout, QTableView
 from PyQt5 import QtWidgets
