@@ -312,9 +312,9 @@ class ventanaModificarCantidad(QDialog):
             if self.ui.comboBoxJustificaciones.currentText() != "Otros":
                 idproveedor = self.conector.getIdProveedor(self.ui.comboBoxProveedores.currentText().upper())
                 self.conector.insertarCompra((int(self.producto_.getCantidad()) - int(self.cantidadActual)) * int(self.producto_.getPrecioCompra()), idproveedor)
-            self.conector.insertarMovimiento(True,int(self.producto_.getPrecioCompra())*(int(self.producto_.getCantidad()) - int(self.cantidadActual)), justificacion, USER.getNombre())
+            self.conector.insertarMovimiento(False,int(self.producto_.getPrecioCompra())*(int(self.producto_.getCantidad()) - int(self.cantidadActual)), justificacion, USER.getNombre())
         else:
-            self.conector.insertarMovimiento(False, 0, justificacion, USER.getNombre())
+            self.conector.insertarMovimiento(True, 0, justificacion, USER.getNombre())
         self.ventana.cambiarDato()
         self.irVolver()
 
@@ -1081,12 +1081,11 @@ class ventanaMenu(QMainWindow):
             self.popUpErrorConexion()
 
     def popUpEnviarReporte(self):
-        self.popUp_EnviarReporte = popUp("¿Desea enviar el reporte de movimientos a los administradores?", 'Enviar Reporte', True, 'dubitativo', 'Si', 'No')
-        self.popUp_EnviarReporte.buttons()[1].pressed.connect(self.enviarReporte)
-        self.popUp_EnviarReporte.exec_()
+        popUp_EnviarReporte = popUp("¿Desea enviar el reporte de movimientos a los administradores?", 'Enviar Reporte', True, 'dubitativo', 'Si', 'No')
+        popUp_EnviarReporte.buttons()[1].pressed.connect(self.enviarReporte)
+        popUp_EnviarReporte.exec_()
 
     def enviarReporte(self):
-        self.popUp_EnviarReporte.hide()
         conector = ConexionDataBase()
         correos = conector.buscarCorreoAdministradores()
         crearCsv = GestorCsv(USER.getNombre())
