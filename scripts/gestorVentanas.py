@@ -693,6 +693,7 @@ class ventanaConfirmarCorreo(QDialog):
 
     def validarCodigoDos(self):
         if self.validarCodigo():
+            self.hide()
             self.ventanaAnterior.correoConfirmado()
             self.volver()
         else:
