@@ -9,7 +9,6 @@ from PyQt5 import QtSql
 from PyQt5.QtSql import *
 from PyQt5.QtSql import QSqlQuery, QSqlTableModel
 import functools
-import time
 #Import Ventanas
 from ventanaMenu import Ui_MainWindow
 from ventanaMenuNoAdmin import Ui_MainWindowna
