@@ -632,6 +632,11 @@ class ventanaRegistrarVentaDatosCliente(QDialog):
             usuario = self.conector.buscarCliente(self.ui.textCedula.toPlainText())
             self.ui.textNombre.setPlainText(usuario.getNombre())
             self.ui.textTelefono.setPlainText(str(usuario.getTelefono()))
+        else:
+            self.ui.textNombre.setDisabled(0)
+            self.ui.textTelefono.setDisabled(0)
+            self.ui.textNombre.setPlainText("")
+            self.ui.textTelefono.setPlainText("")
 
     def validadorDatos(self):
         validador = Validaciones()
