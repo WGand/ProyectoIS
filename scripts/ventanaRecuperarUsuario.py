@@ -1,10 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_QDialogvru(object):
+class Ui_QDialogvruu(object):
     def setupUi(self, QDialog):
         QDialog.setObjectName("QDialog")
-        QDialog.resize(700, 460)
+        QDialog.resize(712, 425)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../assets/iconoLogo.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         QDialog.setWindowIcon(icon)
@@ -15,7 +15,7 @@ class Ui_QDialogvru(object):
         self.labelUsuario.setGeometry(QtCore.QRect(189, 185, 120, 31))
         self.labelUsuario.setObjectName("labelUsuario")
         self.labelUsuario_2 = QtWidgets.QLabel(QDialog)
-        self.labelUsuario_2.setGeometry(QtCore.QRect(189, 225, 120, 31))
+        self.labelUsuario_2.setGeometry(QtCore.QRect(148, 224, 161, 31))
         self.labelUsuario_2.setObjectName("labelUsuario_2")
         self.labelUsuario_3 = QtWidgets.QLabel(QDialog)
         self.labelUsuario_3.setGeometry(QtCore.QRect(189, 265, 120, 31))
@@ -29,23 +29,12 @@ class Ui_QDialogvru(object):
         self.lineEditConfirmacion = QtWidgets.QLineEdit(QDialog)
         self.lineEditConfirmacion.setGeometry(QtCore.QRect(311, 265, 200, 25))
         self.lineEditConfirmacion.setObjectName("lineEditConfirmacion")
-        self.radioButtonSi = QtWidgets.QRadioButton(QDialog)
-        self.radioButtonSi.setGeometry(QtCore.QRect(321, 335, 42, 23))
-        self.radioButtonSi.setChecked(False)
-        self.radioButtonSi.setObjectName("radioButtonSi")
-        self.radioButtonNo = QtWidgets.QRadioButton(QDialog)
-        self.radioButtonNo.setGeometry(QtCore.QRect(363, 335, 42, 23))
-        self.radioButtonNo.setChecked(True)
-        self.radioButtonNo.setObjectName("radioButtonNo")
         self.buttonVolver = QtWidgets.QPushButton(QDialog)
-        self.buttonVolver.setGeometry(QtCore.QRect(250, 375, 90, 25))
+        self.buttonVolver.setGeometry(QtCore.QRect(250, 350, 90, 25))
         self.buttonVolver.setObjectName("buttonVolver")
         self.buttonAceptar = QtWidgets.QPushButton(QDialog)
-        self.buttonAceptar.setGeometry(QtCore.QRect(355, 375, 90, 25))
+        self.buttonAceptar.setGeometry(QtCore.QRect(355, 350, 90, 25))
         self.buttonAceptar.setObjectName("buttonAceptar")
-        self.labelAdministrador = QtWidgets.QLabel(QDialog)
-        self.labelAdministrador.setGeometry(QtCore.QRect(190, 335, 130, 23))
-        self.labelAdministrador.setObjectName("labelAdministrador")
         self.labelInfo = QtWidgets.QLabel(QDialog)
         self.labelInfo.setGeometry(QtCore.QRect(170, 100, 371, 71))
         self.labelInfo.setTextFormat(QtCore.Qt.AutoText)
@@ -74,16 +63,13 @@ class Ui_QDialogvru(object):
 
     def retranslateUi(self, QDialog):
         _translate = QtCore.QCoreApplication.translate
-        QDialog.setWindowTitle(_translate("QDialog", "Registrar usuario"))
-        self.labelTitulo.setText(_translate("QDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600;\">Ingrese los datos del nuevo usuario:</span></p></body></html>"))
+        QDialog.setWindowTitle(_translate("QDialog", "Recuperar Usuario"))
+        self.labelTitulo.setText(_translate("QDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600;\">Ingrese los datos del usuario:</span></p></body></html>"))
         self.labelUsuario.setText(_translate("QDialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Usuario:</span></p></body></html>"))
-        self.labelUsuario_2.setText(_translate("QDialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Contraseña:</span></p></body></html>"))
+        self.labelUsuario_2.setText(_translate("QDialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Contraseña nueva:</span></p></body></html>"))
         self.labelUsuario_3.setText(_translate("QDialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Confirmación:</span></p></body></html>"))
-        self.radioButtonSi.setText(_translate("QDialog", "Si"))
-        self.radioButtonNo.setText(_translate("QDialog", "No"))
         self.buttonVolver.setText(_translate("QDialog", "Volver"))
         self.buttonAceptar.setText(_translate("QDialog", "Aceptar"))
-        self.labelAdministrador.setText(_translate("QDialog", "<html><head/><body><p><span style=\" font-size:14pt;\">Administrador:</span></p></body></html>"))
         self.labelInfo.setText(_translate("QDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

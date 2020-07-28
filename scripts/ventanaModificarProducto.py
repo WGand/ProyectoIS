@@ -1,37 +1,38 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'ventanaModificarProducto.ui'
-#
-# Created by: PyQt5 UI code generator 5.14.2
-#
-# WARNING! All changes made in this file will be lost!
-
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_Dialogvmp(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(507, 449)
-        self.verticalLayoutWidget = QtWidgets.QWidget(Dialog)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(39, 29, 441, 291))
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../assets/iconoLogo.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        Dialog.setWindowIcon(icon)
-        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.campoTexto = QtWidgets.QLineEdit(self.verticalLayoutWidget)
-        self.campoTexto.setObjectName("campoTexto")
-        self.verticalLayout.addWidget(self.campoTexto)
-        self.tableView = QtWidgets.QTableView(self.verticalLayoutWidget)
-        self.tableView.setObjectName("tableView")
-        self.verticalLayout.addWidget(self.tableView)
-        self.pushButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        Dialog.resize(682, 489)
+        self.gridLayoutWidget = QtWidgets.QWidget(Dialog)
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(0, 0, 681, 481))
+        self.gridLayoutWidget.setObjectName("gridLayoutWidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setVerticalSpacing(2)
+        self.gridLayout.setObjectName("gridLayout")
+        self.pushButton = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.pushButton.setObjectName("pushButton")
-        self.verticalLayout.addWidget(self.pushButton)
+        self.gridLayout.addWidget(self.pushButton, 2, 0, 1, 2)
+        self.tableView = QtWidgets.QTableView(self.gridLayoutWidget)
+        self.tableView.setObjectName("tableView")
+        self.gridLayout.addWidget(self.tableView, 1, 0, 1, 2)
+        self.campoTexto = QtWidgets.QLineEdit(self.gridLayoutWidget)
+        self.campoTexto.setObjectName("campoTexto")
+        self.gridLayout.addWidget(self.campoTexto, 0, 0, 1, 1)
+        self.label = QtWidgets.QLabel(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setMinimumSize(QtCore.QSize(0, 0))
+        self.label.setText("")
+        self.label.setPixmap(QtGui.QPixmap("../assets/iconoLupa.png"))
+        self.label.setScaledContents(True)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 1, 1, 1)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -39,5 +40,4 @@ class Ui_Dialogvmp(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Modificar Producto  "))
-        #self.campoTexto.setText(_translate("Dialog", "Ingrese Producto a buscar"))
         self.pushButton.setText(_translate("Dialog", "Volver"))

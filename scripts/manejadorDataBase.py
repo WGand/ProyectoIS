@@ -1,7 +1,6 @@
 import sys
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
-from objetosPrograma import Cliente, Producto, usuario
-from objetosPrograma import Venta
+from objetosPrograma import Cliente, Producto, usuario, Venta, Movimiento
 
 class ConexionDataBase:
 
@@ -10,32 +9,130 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
-
-    def openDB(self):
-        ConexionDataBase.db.open()
     
-    def closeDB(self):
+    def insertarMovimiento(self, tipo, monto, justificacion, usuario):
+        sql = "INSERT INTO movimiento(tipo, monto, justificacion, usuario) VALUES ("+str(tipo)+","+str(monto)+",'"+justificacion+"','"+usuario+"');"
+        self.excuteQuery(sql)
+    
+    def recorrerProveedor(self):
+        listaProveedor = []
+        sql = "SELECT nombre from proveedor;"
+        query = self.excuteQuery(sql)
+        while query.next():
+            listaProveedor.append(str(query.value(0)))
+        return listaProveedor
+
+    def getIdProducto(self, nombre):
+        sql = "SELECT id_producto FROM producto WHERE nombre = '" + str(nombre) + "';"
+        query = self.excuteQuery(sql)
+        i = 0
+        while query.next():
+            i = query.value(0)
+        return i
+
+    def buscarProveedoresProducto(self, nombre):
+        listaProveedorID = []
+        listaProveedor = []
+        idproducto = self.getIdProducto(nombre)
+        sql = "SELECT proveedor_id FROM proveedor_producto WHERE producto_id = '" + str(idproducto) + "';"
+        query = self.excuteQuery(sql)
+        while query.next():
+            listaProveedorID.append(str(query.value(0)))
+        for i in listaProveedorID:
+            sql = "SELECT nombre FROM proveedor WHERE id_proveedor = '" + str(i) + "';"
+            query = self.excuteQuery(sql)
+            query.next()
+            listaProveedor.append(str(query.value(0)))
+        return listaProveedor
+
+    def buscarProveedorProducto(self, nombre):
+        idproducto = self.getIdProducto(nombre)
+        sql = "SELECT proveedor_id FROM proveedor_producto WHERE producto_id = '" + str(idproducto) + "';"
+        query = self.excuteQuery(sql)
+        while query.next():
+            id_proveedor = str(query.value(0))
+            if len(id_proveedor) > 0:
+                sql = "SELECT nombre FROM proveedor WHERE id_proveedor = '" + str(id_proveedor) + "';"
+                query = self.excuteQuery(sql)
+                while query.next():
+                    nombreProveedor = str(query.value(0))
+        return nombreProveedor
+
+
+    def verificarProveedor(self, nombre): #Devuelve True si esta en la DB
+        sql = "SELECT FROM proveedor WHERE nombre = '" + str(nombre) + "';"
+        query = self.excuteQuery(sql)
+        if (query.size() > 0):
+            return False
+        else:
+            return True
+
+    def buscarMovimientos(self):
+        sql = "SELECT tipo, monto, justificacion, usuario, fecha FROM movimiento;"
+        query = self.excuteQuery(sql)
+        movimientos = []
+        if (query.size() > 0):
+            while query.next():
+                if query.value(0):
+                    tipo = True
+                else:
+                    tipo = False
+                movimiento = Movimiento(tipo, query.value(1), query.value(2), query.value(3), query.value(4))
+                movimientos.append(movimiento)
+        return movimientos
+
+    def getIdProveedor(self,nombre):
+        sql = "SELECT id_proveedor FROM proveedor WHERE nombre = '" + str(nombre) + "';"
+        query = self.excuteQuery(sql)
+        if query.size() > 0:
+            while query.next():
+                i = query.value(0)
+            return i
+        else:
+            return 0
+
+    def excuteQuery(self, sql):
+        ConexionDataBase.db.open()
+        query = QSqlQuery(sql)
         ConexionDataBase.db.close()
+        return query
+
+    def buscarCorreoAdministradores(self):
+        sql = "SELECT correo from usuario WHERE admininstrador = True;"
+        query = self.excuteQuery(sql)
+        correos = []
+        while query.next():
+            correos.append(str(query.value(0)))
+        return correos
+
+    def borrarMovimientos(self):
+        sql = "TRUNCATE TABLE movimiento;"
+        self.excuteQuery(sql)
 
     def buscarUsuario(self, nombre):
         sql = "SELECT nombre, admininstrador from usuario WHERE nombre = '" + nombre + "';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        query = self.excuteQuery(sql)
         while query.next():
             user = usuario(query.value(0), query.value(1))
         return user
 
+    def buscarUsuarioCompleto(self, nombre):
+        sql = "SELECT nombre, admininstrador, correo from usuario WHERE nombre = '" + nombre + "';"
+        query = self.excuteQuery(sql)
+        if (query.size() > 0):
+            while query.next():
+                user = usuario(query.value(0), query.value(1), query.value(2))
+            return user
+        else:
+            return usuario()
+
     def recorrerUsuarioCero(self):
         listaUsuarios = []
         sql = "SELECT nombre, admininstrador FROM usuario;"
-        self.openDB()
-        query = QSqlQuery(sql)
-        self.closeDB()
+        query = self.excuteQuery(sql)
         while query.next():
             nombre = query.value(0)
             admin = query.value(1)
@@ -43,330 +140,224 @@ class ConexionDataBase:
             listaUsuarios.append(objeto)
         return listaUsuarios
 
-    #Select
 
-    def validarUsuario(self, nombre): #Devuelve True si esta en la DB
+    def verificarUsuario(self, nombre): #Devuelve True si esta en la DB
         sql = "SELECT FROM usuario WHERE nombre = '" + str(nombre) + "';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        query = self.excuteQuery(sql)
         if (query.size() > 0):
             return True
         else:
             return False
 
     #Precondicion: Existe el usuario.
-    def validarClave(self, nombre, clave):
+    def verificarClave(self, nombre, clave):
         sql = "SELECT clave FROM usuario WHERE nombre = '"+str(nombre)+"';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        query = self.excuteQuery(sql)
         while query.next():
             hash_ = query.value(0)
         sql2 = "SELECT FROM usuario WHERE nombre = '"+str(nombre)+"' and clave = crypt('"+str(clave)+"', '"+str(hash_)+"');"
-        query2 = QSqlQuery()
-        self.openDB()
-        query2.exec_(sql2)
-        self.closeDB()
+        query2 = self.excuteQuery(sql2)
         if (query2.size() > 0):
             return True
         else:
             return False
         
-    def validarCliente(self,cedula): #Devuelve True si esta en la DB
+    def verificarCliente(self,cedula): #Devuelve True si esta en la DB
         sql = "SELECT FROM cliente WHERE cedula = " + str(cedula) + ";"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        query = self.excuteQuery(sql)
         if (query.size() > 0):
             return True
         else:
             return False
 
-    def validarProducto(self,nombre): #Devuelve True si esta en la DB
+    def buscarCliente(self, cedula):
+        sql = "SELECT cedula, telefono, nombre from cliente where cedula = " + str(cedula) + ";"
+        query = self.excuteQuery(sql)
+        if query.size() > 0:
+            while query.next():
+                cliente = Cliente(query.value(2), query.value(0), query.value(1))
+            return cliente
+        else:
+            return 0
+
+    def verificarProducto(self,nombre): #Devuelve True si esta en la DB
         sql = "SELECT FROM producto WHERE nombre = '" + str(nombre) + "';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        query = self.excuteQuery(sql)
         if (query.size() > 0):
             return True
         else:
             return False
 
-    def validarVendedor(self,cedula): #Devuelve True si esta en la DB
-        sql = "SELECT FROM vendedor WHERE cedula = " + str(cedula) + ";"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
-        if (query.size() > 0):
-            return True
-        else:
-            return False
+    def insertarUsuario(self, nombre, clave, admin, correo):
+        sql = "INSERT INTO usuario(nombre, clave, admininstrador, correo) VALUES ('"+str(nombre)+"',crypt('"+str(clave)+"', gen_salt('bf')),"+str(admin)+", '"+correo+"');"
+        self.excuteQuery(sql)
 
-    #Insert
-    def insertUsuario(self, nombre, clave, admin):
-        sql = "INSERT INTO usuario(nombre, clave, admininstrador) VALUES ('"+str(nombre)+"',crypt('"+str(clave)+"', gen_salt('bf')),"+str(admin)+");"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+    def actualizarUsuario(self, nombre, clave):
+        sql = "UPDATE usuario SET clave = crypt('"+str(clave)+"', gen_salt('bf')) WHERE nombre = '"+ str(nombre) +"';"
+        self.excuteQuery(sql)
 
-    def insertCliente(self, cedula, telefono, nombre):
-        if (self.validarCliente(cedula) == False):
-            sql = "INSERT INTO cliente(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"');"
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
+    def insertarCliente(self, cedula, telefono, nombre):
+        sql = "INSERT INTO cliente(cedula, telefono, nombre) VALUES ("+str(cedula)+", '"+str(telefono)+"', '"+str(nombre)+"');"
+        self.excuteQuery(sql)
     
-    def insertProducto(self, nombre, cantidad, precio, iva):
-        sql = "INSERT INTO producto(nombre, cantidad, precio, iva) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precio)+","+str(iva)+");"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+    def insertarProducto(self, nombre, cantidad, precioventa, iva, preciocompra):
+        sql = "INSERT INTO producto(nombre, cantidad, precioventa, iva, preciocompra) VALUES ('"+str(nombre)+"',"+str(cantidad)+","+str(precioventa)+","+str(iva)+","+str(preciocompra)+");"
+        self.excuteQuery(sql)
 
-    def insertVendedor(self, cedula, telefono, nombre):
-        if (self.validarVendedor(cedula) == False):  
-            sql = "INSERT INTO vendedor(cedula, telefono, nombre) VALUES ("+str(cedula)+", "+str(telefono)+", '"+str(nombre)+"');"
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
+    def insertarVenta(self, monto, cliente_id, usuario_id):
+        sql = "INSERT INTO venta(monto, cliente_id, usuario_id) VALUES ("+str(monto)+", "+str(cliente_id)+", "+str(usuario_id)+");"
+        self.excuteQuery(sql)
     
-    def insertVenta(self, monto, cliente_id):
-        sql = "INSERT INTO venta(monto, cliente_id) VALUES ("+str(monto)+", "+str(cliente_id)+");"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+    def insertarCompra(self, monto, proveedor_id):
+        sql = "insert into compra(monto, proveedor_id) values ("+str(monto)+", "+str(proveedor_id)+");"
+        self.excuteQuery(sql)
     
-    def insertVentaProducto(self, cantidad, producto_id, venta_id):
-        sql = "INSERT INTO venta_producto(cantidad, producto_id, venta_id) VALUES ("+str(cantidad)+", "+str(producto_id)+", "+str(venta_id)+");"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+    def insertarHproducto(self, nombre):
+        sql = "insert into hproducto(nombre) values ('"+nombre+"');"
+        self.excuteQuery(sql)
+    
+    def insertarProveedor(self, nombre):
+        sql = "insert into proveedor(nombre) values ('"+nombre+"');"
+        self.excuteQuery(sql)
+
+    def insertarProveedorProducto(self, producto_id, proveedor_id):
+        sql = "insert into proveedor_producto(producto_id, proveedor_id) values ("+str(producto_id)+", "+str(proveedor_id)+");"
+        self.excuteQuery(sql)
+    
+    def insertarRerror(self, error):
+        sql = "insert into rerror(error) values ('"+error+"');"
+        self.excuteQuery(sql)
+
+    def insertarVentaHproducto(self, cantidad, hproducto_id, venta_id):
+        sql = "INSERT INTO venta_hproducto(cantidad, hproducto_id, venta_id) VALUES ("+str(cantidad)+", "+str(hproducto_id)+", "+str(venta_id)+");"
+        self.excuteQuery(sql)
 
     #Delete
-    def deleteUsuario(self, nombre):
+    def eliminarUsuario(self, nombre):
         sql = "DELETE FROM usuario WHERE nombre = '" + str(nombre) + "';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        self.excuteQuery(sql)
 
-    def deleteCliente(self, cedula):
-        sql = "DELETE FROM cliente WHERE cedula = " + str(cedula) + ";"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
-
-    def deleteProducto(self, nombre):
+    def eliminarProducto(self, nombre):
         sql = "DELETE FROM producto WHERE nombre = '" + str(nombre) + "';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
-
-    def deleteVendedor(self, cedula):
-        sql = "DELETE FROM vendedor WHERE cedula = '" + str(cedula) + "';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
-
-    #Modificaciones
-
-    #Cliente
-    def modificarNombreCliente(self, nombre, cedula):
-        if (self.validarCliente(cedula) == True):
-            sql = "UPDATE cliente SET nombre = '" + str(nombre) +"' WHERE cedula = "+ str(cedula)
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
-
-    def modificarCedulaCliente(self, nuevaCedula, cedula):
-        if (self.validarCliente(cedula) == True):
-            sql = "UPDATE cliente SET cedula = " + str(nuevaCedula) +" WHERE cedula = "+ str(cedula)
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
-
-    def modificarTelefonoCliente(self, telefono, cedula):
-        if (self.validarCliente(cedula) == True):
-            sql = "UPDATE cliente SET telefono = " + str(telefono) +" WHERE cedula = "+ str(cedula)
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
+        self.excuteQuery(sql)
+    
+    def eliminarProveedorProducto(self, nombre):
+        idproducto = self.getIdProducto(nombre)
+        proveedores = self.buscarProveedoresProducto(nombre)
+        for i in range(len(proveedores)):
+            sql = "DELETE FROM proveedor_producto WHERE producto_id = '"+str(idproducto)+"';"
+            self.excuteQuery(sql)
 
     #Producto
     def modificarNombreProducto(self, nuevoNombre, nombre):
-        if (self.validarProducto(nombre) == True):
-            sql = "UPDATE producto SET nombre = '" + str(nuevoNombre) +"' WHERE nombre = '"+ str(nombre) +"';"
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
+        sql = "UPDATE producto SET nombre = '" + str(nuevoNombre) +"' WHERE nombre = '"+ str(nombre) +"';"
+        self.excuteQuery(sql)
 
     def modificarCantidadProducto(self, nuevaCantidad, nombre):
-        if (self.validarProducto(nombre) == True):
-            self.openDB()
-            sql = "UPDATE producto SET cantidad = " + str(nuevaCantidad) +" WHERE nombre = '"+ str(nombre) +"';"
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
+        sql = "UPDATE producto SET cantidad = " + str(nuevaCantidad) +" WHERE nombre = '"+ str(nombre) +"';"
+        self.excuteQuery(sql)
 
-    def modificarPrecioProducto(self, nuevoPrecio, nombre):
-        if (self.validarProducto(nombre) == True):
-            sql = "UPDATE producto SET precio = " + str(nuevoPrecio) +" WHERE nombre = '"+ str(nombre) +"';"
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
+    def modificarPrecioventaProducto(self, nuevoPrecio, nombre):
+        sql = "UPDATE producto SET precioventa = " + str(nuevoPrecio) +" WHERE nombre = '"+ str(nombre) +"';"
+        self.excuteQuery(sql)
+    
+    def modificarPreciocompraProducto(self, nuevoPrecio, nombre):
+        sql = "UPDATE producto SET preciocompra = " + str(nuevoPrecio) +" WHERE nombre = '"+ str(nombre) +"';"
+        self.excuteQuery(sql)
 
     def modificarIvaProducto(self, nuevoIva, nombre):
         sql = "UPDATE producto SET iva = " + str(nuevoIva) +" WHERE nombre = '"+ str(nombre) +"';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
-
-    #Vendedor        
-    def modificarCedulaVendedor(self, nuevaCedula, cedula):
-        if (self.validarVendedor(cedula) == True):
-            sql = "UPDATE vendedor SET cedula = " + str(nuevaCedula) +" WHERE cedula = "+ str(cedula) +";"
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
-
-    def modificarTelefonoVendedor(self, nuevoTelefono, cedula):
-        if (self.validarVendedor(cedula) == True):
-            sql = "UPDATE vendedor SET telefono = " + str(nuevoTelefono) +" WHERE cedula = "+ str(cedula) +";"
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
-
-    def modificarNombreVendedor(self, nuevoNombre, cedula):
-        if (self.validarVendedor(cedula) == True):
-            sql = "UPDATE vendedor SET nombre = '" + str(nuevoNombre) +"' WHERE cedula = "+ str(cedula) +";"
-            query = QSqlQuery()
-            self.openDB()
-            query.exec_(sql)
-            self.closeDB()
-
-    def retornarTodoProducto(self):
-        sql = 'SELECT * FROM producto;'
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
-        return query
+        self.excuteQuery(sql)
 
     def busquedaProducto(self, nombre):
-        sql = "SELECT cantidad, precio, iva FROM producto WHERE nombre = '"+str(nombre)+"';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        sql = "SELECT cantidad, precioventa, iva, preciocompra FROM producto WHERE nombre = '"+str(nombre)+"';"
+        query = self.excuteQuery(sql)
         producto_ = Producto()
         producto_.setNombre(nombre)
         while (query.next()):
-            for i in range (0,3):
+            for i in range (0,4):
                 if(i == 0):
                     producto_.setCantidad(query.value(i))
                 elif(i == 1):
-                    producto_.setPrecio(query.value(i))
-                else:
+                    producto_.setPrecioVenta(query.value(i))
+                elif(i == 2):
                     producto_.setIva(query.value(i))
+                else:
+                    producto_.setPrecioCompra(query.value(i))
         return producto_
   
     def recorrerProducto(self):
         listaProducto = []
         sql = "SELECT * FROM producto;"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        query = self.excuteQuery(sql)
         while query.next():
             nombre = query.value(1)
             cantidad = query.value(2)
-            precio = query.value(3)
+            precioVenta = query.value(3)
             iva = query.value(4)
-            objeto = Producto(nombre,cantidad,precio,iva)
+            precioCompra = query.value(5)
+            objeto = Producto(nombre,cantidad,precioVenta,iva,precioCompra)
             listaProducto.append(objeto)
         return listaProducto
 
     def recorrerProductoCero(self):
         listaProducto = []
         sql = "SELECT * FROM producto WHERE cantidad = 0"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        query = self.excuteQuery(sql)
         while query.next():
             nombre = query.value(1)
             cantidad = query.value(2)
-            precio = query.value(3)
+            precioVenta = query.value(3)
             iva = query.value(4)
-            objeto = Producto(nombre,cantidad,precio,iva)
+            precioCompra = query.value(5)
+            objeto = Producto(nombre,cantidad,precioVenta,iva,precioCompra)
             listaProducto.append(objeto)
         return listaProducto
+    
+    def getIdHproducto(self,nombre): #Devuelve True si esta en la DB
+        sql = "SELECT id_hproducto FROM hproducto WHERE nombre = '" + str(nombre) + "';"
+        query = self.excuteQuery(sql)
+        while query.next():
+            i = query.value(0)
+        return i
 
     def getIdUltimaVenta(self):
         sql = "SELECT id_venta FROM venta;"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
-        while query.next():
-            i = query.value(0)
+        query = self.excuteQuery(sql)
+        if query.size() > 0:
+            while query.next():
+                i = query.value(0)
+        else:
+            i = 0
         return i
 
     def getIdCliente(self,cedula): #Devuelve True si esta en la DB
         sql = "SELECT id_cliente FROM cliente WHERE cedula = " + str(cedula) + ";"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
-        while query.next():
-            i = query.value(0)
-        return i
-    
-    def getIdProducto(self,nombre): #Devuelve True si esta en la DB
-        sql = "SELECT id_producto FROM producto WHERE nombre = '" + str(nombre) + "';"
-        query = QSqlQuery()
-        self.openDB()
-        query.exec_(sql)
-        self.closeDB()
+        query = self.excuteQuery(sql)
         while query.next():
             i = query.value(0)
         return i
 
-    def guardarVenta(self, venta ):
-        clienteIntenso = Cliente()
-        clienteIntenso.setCedula(venta.getCliente().getCedula())
-        clienteIntenso.setNombre(venta.getCliente().getNombre())
-        clienteIntenso.setTelefono(venta.getCliente().getTelefono())
-        if(self.validarCliente(int(clienteIntenso.getCedula()))):
-            id_cliente = self.getIdCliente(int(clienteIntenso.getCedula()))
+    def getIdUsuario(self, nombre):
+        sql = "select id_usuario from usuario where nombre = '"+nombre+"';"
+        query = self.excuteQuery(sql)
+        while query.next():
+            i = query.value(0)
+        return i
+
+    def guardarVenta(self, venta, usuario):
+        clienteVenta = Cliente()
+        clienteVenta.setCedula(venta.getCliente().getCedula())
+        clienteVenta.setNombre(venta.getCliente().getNombre())
+        clienteVenta.setTelefono(venta.getCliente().getTelefono())
+        if(self.verificarCliente(int(clienteVenta.getCedula()))):
+            id_cliente = self.getIdCliente(int(clienteVenta.getCedula()))
         else:
-            self.insertCliente(clienteIntenso.getCedula(), clienteIntenso.getTelefono(), clienteIntenso.getNombre())
-            id_cliente = self.getIdCliente(clienteIntenso.getCedula())
-        self.insertVenta(venta.getMonto(), id_cliente)
-        #id_venta = self.getIdUltimaVenta()
-        #for producto_ in venta.getProducto():
-        #    id_producto = self.getIdProducto(producto_.getNombre())
-        #    self.insertVentaProducto(producto_.getCantidad(), id_producto, id_venta)
+            self.insertarCliente(clienteVenta.getCedula(), clienteVenta.getTelefono(), clienteVenta.getNombre())
+            id_cliente = self.getIdCliente(clienteVenta.getCedula())
+        id_usuario = self.getIdUsuario(usuario)
+        self.insertarVenta(venta.getMonto(), id_cliente, id_usuario)
+        id_venta = self.getIdUltimaVenta()
+        for producto_ in venta.getProducto():
+            id_hproducto = self.getIdHproducto(producto_.getNombre())
+            self.insertarVentaHproducto(producto_.getCantidad(), id_hproducto, id_venta)

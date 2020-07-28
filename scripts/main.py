@@ -5,7 +5,6 @@ from PyQt5 import QtSql, QtGui
 from gestorVentanas import ventanaLogin
 
 if __name__ == '__main__':
-
     App = QApplication(sys.argv)
     win = ventanaLogin()
     win.show()

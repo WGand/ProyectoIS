@@ -1,0 +1,73 @@
+create extension pgcrypto;
+create table usuario (
+        id_usuario SERIAL,
+        nombre text unique not null,
+        clave text not null,
+        admininstrador bool not null,
+        correo text not null,
+        primary key (id_usuario)
+);
+CREATE TABLE cliente (
+        id_cliente SERIAL,
+        cedula INTEGER not null,
+        telefono text not null,
+        nombre text not null,
+        primary key (id_cliente)
+);
+create table venta (
+        id_venta SERIAL,
+        monto real not null,
+        cliente_id INTEGER REFERENCES cliente (id_cliente) not null,
+        usuario_id INTEGER references usuario (id_usuario) not null,
+        fecha timestamp default current_timestamp,
+        primary key (id_venta)
+);
+create table hproducto (
+        id_hproducto SERIAL,
+        nombre text not null,
+        primary key (id_hproducto)
+);
+create table venta_hproducto (
+        id_venta_hproducto SERIAL,
+        cantidad bigint not null,
+        hproducto_id integer references hproducto (id_hproducto),
+        venta_id integer references venta (id_venta)
+);
+create table proveedor(
+        id_proveedor SERIAL,
+        nombre text not null,
+        primary key (id_proveedor)
+);
+create table producto (
+        id_producto SERIAL,
+        nombre text not null,
+        cantidad bigint not null,
+        precioventa real not null,
+        iva bool not null,
+        preciocompra real not null,
+        primary key (id_producto)
+);
+create table proveedor_producto (
+        id_proveedor_producto SERIAL,
+        producto_id INTEGER references producto (id_producto),
+        proveedor_id INTEGER references proveedor (id_proveedor),
+        primary key (id_proveedor_producto)
+);
+create table compra (
+        id_compra SERIAL,
+        monto real not null,
+        proveedor_id INTEGER references proveedor (id_proveedor),
+        fecha timestamp default current_timestamp,
+        primary key (id_compra)
+);
+create table movimiento (
+        id_movimiento SERIAL,
+        tipo bool not null,
+        monto real not null,
+        justificacion text not null,
+        usuario text not null,
+        fecha date default current_date,
+        primary key (id_movimiento)
+);
+insert into usuario(nombre, clave, admininstrador, correo) values ('admin', crypt('1234567', gen_salt('bf')), true, 'costanzag1999@gmail.com' );
+

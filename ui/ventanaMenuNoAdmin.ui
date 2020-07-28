@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>794</width>
-    <height>595</height>
+    <height>712</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,19 +56,6 @@
        </property>
       </spacer>
      </item>
-     <item row="0" column="1">
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
      <item row="0" column="2">
       <widget class="QPushButton" name="botonRegistrarVenta">
        <property name="minimumSize">
@@ -85,44 +72,6 @@
        </property>
        <property name="text">
         <string>Registrar venta</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QPushButton" name="botonSalir">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>90</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>2000</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Salir</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QPushButton" name="botonListarInventario">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>90</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>2000</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Listar Inventario</string>
        </property>
       </widget>
      </item>
@@ -145,7 +94,77 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="1">
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="botonListarInventario">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>90</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>2000</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Listar Inventario</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="botonEnviarReporte">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>90</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Enviar Reporte</string>
+       </property>
+      </widget>
+     </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="botonSalir">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>560</y>
+      <width>378</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>90</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>2000</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>Salir</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

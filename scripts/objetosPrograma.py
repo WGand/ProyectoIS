@@ -1,15 +1,57 @@
 from abc import ABC, abstractmethod
 
+class Movimiento():
+	def __init__(self, tipo = '', monto= '', justificacion= '', usuario= '', fecha= ''):
+		self.__tipo = tipo
+		self.__monto = monto
+		self.__justificacion = justificacion
+		self.__usuario = usuario
+		self.__fecha = fecha
+	
+	def setTipo(self, tipo):
+		self.__tipo = tipo
+	
+	def getTipo(self):
+		return self.__tipo
+
+	def setMonto(self, monto):
+		self.__monto = monto
+	
+	def getMonto(self):
+		return self.__monto
+	
+	def setJustificacion(self, justificacion):
+		self.__justificacion = justificacion
+	
+	def getJustificacion(self):
+		return self.__justificacion
+
+	def setUsuario(self, usuario):
+		self.__usuario = usuario
+	
+	def getUsuario(self):
+		return self.__usuario
+
+	def setFecha(self, fecha):
+		self.__fecha = fecha
+	
+	def getFecha(self):
+		return self.__fecha
+
 class usuario():
-	def __init__(self, nombre = '', admin = ''):
+	def __init__(self, nombre = '', admin = '', correo = ''):
 		self.__nombre = nombre
 		self.__admin = admin
+		self.__correo = correo
 	
 	def getNombre(self):
 		return self.__nombre
 	
 	def isAdmin(self):
 		return self.__admin
+	
+	def getCorreo(self):
+		return self.__correo
 
 class Persona(ABC):
 	def __init__(self, nombre = '', cedula = '', telefono = ''):
@@ -38,15 +80,13 @@ class Persona(ABC):
 class Cliente(Persona):
 	pass
 
-class Vendedor(Persona):
-	pass
-
 class Producto():
-	def __init__(self, nombre = '', cantidad = '', precio = '', iva = ''):
+	def __init__(self, nombre = '', cantidad = '', precioVenta = '', iva = '', precioCompra =''):
 		self.__nombre = nombre
 		self.__cantidad = cantidad
-		self.__precio = precio
+		self.__precioVenta = precioVenta
 		self.__iva = iva
+		self.__precioCompra = precioCompra
 	
 	def setIva(self, iva):
 		self.__iva = iva
@@ -66,11 +106,17 @@ class Producto():
 	def getCantidad(self):
 		return self.__cantidad
 	
-	def setPrecio(self, precio):
-		self.__precio = precio
+	def setPrecioVenta(self, precioVenta):
+		self.__precioVenta = precioVenta
 	
-	def getPrecio(self):
-		return self.__precio
+	def setPrecioCompra(self, precioCompra):
+		self.__precioCompra = precioCompra
+	
+	def getPrecioCompra(self):
+			return self.__precioCompra
+
+	def getPrecioVenta(self):
+		return self.__precioVenta
 
 class Venta():
 	def __init__(self, cliente = ''):
@@ -83,9 +129,9 @@ class Venta():
 		if(self.__producto):	
 			for producto_ in self.__producto:
 				if(producto_.getIva()):
-					monto_ += (producto_.getPrecio() + producto_.getPrecio() * 0.16) * producto_.getCantidad()
+					monto_ += (producto_.getPrecioVenta() + producto_.getPrecioVenta() * 0.16) * producto_.getCantidad()
 				else:
-					monto_ += (producto_.getPrecio()) * producto_.getCantidad()
+					monto_ += (producto_.getPrecioVenta()) * producto_.getCantidad()
 			self.__monto = monto_
 		else:
 			self.__monto = 0
