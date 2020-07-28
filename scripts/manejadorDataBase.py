@@ -25,7 +25,7 @@ class ConexionDataBase:
             listaProveedor.append(str(query.value(0)))
         return listaProveedor
 
-    def getIdProducto(self,nombre):
+    def getIdProducto(self, nombre):
         sql = "SELECT id_producto FROM producto WHERE nombre = '" + str(nombre) + "';"
         query = self.excuteQuery(sql)
         i = 0
@@ -47,7 +47,20 @@ class ConexionDataBase:
             query.next()
             listaProveedor.append(str(query.value(0)))
         return listaProveedor
-        
+
+    def buscarProveedorProducto(self, nombre):
+        idproducto = self.getIdProducto(nombre)
+        sql = "SELECT proveedor_id FROM proveedor_producto WHERE producto_id = '" + str(idproducto) + "';"
+        query = self.excuteQuery(sql)
+        while query.next():
+            id_proveedor = str(query.value(0))
+            if len(id_proveedor) > 0:
+                sql = "SELECT nombre FROM proveedor WHERE id_proveedor = '" + str(id_proveedor) + "';"
+                query = self.excuteQuery(sql)
+                while query.next():
+                    nombreProveedor = str(query.value(0))
+        return nombreProveedor
+
 
     def verificarProveedor(self, nombre): #Devuelve True si esta en la DB
         sql = "SELECT FROM proveedor WHERE nombre = '" + str(nombre) + "';"

@@ -191,7 +191,7 @@ class ventanaListarInventario(QDialog):
             self.ui.tableView.setColumnWidth(1, self.width()/7)
             self.ui.tableView.setColumnWidth(2, self.width()/6)
             self.ui.tableView.setColumnWidth(3, self.width()/7)
-            self.ui.tableView.setColumnWidth(4, self.width()/7.4)
+            self.ui.tableView.setColumnWidth(4, self.width()/10)
             self.ui.tableView.setColumnWidth(5, self.width()/7)
             self.ui.tableView.clicked.connect(self.irVentanaModificarCantidad)
         else:
@@ -208,7 +208,7 @@ class ventanaListarInventario(QDialog):
             self.filaModificar = self.ui.tableView.currentIndex().row()
             self.ventana_ModificarCantidad = ventanaModificarCantidad(self, self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
             self.ventana_ModificarCantidad.show()
-
+    
     def cambiarDato(self):
         productoNuevo = self.db.busquedaProducto(self.nombreModificar)
         self.model.setItem(self.filaModificar, 1, QtGui.QStandardItem(str(productoNuevo.getCantidad())))
@@ -483,25 +483,30 @@ class ventanaEliminarProducto(QDialog):
         self.conector = ConexionDataBase()
         self.result = self.conector.recorrerProductoCero()
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio Compra', 'Precio Venta', 'Proveedor', 'IVA'])
         self.columnas = 3
         self.fila = len(self.result)
         for filas in range(self.fila):
             objects = self.result[filas]
+            nombreProveedor = self.conector.buscarProveedorProducto(objects.getNombre())
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioVenta())))
-            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioCompra())))
+            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getPrecioVenta())))
+            self.model.setItem(filas, 4, QtGui.QStandardItem(str(nombreProveedor)))
+            self.model.setItem(filas, 5, QtGui.QStandardItem(str(objects.getIva())))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
         self.filtro.setSourceModel(self.model)
         self.filtro.setFilterKeyColumn(0)
         self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
-        self.ui.tableView.setColumnWidth(0, self.width()/3.4)
-        self.ui.tableView.setColumnWidth(1, self.width()/5)
-        self.ui.tableView.setColumnWidth(2, self.width()/5)
-        self.ui.tableView.setColumnWidth(3, self.width()/7)
+        self.ui.tableView.setColumnWidth(0, self.width()/4.7)
+        self.ui.tableView.setColumnWidth(1, self.width()/8)
+        self.ui.tableView.setColumnWidth(2, self.width()/6)
+        self.ui.tableView.setColumnWidth(3, self.width()/6)
+        self.ui.tableView.setColumnWidth(4, self.width()/6)
+        self.ui.tableView.setColumnWidth(5, self.width()/7)
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ui.tableView.clicked.connect(self.popUpEliminarProducto)
         self.ui.pushButton.clicked.connect(self.volver)
@@ -510,7 +515,7 @@ class ventanaEliminarProducto(QDialog):
         self.ui.tableView.clearSpans()
         self.result = self.conector.recorrerProductoCero()
         self.model.clear()
-        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio', 'IVA'])
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio Compra', 'Precio Venta', 'Proveedor', 'IVA'])
         self.columnas = 3
         self.fila = len(self.result)
         for filas in range(self.fila):
@@ -524,11 +529,18 @@ class ventanaEliminarProducto(QDialog):
         self.filtro.setSourceModel(self.model)
         self.filtro.setFilterKeyColumn(0)
         self.ui.tableView.setModel(self.filtro)
+        self.ui.tableView.setColumnWidth(0, self.width()/4.7)
+        self.ui.tableView.setColumnWidth(1, self.width()/8)
+        self.ui.tableView.setColumnWidth(2, self.width()/6)
+        self.ui.tableView.setColumnWidth(3, self.width()/6)
+        self.ui.tableView.setColumnWidth(4, self.width()/6)
+        self.ui.tableView.setColumnWidth(5, self.width()/7)
 
     def volver(self):
         self.close()        
 
     def popUpEliminarProducto(self):
+        self.nombreProducto = self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data()
         self.productoEliminar = self.conector.busquedaProducto(self.ui.tableView.model().index(self.ui.tableView.currentIndex().row(), 0).data())
         self.popUp_EliminarProducto = popUp('Se eliminara el producto: '+self.productoEliminar.getNombre()+'\n¿Desea continuar?', 'Eliminar', True, 'advertencia', 'Confirmar', 'Cancelar')    
         self.popUp_EliminarProducto.buttons()[1].pressed.connect(self.eliminarProducto)
@@ -537,6 +549,7 @@ class ventanaEliminarProducto(QDialog):
     def eliminarProducto(self):
         self.conector.eliminarProveedorProducto(self.productoEliminar.getNombre())
         self.conector.eliminarProducto(self.productoEliminar.getNombre()) 
+        self.conector.eliminarProveedorProducto(self.nombreProducto)
         self.llenarTabla()
         self.popUp_EliminarProducto.close()
 
