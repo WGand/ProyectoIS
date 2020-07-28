@@ -9,6 +9,7 @@ from PyQt5 import QtSql
 from PyQt5.QtSql import *
 from PyQt5.QtSql import QSqlQuery, QSqlTableModel
 import functools
+import time
 #Import Ventanas
 from ventanaMenu import Ui_MainWindow
 from ventanaMenuNoAdmin import Ui_MainWindowna
@@ -187,7 +188,7 @@ class ventanaListarInventario(QDialog):
         self.ui.tableView.setModel(self.filtro)
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         if USER.isAdmin():
-            self.ui.tableView.setColumnWidth(0, self.width()/4)
+            self.ui.tableView.setColumnWidth(0, self.width()/3.5)
             self.ui.tableView.setColumnWidth(1, self.width()/7)
             self.ui.tableView.setColumnWidth(2, self.width()/6)
             self.ui.tableView.setColumnWidth(3, self.width()/7)
@@ -310,11 +311,11 @@ class ventanaModificarCantidad(QDialog):
             justificacion = self.ui.comboBoxJustificaciones.currentText()
         if self.cantidadActual < self.producto_.getCantidad():
             if self.ui.comboBoxJustificaciones.currentText() != "Otros":
-                idproveedor = self.conector.getIdProveedor(self.ui.comboBoxProveedores.currentText())
-                self.conector.insertarCompra(int(self.producto_.getCantidad()) * int(self.producto_.getPrecioCompra()), idproveedor)
-            self.conector.insertarMovimiento(False,int(self.producto_.getCantidad())*int(self.producto_.getPrecioCompra()), justificacion, USER.getNombre())
+                idproveedor = self.conector.getIdProveedor(self.ui.comboBoxProveedores.currentText().upper())
+                self.conector.insertarCompra((int(self.producto_.getCantidad()) - int(self.cantidadActual)) * int(self.producto_.getPrecioCompra()), idproveedor)
+            self.conector.insertarMovimiento(True,int(self.producto_.getPrecioCompra())*(int(self.producto_.getCantidad()) - int(self.cantidadActual)), justificacion, USER.getNombre())
         else:
-            self.conector.insertarMovimiento(True, 0, justificacion, USER.getNombre())
+            self.conector.insertarMovimiento(False, 0, justificacion, USER.getNombre())
         self.ventana.cambiarDato()
         self.irVolver()
 
@@ -499,11 +500,11 @@ class ventanaEliminarProducto(QDialog):
         self.filtro.setFilterKeyColumn(0)
         self.ui.campoTexto.textChanged.connect(self.filtro.setFilterRegExp)
         self.ui.tableView.setModel(self.filtro)
-        self.ui.tableView.setColumnWidth(0, self.width()/4.7)
-        self.ui.tableView.setColumnWidth(1, self.width()/8)
-        self.ui.tableView.setColumnWidth(2, self.width()/6)
-        self.ui.tableView.setColumnWidth(3, self.width()/6)
-        self.ui.tableView.setColumnWidth(4, self.width()/7)
+        self.ui.tableView.setColumnWidth(0, self.width()/4.1)
+        self.ui.tableView.setColumnWidth(1, self.width()/6)
+        self.ui.tableView.setColumnWidth(2, self.width()/4.5)
+        self.ui.tableView.setColumnWidth(3, self.width()/4.5)
+        self.ui.tableView.setColumnWidth(4, self.width()/8)
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ui.tableView.clicked.connect(self.popUpEliminarProducto)
         self.ui.pushButton.clicked.connect(self.volver)
@@ -512,7 +513,7 @@ class ventanaEliminarProducto(QDialog):
         self.ui.tableView.clearSpans()
         self.result = self.conector.recorrerProductoCero()
         self.model.clear()
-        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio Compra', 'Precio Venta', 'Proveedor', 'IVA'])
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio Compra', 'Precio Venta', 'IVA'])
         self.columnas = 3
         self.fila = len(self.result)
         for filas in range(self.fila):
@@ -527,11 +528,11 @@ class ventanaEliminarProducto(QDialog):
         self.filtro.setSourceModel(self.model)
         self.filtro.setFilterKeyColumn(0)
         self.ui.tableView.setModel(self.filtro)
-        self.ui.tableView.setColumnWidth(0, self.width()/4.7)
-        self.ui.tableView.setColumnWidth(1, self.width()/8)
-        self.ui.tableView.setColumnWidth(2, self.width()/6)
-        self.ui.tableView.setColumnWidth(3, self.width()/6)
-        self.ui.tableView.setColumnWidth(4, self.width()/7)
+        self.ui.tableView.setColumnWidth(0, self.width()/4.1)
+        self.ui.tableView.setColumnWidth(1, self.width()/6)
+        self.ui.tableView.setColumnWidth(2, self.width()/4.5)
+        self.ui.tableView.setColumnWidth(3, self.width()/4.5)
+        self.ui.tableView.setColumnWidth(4, self.width()/8)
 
     def volver(self):
         self.close()        
@@ -1032,8 +1033,10 @@ class ventanaAnadirProducto(QDialog):
                         self.conector.insertarProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecioVenta.toPlainText(), False, self.ui.campoTextoPrecioCompra.toPlainText())
                     self.proveedorExiste()
                     self.conector.insertarHproducto(self.ui.campoTextoNombre.toPlainText())
-                    id_proveedor = self.conector.getIdProveedor(self.ui.campoTextoProveedor.text())
+                    id_proveedor = self.conector.getIdProveedor(self.ui.campoTextoProveedor.text().upper())
+                    id_producto = self.conector.getIdProducto(self.ui.campoTextoNombre.toPlainText())
                     self.conector.insertarMovimiento(False, int(self.ui.campoTextoCantidad.toPlainText())*int(self.ui.campoTextoPrecioCompra.toPlainText()), "Comprar producto", USER.getNombre())
+                    self.conector.insertarProveedorProducto(id_producto, id_proveedor)
                     self.conector.insertarCompra(int(self.ui.campoTextoCantidad.toPlainText())*int(self.ui.campoTextoPrecioCompra.toPlainText()), id_proveedor)
                     self.popUp_InfoDatosCorrectos = popUp('Se agregó el nuevo producto exitosamente.', 'Éxito', False, 'informativo', 'Ok')
                     self.popUp_InfoDatosCorrectos.buttons()[0].pressed.connect(self.close)
@@ -1074,11 +1077,12 @@ class ventanaMenu(QMainWindow):
             self.popUpErrorConexion()
 
     def popUpEnviarReporte(self):
-        popUp_EnviarReporte = popUp("¿Desea enviar el reporte de movimientos a los administradores?", 'Enviar Reporte', True, 'dubitativo', 'Si', 'No')
-        popUp_EnviarReporte.buttons()[1].pressed.connect(self.enviarReporte)
-        popUp_EnviarReporte.exec_()
+        self.popUp_EnviarReporte = popUp("¿Desea enviar el reporte de movimientos a los administradores?", 'Enviar Reporte', True, 'dubitativo', 'Si', 'No')
+        self.popUp_EnviarReporte.buttons()[1].pressed.connect(self.enviarReporte)
+        self.popUp_EnviarReporte.exec_()
 
     def enviarReporte(self):
+        self.popUp_EnviarReporte.hide()
         conector = ConexionDataBase()
         correos = conector.buscarCorreoAdministradores()
         crearCsv = GestorCsv(USER.getNombre())
