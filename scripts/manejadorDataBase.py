@@ -9,8 +9,8 @@ class ConexionDataBase:
     def __init__(self):
         ConexionDataBase.db.setHostName("localhost")
         ConexionDataBase.db.setPort(5432)
-        ConexionDataBase.db.setDatabaseName("inventarioabasto")
-        ConexionDataBase.db.setUserName("inventarioabasto")
+        ConexionDataBase.db.setDatabaseName("postgres")
+        ConexionDataBase.db.setUserName("postgres")
         ConexionDataBase.db.setPassword("123456")
     
     def insertarMovimiento(self, tipo, monto, justificacion, usuario):
@@ -243,8 +243,10 @@ class ConexionDataBase:
     
     def eliminarProveedorProducto(self, nombre):
         idproducto = self.getIdProducto(nombre)
-        sql = "DELETE FROM proveedor_producto WHERE producto_id = '"+str(idproducto)+"';"
-        self.excuteQuery(sql)
+        proveedores = self.buscarProveedoresProducto(nombre)
+        for i in range(len(proveedores)):
+            sql = "DELETE FROM proveedor_producto WHERE producto_id = '"+str(idproducto)+"';"
+            self.excuteQuery(sql)
 
     #Producto
     def modificarNombreProducto(self, nuevoNombre, nombre):

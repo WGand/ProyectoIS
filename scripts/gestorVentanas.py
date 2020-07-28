@@ -483,18 +483,16 @@ class ventanaEliminarProducto(QDialog):
         self.conector = ConexionDataBase()
         self.result = self.conector.recorrerProductoCero()
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio Compra', 'Precio Venta', 'Proveedor', 'IVA'])
+        self.model.setHorizontalHeaderLabels(['Nombre', 'Cantidad', 'Precio Compra', 'Precio Venta', 'IVA'])
         self.columnas = 3
         self.fila = len(self.result)
         for filas in range(self.fila):
             objects = self.result[filas]
-            nombreProveedor = self.conector.buscarProveedorProducto(objects.getNombre())
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
             self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioCompra())))
             self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getPrecioVenta())))
-            self.model.setItem(filas, 4, QtGui.QStandardItem(str(nombreProveedor)))
-            self.model.setItem(filas, 5, QtGui.QStandardItem(str(objects.getIva())))
+            self.model.setItem(filas, 4, QtGui.QStandardItem(str(objects.getIva())))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
         self.filtro.setSourceModel(self.model)
@@ -505,8 +503,7 @@ class ventanaEliminarProducto(QDialog):
         self.ui.tableView.setColumnWidth(1, self.width()/8)
         self.ui.tableView.setColumnWidth(2, self.width()/6)
         self.ui.tableView.setColumnWidth(3, self.width()/6)
-        self.ui.tableView.setColumnWidth(4, self.width()/6)
-        self.ui.tableView.setColumnWidth(5, self.width()/7)
+        self.ui.tableView.setColumnWidth(4, self.width()/7)
         self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.ui.tableView.clicked.connect(self.popUpEliminarProducto)
         self.ui.pushButton.clicked.connect(self.volver)
@@ -522,8 +519,9 @@ class ventanaEliminarProducto(QDialog):
             objects = self.result[filas]
             self.model.setItem(filas, 0, QtGui.QStandardItem(objects.getNombre()))
             self.model.setItem(filas, 1, QtGui.QStandardItem(str(objects.getCantidad())))
-            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioVenta())))
-            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getIva())))
+            self.model.setItem(filas, 2, QtGui.QStandardItem(str(objects.getPrecioCompra())))
+            self.model.setItem(filas, 3, QtGui.QStandardItem(str(objects.getPrecioVenta())))
+            self.model.setItem(filas, 4, QtGui.QStandardItem(str(objects.getIva())))
         self.filtro = QtCore.QSortFilterProxyModel()
         self.filtro.setFilterCaseSensitivity(0)
         self.filtro.setSourceModel(self.model)
@@ -533,8 +531,7 @@ class ventanaEliminarProducto(QDialog):
         self.ui.tableView.setColumnWidth(1, self.width()/8)
         self.ui.tableView.setColumnWidth(2, self.width()/6)
         self.ui.tableView.setColumnWidth(3, self.width()/6)
-        self.ui.tableView.setColumnWidth(4, self.width()/6)
-        self.ui.tableView.setColumnWidth(5, self.width()/7)
+        self.ui.tableView.setColumnWidth(4, self.width()/7)
 
     def volver(self):
         self.close()        
@@ -549,7 +546,6 @@ class ventanaEliminarProducto(QDialog):
     def eliminarProducto(self):
         self.conector.eliminarProveedorProducto(self.productoEliminar.getNombre())
         self.conector.eliminarProducto(self.productoEliminar.getNombre()) 
-        self.conector.eliminarProveedorProducto(self.nombreProducto)
         self.llenarTabla()
         self.popUp_EliminarProducto.close()
 
@@ -1024,7 +1020,7 @@ class ventanaAnadirProducto(QDialog):
                 self.popUp_AdvertenciaDatoIncorrecto.cerrarPopup()
                 self.popUp_AdvertenciaDatoIncorrecto.exec()
             else:
-                if(self.conector.verificarProducto(self.ui.campoTextoNombre.toPlainText()) and not self.conector.verificarProveedor(self.ui.campoTextoProveedor.text())):
+                if self.conector.verificarProducto(self.ui.campoTextoNombre.toPlainText()):
                     self.popUp_ProductoExistente = popUp('El nombre del producto ingresado ya se encuentra registrado.', 'Error', False, 'advertencia', 'Ok')
                     self.popUp_ProductoExistente.cerrarPopup()
                     self.popUp_ProductoExistente.exec_()
@@ -1035,10 +1031,8 @@ class ventanaAnadirProducto(QDialog):
                         self.conector.insertarProducto(self.ui.campoTextoNombre.toPlainText(), self.ui.campoTextoCantidad.toPlainText(), self.ui.campoTextoPrecioVenta.toPlainText(), False, self.ui.campoTextoPrecioCompra.toPlainText())
                     self.proveedorExiste()
                     self.conector.insertarHproducto(self.ui.campoTextoNombre.toPlainText())
-                    id_producto = self.conector.getIdProducto(self.ui.campoTextoNombre.toPlainText())
                     id_proveedor = self.conector.getIdProveedor(self.ui.campoTextoProveedor.text())
                     self.conector.insertarMovimiento(False, int(self.ui.campoTextoCantidad.toPlainText())*int(self.ui.campoTextoPrecioCompra.toPlainText()), "Comprar producto", USER.getNombre())
-                    self.conector.insertarProveedorProducto(id_producto, id_proveedor)
                     self.conector.insertarCompra(int(self.ui.campoTextoCantidad.toPlainText())*int(self.ui.campoTextoPrecioCompra.toPlainText()), id_proveedor)
                     self.popUp_InfoDatosCorrectos = popUp('Se agregó el nuevo producto exitosamente.', 'Éxito', False, 'informativo', 'Ok')
                     self.popUp_InfoDatosCorrectos.buttons()[0].pressed.connect(self.close)
